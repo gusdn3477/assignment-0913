@@ -11,6 +11,10 @@ Read `PLAN.md`, `STATUS.md`, `DECISIONS.md`, and your assigned `docs/tasks/<feat
 
 ## Implementation
 - TypeScript strict; React/Next App Router; Tailwind and cn; shadcn; TanStack Query for candidate data; Zustand for UI state.
+- Build shared controls such as Input and Button by extending the corresponding native element props (for example, React.ComponentProps<"input">), forwarding native props and refs, and preserving HTML semantics and keyboard behavior.
+- Actively use concurrency where it benefits independent requests or rendering responsiveness. Preserve request ordering and card-scoped isolation; keep controlled input updates immediate, and use React concurrent rendering APIs only for suitable non-urgent rendering work.
+- Actively consider `useTransition` for non-urgent React state updates and `useDeferredValue` for expensive derived views such as search/filter results. Keep input values immediate, expose pending/stale feedback when useful, and keep result counts and empty states consistent with the displayed results. Do not treat transitions as request locks or assume wrapping Zustand writes makes them non-blocking; validate behavior against the installed React version.
+- Keep loading and error handling consistent and scoped: use layout-preserving skeletons for initial loading, retain usable data during background refresh, and show pending feedback only on affected controls/cards. Distinguish initial load failures, refresh failures, mutation failures, and render exceptions; provide clear user-facing messages and appropriate retry/recovery without exposing raw internal errors. Preserve card-scoped rollback and focus, avoid duplicate error notifications, and use accessible status/alert semantics without announcing every keystroke.
 - Additional dependencies are allowed when justified. Document the decision and let integration install them.
 - Preserve keyboard interaction, card-scoped rollback, same-card request exclusion, and successful-write-only persistence.
 - Validate stored data at runtime. Never persist optimistic candidate state through Zustand.

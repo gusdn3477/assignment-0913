@@ -20,3 +20,6 @@ Query: 지원자 캐시와 mutation. Zustand: 검색어·직무·상세 선택. 
 
 ## 제외
 Undo, 가상화, DnD, 로그인, 지원자 생성/삭제, 실제 백엔드, 다중 탭 동기화, 공개 저장소 생성/푸시/배포.
+
+## 후속 승인: 동시 렌더링과 상태 피드백 (2026-09-13)
+사용자의 “작업 시작”에 따라 문서화한 추가 기준을 실제 구현합니다. `concurrent-feedback` 한 기능 세션에서 검색·필터 결과의 `useDeferredValue` 적용, 재시도 Action의 `useTransition` 대기 상태, 최초 로딩/조회 오류/백그라운드 갱신 분리와 회귀 테스트를 수행합니다. 입력은 즉시 갱신하고 카드 저장·잠금·롤백은 최신 데이터를 유지합니다. 기존 Input/Button의 native element props 확장 방식은 유지합니다. 통합 담당은 리뷰·production build·브라우저 확인·인계 기록을 담당합니다.
