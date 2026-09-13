@@ -161,7 +161,10 @@ describe("SearchBar", () => {
   it("allows an explicit empty left slot", () => {
     render(<SearchBar left={null} aria-label="검색" />);
     expect(
-      screen.getByRole("searchbox").closest('[data-slot="input-wrapper"]'),
+      screen
+        .getByRole("searchbox")
+        .closest('[data-slot="input-wrapper"]')
+        ?.querySelector('[data-slot="input-left"]'),
     ).toBeNull();
   });
 });

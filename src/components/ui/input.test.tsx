@@ -35,7 +35,7 @@ describe("Input primitive", () => {
     expect(button).toHaveFocus();
   });
 
-  it("forwards native props, change events and ref without wrapping a plain input", async () => {
+  it("forwards native props, change events and ref inside the same wrapper for a plain input", async () => {
     const ref = createRef<HTMLInputElement>();
     const onChange = vi.fn();
     const { container } = render(
@@ -57,15 +57,21 @@ describe("Input primitive", () => {
     expect(ref.current).toBe(input);
     expect(input).toHaveAttribute("name", "query");
     expect(input).toHaveClass("bg-white");
-    expect(container.firstElementChild).toBe(input);
+    expect(container.firstElementChild).toBe(
+      input.closest('[data-slot="input-wrapper"]'),
+    );
   });
 
-  it("keeps refs current as slots appear and disappear", () => {
+  it("preserves the input node, value, selection and focus as slots appear and disappear", async () => {
     const ref = createRef<HTMLInputElement>();
     const { rerender, unmount } = render(
       <Input ref={ref} defaultValue="text" />,
     );
-    expect(ref.current).toBe(screen.getByRole("textbox"));
+    const input = screen.getByRole("textbox") as HTMLInputElement;
+    const wrapper = input.parentElement;
+    await userEvent.type(input, " edited");
+    input.setSelectionRange(1, 3);
+    expect(ref.current).toBe(input);
     rerender(
       <Input
         ref={ref}
@@ -76,11 +82,20 @@ describe("Input primitive", () => {
       />,
     );
     expect(ref.current).toBe(screen.getByRole("textbox"));
+    expect(ref.current).toBe(input);
+    expect(input.parentElement).toBe(wrapper);
+    expect(input).toHaveValue("text edited");
+    expect(input).toHaveFocus();
+    expect([input.selectionStart, input.selectionEnd]).toEqual([1, 3]);
     expect(ref.current?.closest('[data-slot="input-wrapper"]')).toHaveClass(
       "bg-white",
     );
     rerender(<Input ref={ref} defaultValue="text" />);
-    expect(ref.current).toBe(screen.getByRole("textbox"));
+    expect(ref.current).toBe(input);
+    expect(input.parentElement).toBe(wrapper);
+    expect(input).toHaveValue("text edited");
+    expect(input).toHaveFocus();
+    expect([input.selectionStart, input.selectionEnd]).toEqual([1, 3]);
     unmount();
     expect(ref.current).toBeNull();
   });

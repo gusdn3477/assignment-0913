@@ -19,26 +19,6 @@ function Input({
   right,
   ...props
 }: InputProps) {
-  const hasSlots = left != null || right != null;
-  const input = (
-    <input
-      ref={ref}
-      type={type}
-      data-slot="input"
-      className={cn(
-        "h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30",
-        "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
-        "aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40",
-        hasSlots &&
-          "flex-1 rounded-none border-0 px-0 shadow-none focus-visible:ring-0 aria-invalid:ring-0 dark:bg-transparent",
-        className,
-      )}
-      {...props}
-    />
-  );
-
-  if (!hasSlots) return input;
-
   return (
     <div
       data-slot="input-wrapper"
@@ -58,7 +38,16 @@ function Input({
           {left}
         </div>
       )}
-      {input}
+      <input
+        ref={ref}
+        type={type}
+        data-slot="input"
+        className={cn(
+          "h-9 w-full min-w-0 flex-1 rounded-none border-0 bg-transparent px-0 py-1 text-base outline-none selection:bg-primary selection:text-primary-foreground file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed md:text-sm",
+          className,
+        )}
+        {...props}
+      />
       {right != null && (
         <div
           data-slot="input-right"
