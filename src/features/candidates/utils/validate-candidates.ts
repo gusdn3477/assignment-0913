@@ -1,3 +1,4 @@
+import { MOCK_API_ERROR_CODES } from "@/features/candidates/constants/candidate-errors";
 import { JOBS, STAGES } from "@/features/candidates/constants/candidate";
 import type { Candidate } from "@/features/candidates/types/candidate";
 import { MockApiError } from "@/features/candidates/api/mock-api-error";
@@ -32,7 +33,7 @@ export function parseCandidates(raw: string): Candidate[] {
     return candidates;
   } catch {
     throw new MockApiError(
-      "corrupt-storage",
+      MOCK_API_ERROR_CODES.CORRUPT_STORAGE,
       "저장된 지원자 데이터가 손상되었습니다. 브라우저 저장 데이터를 확인해 주세요.",
     );
   }

@@ -3,16 +3,20 @@
 import { Wifi } from "lucide-react";
 import { ReloadButton } from "@/components/buttons/reload-button";
 import { RetryButton } from "@/components/buttons/retry-button";
+import {
+  CANDIDATE_LOAD_ERROR_MESSAGES,
+  DEFAULT_CANDIDATE_LOAD_ERROR_MESSAGE,
+} from "@/features/candidates/constants/candidate-errors";
 import { MockApiError } from "@/features/candidates/api/mock-api-error";
 
 function loadErrorMessage(error: Error | null) {
   if (error instanceof MockApiError) {
-    if (error.code === "corrupt-storage")
-      return "저장된 지원자 정보를 읽을 수 없어요. 브라우저 저장 데이터를 확인한 뒤 다시 불러와 주세요.";
-    if (error.code === "storage")
-      return "브라우저 저장소에 접근할 수 없어요. 사이트의 저장소 사용 설정을 확인한 뒤 다시 불러와 주세요.";
+    return (
+      CANDIDATE_LOAD_ERROR_MESSAGES[error.code] ??
+      DEFAULT_CANDIDATE_LOAD_ERROR_MESSAGE
+    );
   }
-  return "잠시 후 다시 불러와 주세요.";
+  return DEFAULT_CANDIDATE_LOAD_ERROR_MESSAGE;
 }
 
 export function CandidateLoadError({
