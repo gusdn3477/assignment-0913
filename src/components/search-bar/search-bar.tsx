@@ -6,7 +6,7 @@ import { CloseButton } from "@/components/buttons/close-button";
 import { Input, type InputProps } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-export type SearchBarProps = Omit<InputProps, "type"> & {
+export type SearchBarProps = Omit<InputProps, "type" | "left" | "right"> & {
   onClear?: () => void;
 };
 
@@ -16,8 +16,6 @@ export function SearchBar({
   ref,
   disabled,
   readOnly,
-  left = <Search className="size-4" aria-hidden="true" />,
-  right,
   className,
   wrapperClassName,
   ...props
@@ -38,25 +36,20 @@ export function SearchBar({
         className,
       )}
       wrapperClassName={cn("border-slate-200 bg-slate-50", wrapperClassName)}
-      left={left}
+      left={<Search className="size-4" aria-hidden="true" />}
       right={
         onClear && value !== undefined && String(value).length > 0 ? (
-          <>
-            {right}
-            <CloseButton
-              size="icon"
-              disabled={disabled || readOnly}
-              aria-label="검색어 지우기"
-              className="size-7 shrink-0 text-muted-foreground"
-              onClick={() => {
-                onClear();
-                inputRef.current?.focus();
-              }}
-            />
-          </>
-        ) : (
-          right
-        )
+          <CloseButton
+            size="icon"
+            disabled={disabled || readOnly}
+            aria-label="검색어 지우기"
+            className="size-7 shrink-0 text-muted-foreground"
+            onClick={() => {
+              onClear();
+              inputRef.current?.focus();
+            }}
+          />
+        ) : null
       }
     />
   );
