@@ -104,9 +104,7 @@ describe("CandidatesApp acceptance", () => {
     await user.keyboard("{Enter}");
     expect(input).toHaveValue("");
     expect(input).toHaveFocus();
-    expect(
-      screen.queryByRole("button", { name: "검색어 지우기" }),
-    ).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "검색어 지우기" })).toBeEnabled();
     expect(
       await screen.findByRole("button", { name: "이봄 지원자 상세 보기" }),
     ).toBeInTheDocument();

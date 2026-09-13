@@ -21,3 +21,9 @@ SearchBar는 Input left의 돋보기와 right의 CloseButton을 직접 래핑하
 - clear 클릭은 onClear 한 번 후 focus 복원. native onChange를 만들어 호출하지 않음.
 - toolbar는 onChange/onClear 직접 전달하고 clearButton 설정 객체/기본 스타일 반복 제거. hook은 실제 소비 value/onChange/clear 반환.
 - 앞선 value/onValueChange API와 빈값 hide 테스트는 최종 구현으로 유지하지 않음. native controlled/uncontrolled, optional clear, disabled/readOnly, 키보드/form/ref, slot 조합으로 검증.
+
+## 기능 인계
+- 구현 완료: native onChange 전달, optional onClear가 right 공통 CloseButton 표시를 결정. left 돋보기/기본 스타일/focus는 SearchBar 내부. value/defaultValue/ref와 좌우 추가 슬롯 유지.
+- toolbar clearButton 객체와 스타일 제거, hook 미사용 setValue 반환 제거. 빈값에서도 X 유지하는 최신 계약으로 app clear assertion 갱신.
+- 전체13 files113 tests, lint/typecheck/format/diff check 통과. 신규 의존성/미해결 기능 이슈 없음. production build/browser는 통합 담당.
+- 구현 커밋만 main에 cherry-pick하며, 이 브랜치의 scope 동기화589cf4d는 main4cb60a6과 동일 목적이므로 별도 통합하지 않음.

@@ -47,10 +47,8 @@ export function CandidateToolbar({
           value={search}
           maxLength={MAX_SEARCH_LENGTH}
           onChange={onChange}
-          clearButton={{ onClear: clear, label: "검색어 지우기" }}
+          onClear={clear}
           placeholder="지원자 이름 검색"
-          className="h-10"
-          wrapperClassName="border-slate-200 bg-slate-50"
         />
       </div>
       <div className="flex items-center gap-2">

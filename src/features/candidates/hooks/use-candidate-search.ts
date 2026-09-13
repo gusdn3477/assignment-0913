@@ -12,5 +12,5 @@ export function useCandidateSearch() {
     [setValue],
   );
   const clear = useCallback(() => setValue(""), [setValue]);
-  return { value, setValue, onChange, clear };
+  return { value, onChange, clear };
 }
