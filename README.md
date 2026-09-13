@@ -23,6 +23,7 @@ Production build는 `next build --webpack`을 사용합니다. 개발 환경의 
 ## 사용 방법
 
 - 지원자 이름을 검색하고 직무를 선택하면 두 조건을 모두 만족하는 카드가 표시됩니다.
+- 검색창의 지우기 버튼은 이름만 지우고 직무 선택을 유지합니다. `Tab` → `Enter`로도 실행하며 입력창으로 포커스가 돌아갑니다. **초기화**는 두 조건을 모두 지웁니다.
 - 카드 본문을 누르면 상세 패널이 열립니다. `Esc`로 닫으면 원래 카드로 포커스가 돌아갑니다.
 - 카드의 **단계 이동** 메뉴에서 목적지를 선택합니다. 키보드 Tab·Enter·방향키로도 사용할 수 있습니다.
 - 마우스로 카드의 **드래그 핸들**을 잡아 다른 단계에 놓아도 이동할 수 있습니다. 키보드와 터치에서는 단계 이동 메뉴를 사용합니다. 컬럼 안의 카드 순서는 지원일 기준으로 유지됩니다.
@@ -47,6 +48,7 @@ TypeScript strict · Next.js App Router · React · Tailwind CSS · shadcn/ui ·
 - `useDeferredValue`는 검색·직무 조건에만 적용하고 메모된 보드로 입력 렌더링 비용을 줄입니다. 지원자 데이터와 저장 중 잠금은 지연하지 않습니다.
 - `useTransition`의 비동기 Action으로 재시도 대기 상태를 관리합니다. 중복 요청은 별도 잠금으로 막으며 Query/Zustand 자체를 transition 상태로 취급하지 않습니다.
 - 공통 Input/Button은 기본 HTML 요소의 props를 확장하여 native 속성·이벤트·ref를 전달합니다.
+- 목록 조회는 `candidatesQueryOptions()`로 query key와 AbortSignal 요청 함수를 함께 정의합니다. 현재 브라우저 저장소 목록은 조회 취소 계약을 위해 `useQuery`를 유지합니다. `useSuspenseQuery` 검토 근거는 [DECISIONS.md](DECISIONS.md)에 있습니다.
 - 저장 데이터는 읽을 때 런타임 검증합니다. 지원자 데이터가 손상되면 조용히 덮어쓰지 않고 오류로 보고합니다. UI 설정 손상은 기본값으로 복구합니다.
 
 저장은 **현재 브라우저·현재 origin·단일 탭** 기준입니다. 다른 브라우저/포트에는 공유되지 않습니다. 여러 탭의 동시 수정·인증·실제 지원자 CRUD·배포는 구현 범위 밖입니다.
@@ -61,6 +63,39 @@ TypeScript strict · Next.js App Router · React · Tailwind CSS · shadcn/ui ·
 
 ## 세션·설계·검증 기록
 
+### 코드 구조와 공통 컴포넌트
+
+```text
+src/components/
+  ui/                 # shadcn 기반 native Input/Button/Skeleton 등
+  buttons/            # ResetButton, RetryButton, CloseButton
+  header/             # left/center/right 슬롯 Header
+src/features/candidates/
+  components/         # candidate-card, candidate-board, candidate-detail 등
+  api/                # mock 요청, 오류, 시드
+  constants/          # 단계/직무, 스타일, 저장 키
+  types/              # 지원자/이동/Undo 및 API 타입
+  utils/              # 필터, 런타임 검증, 취소 가능한 지연
+  queries/            # query key 및 queryOptions factory
+  hooks/              # 목록/이동/드래그/검색 입력 훅
+  stores/             # UI persist 및 QueryClient별 이동 잠금·이력
+```
+
+테스트는 해당 컴포넌트·모듈 가까이 두며 기능 내부 참조는 `@/features/candidates/...`를 사용합니다. `CandidateCardSkeleton`과 `BoardSkeleton`은 기본 Skeleton을 실제 카드와 보드 배치로 조합합니다. 요약은 `CandidateMetric` 안에서 값이 없는 부분에만 skeleton을 표시합니다.
+
+```tsx
+const { value, onChange, clear } = useCandidateSearch();
+<Input
+  value={value}
+  onChange={onChange}
+  clearButton={{ onClear: clear, label: "검색어 지우기" }}
+/>;
+<RetryButton pending={pending} onClick={retry}>다시 불러오기</RetryButton>;
+<Header left={<Brand />} center={<Navigation />} right={<Profile />} />;
+```
+
+Input의 clear는 명시적인 `onClear`를 한 번 호출합니다. 일반 입력 `onChange` 이벤트를 인위적으로 만들지 않으며, 빈 값·disabled·readOnly에는 지우기 버튼을 표시하지 않습니다. 버튼 래퍼는 native props/ref를 전달하고 기본 `type="button"`으로 의도치 않은 폼 제출을 막습니다. Header 중앙 슬롯은 선택 사항이며 좁은 화면에서 별도 행으로 내려갑니다.
+
 - [AGENTS.md](AGENTS.md): 모든 기능 세션의 작업 규칙.
 - [PLAN.md](PLAN.md): 승인된 목표·범위·완료 기준.
 - [STATUS.md](STATUS.md): 현재 완료 상태·다음 작업·검증 결과.
@@ -72,7 +107,7 @@ TypeScript strict · Next.js App Router · React · Tailwind CSS · shadcn/ui ·
 기능마다 별도 세션·브랜치·워크트리를 사용했고, `type(scope): 요약` 커밋과 병합 이력을 유지합니다. 의존성이 없는 기능만 병렬 개발합니다.
 
 ## 최종 검증 결과
-`pnpm verify`와 `pnpm format:check` 통과. 자동 테스트 7개 파일·87개 사례. Undo 성공·실패 재시도·카드 간 격리·키보드·가상화 포커스 회귀를 포함합니다. 기본 250명 및 합성 1,000명 production 보드에서 가상화 DOM 제한·깊은 스크롤·검색·상세·이동·저장 유지·재시도·390px 화면을 확인했습니다. 전체 카드 키보드 순회와 화면 밖 이동/롤백 포커스는 자동 테스트에도 포함됩니다. 자세한 결과는 [STATUS.md](STATUS.md), [가상화 통합 기록](docs/records/virtualization-integration.md)을 참고하세요.
+`pnpm verify`와 `pnpm format:check` 통과. 자동 테스트 10개 파일·100개 사례. 공통 Input ref/clear·버튼·Header와 검색 clear 통합 검증을 포함합니다. Undo 성공·실패 재시도·카드 간 격리·키보드·가상화 포커스 회귀를 포함합니다. 기본 250명 및 합성 1,000명 production 보드에서 가상화 DOM 제한·깊은 스크롤·검색·상세·이동·저장 유지·재시도·390px 화면을 확인했습니다. 전체 카드 키보드 순회와 화면 밖 이동/롤백 포커스는 자동 테스트에도 포함됩니다. 자세한 결과는 [STATUS.md](STATUS.md), [가상화 통합 기록](docs/records/virtualization-integration.md)을 참고하세요.
 
 Undo production 검증에서 키보드 실행·포커스 복귀·되돌린 단계의 새로고침 후 저장 유지와 390px 메뉴를 확인했습니다. [Undo 통합 기록](docs/records/undo-integration.md)을 참고하세요.
 

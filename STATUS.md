@@ -1,7 +1,15 @@
 # 세션 인계 / 현재 상태
 
 ## 현재 결론
-필수 기능, concurrent-feedback, virtualization, Undo 및 DnD 완료. 사용자 후속 승인으로 **재사용 UI와 지원자 폴더·Query·훅 구조 정리 진행 중**. 기존 기준은 `81e7a91`이며 새 독립 세션 `reusable-ui`, `candidate-structure`를 통합 담당이 관리합니다.
+필수 기능과 기존 선택 기능에 이어 **재사용 UI와 지원자 폴더·Query·훅 구조 정리 완료**. 검증 코드 `4f36d6f`. 별도 사용자 작업의 `codex/candidate-boundaries`는 이 기준 이후 추가 변경을 진행 중이며, 이번 검증 결과에 포함하지 않습니다.
+
+## 최신 재사용성·구조 정리 검증 (2026-09-13)
+- `reusable-ui` 기능 `9f97bae`, `candidate-structure` 기능 `2bd8ad9`, 사용처 연결 `4f36d6f`. 각 독립 브랜치/워크트리 보존.
+- Input clearButton·Reset/Retry/CloseButton·슬롯 Header 실제 사용, 도메인 내부 컴포넌트/상수/타입/API/유틸/Query/훅/store 분리, 카드/보드 skeleton 구성, useCandidateSearch 추가.
+- queryOptions 실사용. useSuspenseQuery는 조회 취소와 기존 오류 복구 계약을 위해 보류(DECISIONS 근거 참조).
+- `pnpm format:check && pnpm verify`: 포맷/lint/strict typecheck/**10 files, 100/100 tests**/production build 통과.
+- production 250명, 키보드 clear 후 검색 포커스/250명 복원, CloseButton 상세 포커스 복귀, 단계 저장 및 원래 단계 복원 후 reload 유지, 새로고침 pending 중 보드 유지, 390px 헤더/검색 배치 확인. console error/warn 없음.
+- 상세: `docs/records/reusability-integration.md`. 아래 수치는 각 기능 완료 당시의 검증입니다.
 
 ## 최종 요구사항 재감사 (2026-09-13)
 - 초기 커밋 `12ed483`의 PLAN과 현재 승인 범위, 구현·테스트·기능별 기록을 대조했습니다. 필수 기능의 누락이나 승인 범위 위반을 발견하지 못했습니다.
@@ -52,6 +60,8 @@
 | virtualization | codex/virtualization | 2c0a912 | 1,000건 가상화/키보드/포커스, 전체 62 tests |
 | undo | codex/undo | a3c8274 | 카드별 성공 이동 되돌리기/실패 재시도, 전체 73 tests |
 | dnd | codex/dnd | ca7687a | 단계 간 드래그/취소·stale 방어/가상화 유지, 전체 87 tests |
+| reusable-ui | codex/reusable-ui | 9f97bae | clear Input·의미별 버튼·Header slots, 공통 UI 12 tests |
+| candidate-structure | codex/candidate-structure | 2bd8ad9 | 도메인 폴더·queryOptions·입력 훅·skeleton, 통합 전체 100 tests |
 
 ## 초기 필수 기능 완료 당시 검증 (후속 기능 추가 전)
 - `pnpm format:check`: 통과.
@@ -62,8 +72,8 @@
 - Turbopack production CSS 내부 포트 오류 때문에 build는 공식 `--webpack` 옵션을 사용합니다.
 
 ## 실행과 다음 작업
-2026-09-13 선택사항 가상화·Undo·DnD까지 구현했습니다. 새 세션은 main에서 시작하고, 완료된 기능 세션을 다른 기능에 재사용하지 않습니다.
+2026-09-13 가상화·Undo·DnD 및 재사용성/구조 정리까지 구현했습니다. 새 세션은 main에서 시작하고, 완료된 기능 세션을 다른 기능에 재사용하지 않습니다. `candidate-boundaries` 추가 작업은 별도 사용자 작업이 담당하며 그 작업의 통합·검증 결과를 이후 갱신합니다.
 
 개발 미리보기는 `pnpm dev --port 3100`으로 실행합니다. 기본 실행은 `pnpm install` → `pnpm dev`입니다. 이번 production 검증 서버는 종료했습니다.
 
-필수 미완료와 알려진 결함은 없습니다. 기존 선택사항은 모두 구현했습니다. 새로운 기능은 별도 범위를 정해 시작합니다. 로그인·실제 백엔드·다중 탭 동기화·공개 저장소 생성/푸시/배포는 승인 범위 밖입니다.
+이번 승인 범위의 필수 미완료와 알려진 결함은 없습니다. 로그인·실제 백엔드·다중 탭 동기화·공개 저장소 생성/푸시/배포는 승인 범위 밖입니다.
