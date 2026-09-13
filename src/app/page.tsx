@@ -1,6 +1,6 @@
 import { BriefcaseBusiness } from "lucide-react";
-import { WorkspaceHeader } from "@/features/candidates/components/workspace-header/workspace-header";
-import { CandidatesApp } from "@/features/candidates/components/candidates-app/candidates-app";
+import { WorkspaceHeader } from "@/components/candidate/workspace-header/workspace-header";
+import { CandidatesApp } from "@/components/candidate/app/candidates-app";
 
 export default function Page() {
   return (

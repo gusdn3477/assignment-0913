@@ -2,7 +2,7 @@ import { useState } from "react";
 import { fireEvent, render, screen, within, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { CandidateBoard } from "@/features/candidates/components/candidate-board/candidate-board";
+import { CandidateBoard } from "@/components/candidate/board/candidate-board";
 import {
   STAGES,
   STAGE_LABELS,

@@ -1,7 +1,7 @@
 import { MOCK_API_ERROR_CODES } from "@/features/candidates/constants/candidate-errors";
 import { JOBS, STAGES } from "@/features/candidates/constants/candidate";
 import type { Candidate } from "@/features/candidates/types/candidate";
-import { MockApiError } from "@/features/candidates/api/mock-api-error";
+import { MockApiError } from "@/api/candidate/mock-api-error";
 function isCandidate(value: unknown): value is Candidate {
   if (!value || typeof value !== "object") return false;
   const candidate = value as Record<string, unknown>;

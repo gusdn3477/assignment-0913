@@ -6,7 +6,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { candidateApi } from "@/features/candidates/api/mock-api";
+import { candidateApi } from "@/api/candidate/mock-api";
 import type {
   Candidate,
   CandidateUndo,

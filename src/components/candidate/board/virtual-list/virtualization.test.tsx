@@ -8,8 +8,8 @@ import {
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { CandidateBoard } from "@/features/candidates/components/candidate-board/candidate-board";
-import { CandidateDetail } from "@/features/candidates/components/candidate-detail/candidate-detail";
+import { CandidateBoard } from "@/components/candidate/board/candidate-board";
+import { CandidateDetail } from "@/components/candidate/detail/candidate-detail";
 import { CandidateUIProvider } from "@/features/candidates/stores/ui-store";
 import { type Candidate } from "@/features/candidates/types/candidate";
 

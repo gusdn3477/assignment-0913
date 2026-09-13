@@ -12,7 +12,7 @@ import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
   VirtualCandidateList,
   type CandidateListHandle,
-} from "@/features/candidates/components/virtual-candidate-list/virtual-candidate-list";
+} from "@/components/candidate/board/virtual-list/virtual-candidate-list";
 import { useCandidateDrag } from "@/features/candidates/hooks/use-candidate-drag";
 import { cn } from "@/lib/utils";
 import { CandidateUndo } from "@/features/candidates/types/candidate";
@@ -25,7 +25,7 @@ import {
   type Stage,
 } from "@/features/candidates/types/candidate";
 
-import { CandidateCard } from "@/features/candidates/components/candidate-card/candidate-card";
+import { CandidateCard } from "@/components/candidate/card/candidate-card";
 import { stageStyles } from "@/features/candidates/constants/stage-styles";
 
 interface CandidateBoardProps {

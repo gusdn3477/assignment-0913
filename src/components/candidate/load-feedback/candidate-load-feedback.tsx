@@ -7,7 +7,7 @@ import {
   CANDIDATE_LOAD_ERROR_MESSAGES,
   DEFAULT_CANDIDATE_LOAD_ERROR_MESSAGE,
 } from "@/features/candidates/constants/candidate-errors";
-import { MockApiError } from "@/features/candidates/api/mock-api-error";
+import { MockApiError } from "@/api/candidate/mock-api-error";
 
 function loadErrorMessage(error: Error | null) {
   if (error instanceof MockApiError) {

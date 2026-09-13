@@ -1,14 +1,14 @@
 import {
   setupDragGeometry,
   sensorDrag,
-} from "@/features/candidates/components/candidate-board/dnd-test-helpers";
+} from "@/components/candidate/board/dnd-test-helpers";
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Providers } from "@/app/providers";
 import Page from "@/app/page";
-import { candidateApi } from "@/features/candidates/api/mock-api";
-import { MockApiError } from "@/features/candidates/api/mock-api-error";
+import { candidateApi } from "@/api/candidate/mock-api";
+import { MockApiError } from "@/api/candidate/mock-api-error";
 import { UI_STORAGE_KEY } from "@/features/candidates/constants/storage";
 import {
   JOBS,
@@ -17,10 +17,8 @@ import {
 } from "@/features/candidates/constants/candidate";
 import { type Candidate } from "@/features/candidates/types/candidate";
 
-vi.mock("@/features/candidates/api/mock-api", async (importOriginal) => ({
-  ...(await importOriginal<
-    typeof import("@/features/candidates/api/mock-api")
-  >()),
+vi.mock("@/api/candidate/mock-api", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/api/candidate/mock-api")>()),
   candidateApi: { listCandidates: vi.fn(), updateCandidateStage: vi.fn() },
 }));
 

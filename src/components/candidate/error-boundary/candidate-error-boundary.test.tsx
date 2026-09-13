@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, expect, it, vi } from "vitest";
-import { CandidateErrorBoundary } from "@/features/candidates/components/candidate-error-boundary/candidate-error-boundary";
+import { CandidateErrorBoundary } from "@/components/candidate/error-boundary/candidate-error-boundary";
 
 afterEach(() => vi.restoreAllMocks());
 
