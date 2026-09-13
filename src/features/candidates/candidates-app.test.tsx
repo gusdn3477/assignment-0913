@@ -404,7 +404,7 @@ describe("saved stage undo menu", () => {
     act(() => trigger().focus());
     await user.keyboard("{Enter}{End}");
     expect(
-      screen.getByRole("menuitem", { name: "서류검토로 되돌리기" }),
+      screen.getByRole("menuitem", { name: "서류검토 단계로 되돌리기" }),
     ).toHaveFocus();
     await user.keyboard("{Enter}");
     await screen.findByRole("region", { name: "서류검토 1명" });
@@ -431,7 +431,7 @@ describe("saved stage undo menu", () => {
     ).not.toBeInTheDocument();
     await user.click(trigger());
     await user.click(
-      screen.getByRole("menuitem", { name: "서류검토로 되돌리기" }),
+      screen.getByRole("menuitem", { name: "서류검토 단계로 되돌리기" }),
     );
     await act(async () => successfulUndo.resolve(candidates[0]));
     await screen.findByRole("button", { name: "김하늘 단계 변경" });
@@ -445,5 +445,74 @@ describe("saved stage undo menu", () => {
       screen.queryByRole("menuitem", { name: /되돌리기/ }),
     ).not.toBeInTheDocument();
     await user.keyboard("{Escape}");
+  });
+});
+
+describe("drag moves through the real mutation flow", () => {
+  function drag(id: string, stage: string) {
+    const values = new Map<string, string>();
+    const dataTransfer = {
+      types: [] as string[],
+      effectAllowed: "",
+      dropEffect: "",
+      setData(type: string, value: string) {
+        values.set(type, value);
+        this.types.push(type);
+      },
+      getData(type: string) {
+        return values.get(type) ?? "";
+      },
+    };
+    fireEvent.dragStart(
+      document.querySelector(`[data-candidate-drag="${id}"]`)!,
+      { dataTransfer },
+    );
+    fireEvent.drop(document.querySelector(`[data-drop-stage="${stage}"]`)!, {
+      dataTransfer,
+    });
+  }
+
+  it("rolls back only a failed dragged card, keeps another save, and offers Undo after success", async () => {
+    const first = deferred<Candidate>();
+    const second = deferred<Candidate>();
+    vi.mocked(candidateApi.updateCandidateStage).mockImplementation(({ id }) =>
+      id === "a" ? first.promise : second.promise,
+    );
+    mount();
+    await screen.findByRole("searchbox");
+    drag("a", "offer");
+    await screen.findByRole("button", { name: "김하늘 단계 변경 (저장 중)" });
+    expect(detail("김하늘")).toHaveFocus();
+    drag("a", "hired");
+    drag("b", "hired");
+    await screen.findByRole("button", { name: "김여름 단계 변경 (저장 중)" });
+    expect(candidateApi.updateCandidateStage).toHaveBeenCalledTimes(2);
+    await act(async () => first.reject(Error("private save error")));
+    await screen.findByRole("button", { name: "김하늘 단계 변경" });
+    expect(
+      within(screen.getByRole("region", { name: "서류검토 1명" })).getByRole(
+        "button",
+        { name: "김하늘 지원자 상세 보기" },
+      ),
+    ).toBeInTheDocument();
+    expect(detail("김여름")).toHaveFocus();
+    await act(async () => second.resolve({ ...candidates[1], stage: "hired" }));
+    await userEvent.click(
+      await screen.findByRole("button", { name: "김여름 단계 변경" }),
+    );
+    expect(
+      screen.getByRole("menuitem", { name: "면접 단계로 되돌리기" }),
+    ).toBeInTheDocument();
+    vi.mocked(candidateApi.updateCandidateStage).mockResolvedValueOnce(
+      candidates[1],
+    );
+    await userEvent.click(
+      screen.getByRole("menuitem", { name: "면접 단계로 되돌리기" }),
+    );
+    await screen.findByRole("region", { name: "면접 1명" });
+    expect(candidateApi.updateCandidateStage).toHaveBeenLastCalledWith({
+      id: "b",
+      stage: "interview",
+    });
   });
 });

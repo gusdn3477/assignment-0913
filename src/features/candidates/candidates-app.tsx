@@ -177,7 +177,8 @@ function BoardContent() {
           </div>
           <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <CircleHelp className="size-3.5" aria-hidden />
-            카드 메뉴에서 단계 이동과 되돌리기를 할 수 있어요
+            손잡이를 드래그해 단계를 이동하거나 카드 메뉴에서 이동·되돌리기를 할
+            수 있어요
           </span>
         </div>
         {showInitialError ? (

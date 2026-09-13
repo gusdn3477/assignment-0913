@@ -24,6 +24,7 @@ export function VirtualCandidateList({
   candidates,
   stage,
   focusId,
+  dragId,
   resetKey,
   listRef,
   children,
@@ -31,6 +32,7 @@ export function VirtualCandidateList({
   candidates: Candidate[];
   stage: Stage;
   focusId: string | null;
+  dragId?: string | null;
   resetKey?: string;
   listRef: Ref<CandidateListHandle>;
   children: (candidate: Candidate) => ReactNode;
@@ -47,6 +49,9 @@ export function VirtualCandidateList({
   );
   const focusedIndex = candidates.findIndex(
     (candidate) => candidate.id === focusId,
+  );
+  const draggedIndex = candidates.findIndex(
+    (candidate) => candidate.id === dragId,
   );
   // Instance stays local and this component opts out of compiler memoization.
   // eslint-disable-next-line react-hooks/incompatible-library
@@ -65,13 +70,14 @@ export function VirtualCandidateList({
         for (const index of [
           pinnedIndex,
           focusedIndex,
+          draggedIndex,
           candidates.length - 1,
         ]) {
           if (index >= 0 && !indexes.includes(index)) indexes.push(index);
         }
         return indexes.sort((a, b) => a - b);
       },
-      [pinnedIndex, focusedIndex, candidates.length],
+      [pinnedIndex, focusedIndex, draggedIndex, candidates.length],
     ),
   });
   useImperativeHandle(
