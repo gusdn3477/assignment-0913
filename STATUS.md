@@ -1,5 +1,11 @@
 # 세션 인계 / 현재 상태
 
+## 진행 중: virtualization (2026-09-13)
+- 사용자 후속 요청으로 가상화를 승인 범위에 추가했습니다.
+- 기능 세션: `codex/virtualization`, `.worktrees/virtualization`, `docs/tasks/virtualization.md`.
+- 1,000건 대응, 컬럼별 가상화와 키보드/포커스/검색 회귀 검증. 통합은 main 문서와 production 검증 담당.
+- 아래 완료 기록은 이번 작업 전의 기준 상태입니다.
+
 ## 현재 결론
 기존 필수 작업과 추가 승인된 `concurrent-feedback`(검색 동시 렌더링과 로딩·오류 피드백) 구현·검증 완료. 기준 브랜치는 `main`이며 기능 브랜치와 커밋 이력을 보존했습니다.
 
