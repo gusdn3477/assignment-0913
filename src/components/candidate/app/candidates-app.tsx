@@ -3,7 +3,7 @@
 import { memo, useCallback, useDeferredValue, useMemo } from "react";
 import { ArrowUpRight, CircleHelp, Layers3, Users } from "lucide-react";
 import { CandidateErrorBoundary } from "@/components/candidate/error-boundary/candidate-error-boundary";
-import { ResetButton } from "@/components/buttons/reset-button";
+import { CandidateEmptyGuard } from "@/components/candidate/empty-guard/candidate-empty-guard";
 import { CandidateMetric } from "@/components/candidate/metric/candidate-metric";
 import { BoardSkeleton } from "@/components/candidate/board/board-skeleton";
 import { CandidateBoard } from "@/components/candidate/board/candidate-board";
@@ -28,7 +28,6 @@ function BoardContent() {
   const selectedId = useCandidateUI((state) => state.selectedId);
   const query = useCandidates(selectedId);
   const selectCandidate = useCandidateUI((state) => state.selectCandidate);
-  const resetFilters = useCandidateUI((state) => state.resetFilters);
   const candidates = query.data;
   const filters = useMemo(() => ({ search, job }), [search, job]);
   const deferredFilters = useDeferredValue(filters);
@@ -107,41 +106,22 @@ function BoardContent() {
             aria-busy={isStale}
             className={isStale ? "opacity-60" : undefined}
           >
-            {filtered.length === 0 && (
-              <div className="my-5 rounded-xl border border-dashed bg-white p-6 text-center">
-                <p className="font-medium">
-                  {candidates.length
-                    ? "검색 조건에 맞는 지원자가 없어요"
-                    : "아직 등록된 지원자가 없어요"}
-                </p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {candidates.length
-                    ? "다른 이름이나 직무로 검색해 보세요."
-                    : "지원자가 등록되면 이곳에서 채용 단계를 관리할 수 있어요."}
-                </p>
-                {!!candidates.length && (
-                  <ResetButton
-                    variant="outline"
-                    size="sm"
-                    className="mt-3"
-                    onClick={resetFilters}
-                  >
-                    검색 조건 초기화
-                  </ResetButton>
-                )}
-              </div>
-            )}
-            <CandidateErrorBoundary label="지원자 보드">
-              <DeferredBoard
-                resetKey={JSON.stringify(deferredFilters)}
-                candidates={filtered}
-                pendingIds={pendingIds}
-                onMove={move}
-                onUndo={undo}
-                undoHistory={undoHistory}
-                onOpenDetail={onOpenDetail}
-              />
-            </CandidateErrorBoundary>
+            <CandidateEmptyGuard
+              total={candidates.length}
+              filtered={filtered.length}
+            >
+              <CandidateErrorBoundary label="지원자 보드">
+                <DeferredBoard
+                  resetKey={JSON.stringify(deferredFilters)}
+                  candidates={filtered}
+                  pendingIds={pendingIds}
+                  onMove={move}
+                  onUndo={undo}
+                  undoHistory={undoHistory}
+                  onOpenDetail={onOpenDetail}
+                />
+              </CandidateErrorBoundary>
+            </CandidateEmptyGuard>
           </div>
         </CandidateQueryGuard>
       </section>

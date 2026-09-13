@@ -187,7 +187,9 @@ describe("CandidatesApp acceptance", () => {
     expect(
       screen.queryByRole("button", { name: "검색 조건 초기화" }),
     ).not.toBeInTheDocument();
-    expect(screen.getAllByText("이 단계의 지원자가 없습니다")).toHaveLength(5);
+    expect(
+      screen.queryByRole("region", { name: "지원자 채용 단계 보드" }),
+    ).not.toBeInTheDocument();
   });
 
   it("composes name and job filters and resets a filtered empty result", async () => {
