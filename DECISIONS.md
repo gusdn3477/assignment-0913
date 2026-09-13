@@ -77,3 +77,9 @@
 - native input props/ref/className을 유지하며 composite border/background는 wrapperClassName으로 지정합니다. SearchBar는 Input을 조합하여 search type/기본 돋보기를 제공하고 좌우 슬롯의 추가·교체를 허용합니다.
 - ResetButton은 초기화, ReloadButton은 배경 새로고침, RetryButton은 실패 후 재시도에 사용합니다. 공통 ActionButton이 native props/ref/pending/disabled를 관리합니다.
 - 컬럼의 max-height를 min(60vh,720px)에서 max(720px,75vh)로 확대합니다. 카드 실측과 가상화를 유지하고 paddingStart/End를 가상화 geometry에 포함해 끝 카드 여백도 스크롤 범위로 계산합니다. 임의 스크롤 위치에서 카드 일부가 보이는 것은 스크롤 목록의 일반 동작이며 마지막 카드 전체는 끝까지 스크롤해 볼 수 있습니다.
+
+## 후속 검토: DnD 라이브러리 전환과 조회 Guard
+- 사용자 요청의 목적은 앱 소유 DnD 복잡도 감소입니다. 최신 공식 React API인 @dnd-kit/react 0.5.0을 사용하고, 한국어 accessibility/feedback 설정에 명시 import하는 @dnd-kit/dom 0.5.0도 직접 의존성으로 선언합니다. sortable/reorder 패키지는 추가하지 않습니다.
+- 센서/충돌 판정/드래그 표시/자동 스크롤은 라이브러리에 맡기되 카드의 현재 단계·잠금·필터 변경 검증은 앱 도메인 규칙으로 유지합니다. 기존 native DataTransfer/token/drag image/수동 edge scrolling은 제거 대상입니다.
+- Query Guard는 useQuery cancellation을 유지하면서 최초 조회 상태, 재시도 잠금/transition/포커스 및 배경 갱신 표시를 소유합니다. 이는 React Suspense 자체가 아니라 선언적으로 조건부 자식을 렌더하는 Guard이며, Promise throw 또는 가짜 초기 데이터를 추가하지 않습니다.
+- 상세 전용 CloseButton은 SheetClose와 범용 버튼을 조합합니다. 페이지별 위치/라벨을 전역 CloseButton 기본값에 섞지 않으며 상세 사용처의 props/null children을 제거합니다.

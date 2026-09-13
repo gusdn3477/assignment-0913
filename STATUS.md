@@ -1,6 +1,8 @@
 # 세션 인계 / 현재 상태
 
 ## 현재 결론
+새 사용자 요청으로 **DnD 라이브러리 전환·조회 Guard·상세 CloseButton 호출 단순화 진행 중**. 독립 dnd-kit-migration/query-guard-close 기능 세션을 통합 담당이 관리합니다. 아래는 직전 완료 기준입니다.
+
 기존 기능에 이어 **Input 좌우 슬롯·SearchBar·ReloadButton·카드 목록 높이/끝 여백 보완 구현 완료**. 기능 `ccd5a50`, main 통합 `d378dc0`. main 전체 검사와 production 브라우저 재확인까지 완료했습니다.
 
 ## 최신 검색 조합·카드 공간 검증 (2026-09-13)
