@@ -574,3 +574,81 @@ Codex in-app browser, 127.0.0.1:3101, 기본 viewport 1280×720.
 - 검색 초기화로 전체 250명 복구, console error/warn `[]`. viewport override 초기화, 임시 탭 닫기, 검증 서버 Ctrl-C 종료.
 - Undo 실패/재시도는 결정적인 자동 테스트로 확인했으며 production에서는 일반 이동 실패를 관찰했습니다. 실패 확률/지연과 기본 시드를 변경하지 않았습니다.
 - 알려진 미해결 결함 없음. DnD는 다음 후보이며 이번에는 구현하지 않았습니다.
+
+
+---
+
+# DnD 기능 기록
+
+## 실제 요청 / 배정
+
+사용자: “선택사항 이어서 진행하자”.
+
+통합 담당의 배정: “Implement assigned DnD feature in /Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/dnd branch codex/dnd. Read AGENTS.md PLAN STATUS DECISIONS docs/tasks/dnd.md and relevant installed Next docs first. Own src/features/candidates implementation/tests + docs/tasks/dnd.md docs/records/dnd.md only. Integration (me) handles top docs and main browser/build. No new dependencies unless coordinated. Use native drag handle desktop DnD and existing accessible menu for keyboard/touch; guard external/same-stage/pending/canceled/stale drag, preserve virtualization and focus, reuse onMove for rollback and Undo. Add meaningful board DnD and app integration tests. Run lint/typecheck/tests/format (symlink deps use pnpm --config.verify-deps-before-run=false). Commit feature after records/handoff. Do not edit main. Report SHA and evidence.”
+
+## 읽은 자료 / 결정
+
+- AGENTS.md, PLAN.md, STATUS.md, DECISIONS.md, docs/tasks/dnd.md.
+- 설치된 Next.js `node_modules/next/dist/docs/01-app/03-api-reference/01-directives/use-client.md`: 브라우저 이벤트/상태 코드는 기존 client boundary 안에서 구현.
+- `frontend-fundamentals:readability` SKILL.md: 통합 리뷰가 지적한 중첩 삼항을 if 분기와 목적지 변수로 정리.
+- `frontend-fundamentals:coupling` SKILL.md: 반환 필드가 많은 훅을 검토. 모든 필드는 하나의 보드 내부 드래그 세션에서 파생되는 상태/이벤트이고 저장·조회 책임은 포함하지 않으므로 분할 없이 유지.
+- 의존성 추가 없음. 별도 native draggable 손잡이를 제공하고 키보드·터치는 기존 단계 메뉴를 사용. 손잡이는 Tab 순서와 접근성 트리에 추가하지 않으며 상세 버튼과 형제 요소로 분리.
+- 내부 드래그 세션과 일회 토큰을 함께 검사. 외부 데이터, 같은 단계, 중복 drop, 저장 중 카드, Escape/dragend 취소, 필터 변경/원본 제거/원본 단계 변경 이후의 오래된 드래그를 거부.
+- 드래그의 시각 상태는 React의 즉시 상태로 처리. 드롭은 기존 onMove와 Query 동기 잠금·낙관적 변경·성공 저장·카드별 롤백·Undo 경로를 재사용. 요청에 transition을 적용하지 않음.
+- 가상화 range에 원본 카드 한 개를 별도로 고정. 드래그 중에도 기존 포커스 핀은 유지. 보드 양쪽 가장자리 dragover에서 가로 스크롤하여 숨은 목적지 접근.
+
+## 산출물 / 리뷰와 수정
+
+- `use-candidate-drag.ts`: 세션 시작/검증/취소/드롭과 목적지 상태 및 보드 가장자리 스크롤.
+- `board.tsx`: 오른쪽 위 전용 손잡이, 드래그 원본 투명도, 목적지 강조와 status 안내. 메뉴와 상세 버튼의 기본 키보드 동작 보존.
+- `virtual-candidate-list.tsx`: 드래그 원본만 추가로 유지.
+- `candidates-app.tsx`: 드래그 및 메뉴 이동·되돌리기 안내.
+- `dnd.test.tsx`: 13개 결정적 테스트. 카드 1,000명에서 소스 고정/DOM 제한, 가로 스크롤, 중복·취소·외부·stale·pending 방어.
+- `candidates-app.test.tsx`: 실제 Query mutation 연결을 통한 드래그 이동, 같은 카드 잠금, 다른 카드 병렬, 실패 카드만 복구, 다른 카드 포커스 유지, 성공 후 Undo 검사.
+- 통합 브라우저 1280px 검사에서 하단 손잡이가 단계 배지/메뉴 글자를 줄바꿈시키는 회귀를 발견. 손잡이를 오른쪽 위로 이동하고 상세 제목 영역의 오른쪽 공간을 확보. 통합 담당이 수정 스크린샷에서 하단 복구를 확인.
+- DnD 후 Undo 테스트에서 기존 “면접로 되돌리기” 조사가 발견되어 통합 요청에 따라 모든 단계에 “단계로 되돌리기”로 통일하고 기존 Undo 테스트의 기대 문구도 갱신. 동작 변경 없음.
+- 통합 담당의 개발 브라우저 확인: native 드래그 서류검토→면접과 역이동, 즉시 저장 중 피드백/상세 포커스/상세 열기와 닫기 정상. production 전체 검증은 통합 기록에 추가 예정.
+
+## 실행한 검증 / 결과
+
+워크트리의 node_modules는 통합이 마련한 링크를 사용하므로 모든 pnpm 명령에 `--config.verify-deps-before-run=false`를 적용.
+
+- `pnpm ... lint`: 통과.
+- `pnpm ... typecheck`: strict typecheck 통과.
+- `pnpm ... test`: 7 files, **87/87 tests 통과** (기존 73 + 새 14).
+- 손잡이 위치 수정 뒤 `pnpm ... exec vitest run src/features/candidates/board.test.tsx src/features/candidates/dnd.test.tsx src/features/candidates/candidates-app.test.tsx`: 34/34 통과.
+- 손잡이 위치 수정 뒤 lint/typecheck 재실행 통과.
+- 최종 Undo 문구와 테스트 가독성 수정 후 DnD/app 관련 26/26 tests, typecheck, format:check 재통과.
+- `pnpm ... format:check`: 통과. 기록과 인계 수정 뒤에도 다시 확인.
+
+## 인계 / 남은 사항
+
+기능 구현 완료. 알려진 기능 결함 없음. native DnD가 지원되는 데스크톱 입력을 대상으로 하며 터치·키보드는 기존 메뉴 경로 사용. 컬럼 내 순서 변경은 범위 밖. production build와 실제 브라우저 최종 Undo·모바일·저장 검증, main 통합/최상위 문서 갱신은 통합 담당이 수행.
+
+워크트리: `/Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/dnd`, 브랜치: `codex/dnd`.
+
+
+---
+
+# DnD 통합 기록
+
+## 요청과 배정
+- 사용자 원문: “선택사항 이어서 진행하자”. STATUS에서 가상화·Undo 완료 및 다음 독립 후보 DnD 확인, 남은 선택사항을 DnD로 해석해 진행.
+- 시작 main `ba34e22`, 작업 트리 깨끗함. AGENTS/PLAN/STATUS/DECISIONS와 Undo task/통합 기록 확인.
+- 범위 커밋 `8203cf3`, 새 `.worktrees/dnd` / `codex/dnd` 생성. AGENTS의 독립 기능 세션 규칙에 따라 기능 에이전트 배정.
+- 실제 위임: `docs/tasks/dnd.md` 읽기, 후보 기능/테스트·task·기록만 소유, native drag handle/기존 메뉴와 mutation 재사용, 외부·같은 단계·저장 중·취소·stale drag 방어, 가상화/포커스/Undo 유지, lint/typecheck/test/format과 커밋 인계.
+- git 최초 쓰기 sandbox EPERM은 require_escalated로 재실행 성공. rg 미설치로 find 사용. 추가 의존성 없음.
+
+## 통합 검토와 검증
+- 저장·이력 코드는 수정하지 않고 기존 onMove를 재사용함을 확인. 보드 내부 세션 토큰을 소비한 드롭만 이동하고 source 단계/filter/pending 변경 시 취소. 가상 목록은 드래그 원본을 별도로 보존.
+- 첫 브라우저 1280px에서 footer에 추가한 손잡이가 단계 badge/메뉴 문구를 두 줄로 만드는 문제 발견. 기능 담당에 수정 요청, 손잡이를 카드 우측 상단으로 옮긴 뒤 screenshot에서 해결 확인.
+- 실제 마우스로 최서연 서류검토→면접 드래그 성공, 저장 중 메뉴/새로고침 비활성화와 해당 상세 버튼 포커스 확인. 상세 열기/Escape 복귀 확인. 개발 서버 HMR과 Undo 실행이 겹쳐 Undo 검증은 production에서 다시 수행하기로 함.
+- 수정한 상단 손잡이로 면접→서류검토 드래그 성공. reload 후 서류검토 유지 확인, 검색 초기화로 250명 복구. 3102 개발 서버 종료.
+- 개발 서버 최초 listen EPERM 후 require_escalated로 실행. webpack 개발 모드 사용, 초기 컴파일 동안 탭 navigation timeout은 기존 생성 탭을 재연결하여 복구.
+- 새 앱 테스트 리뷰에서 기존 Undo 문구 “면접로” 발견, “면접 단계로”처럼 단계 이름 뒤 동일 문구를 사용하도록 수정 요청.
+- 기능 `ca7687a`를 main `d4ea5f8`로 no-ff 통합. `pnpm format:check && pnpm verify`: format/lint/strict typecheck/7 files **87/87 tests**/production webpack build 통과. tests 16.93s.
+- production 3101에서 실제 native drag 두 번 저장 실패 후 카드별 롤백, 세 번째 드래그 성공 확인. 저장 중 새로고침/카드 메뉴 잠금과 상세 버튼 포커스 유지 확인.
+- 성공 이동 뒤 Tab/Enter → End/Enter로 `서류검토 단계로 되돌리기` 실행. Undo 저장 성공과 상세 버튼 포커스, reload 후 서류검토 유지 확인.
+- 390×844 화면 메뉴 screenshot에서 메뉴/카드 footer가 화면 안에 정상 배치. 검색 초기화로 250명 복구, production console error/warn `[]`.
+- viewport override 초기화, production 탭 닫기 및 서버 종료. 개발 탭은 종료한 서버의 연결 오류(data URL) 화면이 되어 browser URL 정책이 재탐색/닫기를 차단함. 우회하지 않고 임시 탭의 턴 종료 자동 정리에 맡김. production은 새 탭에서 정상 검증 완료.
+- 새 의존성과 알려진 기능 미해결 결함 없음. 터치/키보드는 단계 메뉴를 사용하며 native 마우스 DnD만 제공. 컬럼 내 순서 변경은 제외.

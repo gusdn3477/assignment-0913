@@ -1,7 +1,15 @@
 # 세션 인계 / 현재 상태
 
 ## 현재 결론
-필수 기능, concurrent-feedback, virtualization, 후속 선택 작업 **Undo 구현·통합·검증 완료**. main이 기준이며 기능 브랜치·워크트리·커밋 이력을 보존했습니다. 진행 중인 기능과 알려진 미해결 결함은 없습니다.
+필수 기능, concurrent-feedback, virtualization, Undo 및 **DnD 구현·통합·검증 완료**. main이 기준이며 기능 브랜치·워크트리·커밋을 보존했습니다. 진행 중인 기능과 알려진 미해결 기능 결함은 없습니다.
+
+## 최신 DnD 검증 (2026-09-13)
+- 기능 `ca7687a`, main 통합 `d4ea5f8`. 브랜치 `codex/dnd`, 워크트리 `.worktrees/dnd`.
+- 전용 손잡이로 단계 간 native 드래그, 목적지 강조, 가장자리 가로 스크롤, 원본 가상화 보존. 기존 메뉴/잠금/롤백/Undo 경로 재사용.
+- main `pnpm format:check && pnpm verify`: 포맷/lint/strict typecheck/**87/87 tests**/production build 통과.
+- 실제 브라우저 드래그 성공·실패 롤백·재시도, 키보드 Undo/포커스, reload 후 저장 유지, 390px 메뉴 확인. console error/warn 없음.
+- 테스트 카드는 원래 단계로 복구하고 검색 초기화, 서버 종료/viewport 초기화. 종료된 개발 오류 탭은 도구 URL 정책으로 닫기가 차단되어 턴 종료 자동 정리 대상.
+- 상세: `docs/records/dnd.md`, `docs/records/dnd-integration.md`. 아래 수치는 각 기능 완료 당시 기록입니다.
 
 ## 최신 Undo 검증 (2026-09-13)
 - 기능 `a3c8274`, main 통합 `57cbfa0`. 브랜치 `codex/undo`, 워크트리 `.worktrees/undo`.
@@ -37,6 +45,7 @@
 | concurrent-feedback | codex/concurrent-feedback | 4ceb4f7 | 동시 렌더링·재시도·갱신 피드백, app 11 tests / 전체 56 tests |
 | virtualization | codex/virtualization | 2c0a912 | 1,000건 가상화/키보드/포커스, 전체 62 tests |
 | undo | codex/undo | a3c8274 | 카드별 성공 이동 되돌리기/실패 재시도, 전체 73 tests |
+| dnd | codex/dnd | ca7687a | 단계 간 드래그/취소·stale 방어/가상화 유지, 전체 87 tests |
 
 ## 최종 검증
 - `pnpm format:check`: 통과.
@@ -47,8 +56,8 @@
 - Turbopack production CSS 내부 포트 오류 때문에 build는 공식 `--webpack` 옵션을 사용합니다.
 
 ## 실행과 다음 작업
-2026-09-13 선택한 Undo까지 구현·검증·문서화를 완료했습니다. 새 세션은 main에서 시작하고, 완료된 기능 세션을 다른 기능에 재사용하지 않습니다.
+2026-09-13 선택사항 가상화·Undo·DnD까지 구현했습니다. 새 세션은 main에서 시작하고, 완료된 기능 세션을 다른 기능에 재사용하지 않습니다.
 
 개발 미리보기는 `pnpm dev --port 3100`으로 실행합니다. 기본 실행은 `pnpm install` → `pnpm dev`입니다. 이번 production 검증 서버는 종료했습니다.
 
-필수 미완료와 알려진 결함은 없습니다. 다음 독립 기능 후보는 DnD입니다. 로그인·실제 백엔드·다중 탭 동기화·공개 저장소 생성/푸시/배포는 승인 범위 밖입니다.
+필수 미완료와 알려진 결함은 없습니다. 기존 선택사항은 모두 구현했습니다. 새로운 기능은 별도 범위를 정해 시작합니다. 로그인·실제 백엔드·다중 탭 동기화·공개 저장소 생성/푸시/배포는 승인 범위 밖입니다.
