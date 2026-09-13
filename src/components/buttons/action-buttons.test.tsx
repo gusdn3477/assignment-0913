@@ -39,7 +39,7 @@ describe("semantic buttons", () => {
   });
 
   it.each([RetryButton, ReloadButton])(
-    "keeps %s label and focus while pending and excludes repeated clicks",
+    "keeps %s label and focus while loading and excludes repeated clicks",
     async (Component) => {
       const click = vi.fn();
       const { rerender } = render(
@@ -48,7 +48,7 @@ describe("semantic buttons", () => {
       const button = screen.getByRole("button", { name: "새로고침" });
       await userEvent.click(button);
       rerender(
-        <Component onClick={click} pending>
+        <Component onClick={click} loading>
           새로고침
         </Component>,
       );

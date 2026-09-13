@@ -23,7 +23,7 @@ const candidate: Candidate = {
 };
 const defaults = {
   candidates: [candidate],
-  pendingIds: new Set<string>(),
+  loadingIds: new Set<string>(),
   onMove: vi.fn(),
   onOpenDetail: vi.fn(),
 };
@@ -65,7 +65,7 @@ describe("candidate drag and drop", () => {
     },
   );
 
-  it.each(["pending", "removed", "stage", "filter"])(
+  it.each(["loading", "removed", "stage", "filter"])(
     "permanently invalidates a %s source",
     async (scenario) => {
       const onMove = vi.fn();
@@ -79,7 +79,7 @@ describe("candidate drag and drop", () => {
           {...defaults}
           onMove={onMove}
           resetKey={scenario === "filter" ? "second" : "first"}
-          pendingIds={scenario === "pending" ? new Set(["a"]) : new Set()}
+          loadingIds={scenario === "loading" ? new Set(["a"]) : new Set()}
           candidates={
             scenario === "removed"
               ? []
@@ -100,14 +100,14 @@ describe("candidate drag and drop", () => {
     },
   );
 
-  it("blocks a pending handle but permits another card", async () => {
+  it("blocks a loading handle but permits another card", async () => {
     const onMove = vi.fn();
     render(
       <CandidateBoard
         {...defaults}
         onMove={onMove}
         candidates={[candidate, { ...candidate, id: "b" }]}
-        pendingIds={new Set(["a"])}
+        loadingIds={new Set(["a"])}
       />,
     );
     expect(dragHandle()).toBeDisabled();

@@ -432,7 +432,7 @@ describe("CandidatesApp acceptance", () => {
 });
 
 describe("saved stage undo menu", () => {
-  it("supports keyboard undo, scoped pending, failure retry, successful consumption and focus", async () => {
+  it("supports keyboard undo, scoped loading, failure retry, successful consumption and focus", async () => {
     const user = userEvent.setup();
     const saved = { ...candidates[0], stage: "interview" as const };
     const failedUndo = deferred<Candidate>();

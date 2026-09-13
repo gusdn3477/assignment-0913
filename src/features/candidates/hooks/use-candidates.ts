@@ -48,7 +48,7 @@ export function useCandidates(selectedId?: string | null) {
     selectedCandidate:
       data.find((candidate) => candidate.id === selectedId) ?? null,
     isSuccess: query.isSuccess,
-    isPending: query.isPending,
+    isLoading: query.isPending,
     isError: query.isError,
     isFetching: query.isFetching,
     error: query.error,

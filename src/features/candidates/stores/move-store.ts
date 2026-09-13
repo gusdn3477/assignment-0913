@@ -4,9 +4,9 @@ import type { CandidateUndo } from "@/features/candidates/types/candidate";
 // Only successful writes create history; nothing here is persisted.
 function createMoveStore() {
   let snapshot: {
-    pendingIds: ReadonlySet<string>;
+    loadingIds: ReadonlySet<string>;
     undoHistory: ReadonlyMap<string, CandidateUndo>;
-  } = { pendingIds: new Set(), undoHistory: new Map() };
+  } = { loadingIds: new Set(), undoHistory: new Map() };
   const listeners = new Set<() => void>();
   return {
     getSnapshot: () => snapshot,
@@ -16,11 +16,11 @@ function createMoveStore() {
         listeners.delete(listener);
       };
     },
-    set(id: string, pending: boolean) {
-      const next = new Set(snapshot.pendingIds);
-      if (pending) next.add(id);
+    set(id: string, loading: boolean) {
+      const next = new Set(snapshot.loadingIds);
+      if (loading) next.add(id);
       else next.delete(id);
-      snapshot = { ...snapshot, pendingIds: next };
+      snapshot = { ...snapshot, loadingIds: next };
       listeners.forEach((listener) => listener());
     },
     record(id: string, entry?: CandidateUndo) {

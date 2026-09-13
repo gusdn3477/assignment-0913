@@ -20,12 +20,12 @@ function loadErrorMessage(error: Error | null) {
 }
 
 export function CandidateLoadError({
-  pending,
+  loading,
   error,
   onRetry,
 }: {
   error: Error | null;
-  pending: boolean;
+  loading: boolean;
   onRetry: () => void;
 }) {
   return (
@@ -37,9 +37,9 @@ export function CandidateLoadError({
           {loadErrorMessage(error)}
         </p>
       </div>
-      <RetryButton className="mt-5" onClick={onRetry} pending={pending} />
+      <RetryButton className="mt-5" onClick={onRetry} loading={loading} />
       <p role="status" className="mt-3 min-h-5 text-sm text-muted-foreground">
-        {pending ? "다시 불러오는 중…" : ""}
+        {loading ? "다시 불러오는 중…" : ""}
       </p>
     </div>
   );
@@ -48,13 +48,13 @@ export function CandidateLoadError({
 export function CandidateRefresh({
   failed,
   error,
-  pending,
+  loading,
   blocked,
   onRetry,
 }: {
   failed: boolean;
   error: Error | null;
-  pending: boolean;
+  loading: boolean;
   blocked: boolean;
   onRetry: () => void;
 }) {
@@ -68,11 +68,11 @@ export function CandidateRefresh({
           </p>
         )}
         <p role="status" className="min-h-4">
-          {pending && "최신 지원자 정보를 불러오는 중…"}
+          {loading && "최신 지원자 정보를 불러오는 중…"}
         </p>
         {blocked && <p>단계 저장이 끝나면 새로고침할 수 있어요.</p>}
       </div>
-      <ReloadButton onClick={onRetry} pending={pending} disabled={blocked}>
+      <ReloadButton onClick={onRetry} loading={loading} disabled={blocked}>
         {failed ? "다시 불러오기" : "새로고침"}
       </ReloadButton>
     </div>

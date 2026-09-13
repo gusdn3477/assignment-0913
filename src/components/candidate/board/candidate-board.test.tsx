@@ -20,7 +20,7 @@ const candidate: Candidate = {
 };
 const props = {
   candidates: [candidate],
-  pendingIds: new Set<string>(),
+  loadingIds: new Set<string>(),
   onMove: vi.fn(),
   onOpenDetail: vi.fn(),
 };
@@ -86,12 +86,12 @@ describe("CandidateBoard", () => {
     expect(onMove).toHaveBeenCalledWith("a", "interview");
   });
 
-  it("blocks only the pending card's move control while keeping details available", () => {
+  it("blocks only the loading card's move control while keeping details available", () => {
     render(
       <CandidateBoard
         {...props}
         candidates={[candidate, { ...candidate, id: "b", name: "이봄" }]}
-        pendingIds={new Set(["a"])}
+        loadingIds={new Set(["a"])}
       />,
     );
     expect(

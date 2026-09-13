@@ -26,14 +26,14 @@ import { stageStyles } from "@/features/candidates/constants/stage-styles";
 import type { Candidate, Stage } from "@/features/candidates/types/candidate";
 export const CandidateCard = memo(function CandidateCard({
   candidate,
-  pending,
+  loading,
   undoStage,
   onUndo,
   onMove,
   onOpenDetail,
 }: {
   candidate: Candidate;
-  pending: boolean;
+  loading: boolean;
   undoStage?: Stage;
   onUndo: (id: string) => boolean;
   onMove: (id: string, stage: Stage) => void;
@@ -42,7 +42,7 @@ export const CandidateCard = memo(function CandidateCard({
   const { ref, handleRef, isDragging } = useDraggable({
     id: candidate.id,
     type: "candidate",
-    disabled: pending,
+    disabled: loading,
   });
   const selectedMove = useRef(false);
   const date = candidate.appliedAt.slice(0, 10).replaceAll("-", ".");
@@ -58,16 +58,16 @@ export const CandidateCard = memo(function CandidateCard({
         type="button"
         tabIndex={-1}
         aria-label={`${candidate.name} 단계 드래그`}
-        disabled={pending}
+        disabled={loading}
         data-candidate-drag={candidate.id}
         title={
-          pending
+          loading
             ? "저장 중"
             : "다른 단계로 드래그 · 단계 이동 메뉴도 사용 가능"
         }
         className={cn(
           "absolute right-1 top-2 z-10 flex touch-none size-7 items-center justify-center rounded-md text-slate-400",
-          pending
+          loading
             ? "cursor-wait opacity-40"
             : "cursor-grab hover:bg-slate-100 active:cursor-grabbing",
         )}
@@ -131,11 +131,11 @@ export const CandidateCard = memo(function CandidateCard({
             <button
               type="button"
               data-candidate-move={candidate.id}
-              disabled={pending}
-              aria-label={`${candidate.name} 단계 변경${pending ? " (저장 중)" : ""}`}
+              disabled={loading}
+              aria-label={`${candidate.name} 단계 변경${loading ? " (저장 중)" : ""}`}
               className="inline-flex min-h-8 items-center gap-1 rounded-md px-1.5 text-[11px] font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-800 disabled:cursor-wait disabled:text-slate-400"
             >
-              {pending ? (
+              {loading ? (
                 <>
                   <LoaderCircle
                     aria-hidden="true"
@@ -165,7 +165,7 @@ export const CandidateCard = memo(function CandidateCard({
             {STAGES.map((stage) => (
               <DropdownMenuItem
                 key={stage}
-                disabled={pending || stage === candidate.stage}
+                disabled={loading || stage === candidate.stage}
                 onSelect={() => {
                   selectedMove.current = true;
                   onMove(candidate.id, stage);
@@ -185,7 +185,7 @@ export const CandidateCard = memo(function CandidateCard({
               <>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  disabled={pending}
+                  disabled={loading}
                   onSelect={() => {
                     selectedMove.current = onUndo(candidate.id);
                   }}

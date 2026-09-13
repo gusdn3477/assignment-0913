@@ -1,6 +1,11 @@
 import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/react";
-import { afterEach } from "vitest";
+import { afterEach, beforeEach } from "vitest";
+import { useCandidateUI } from "@/features/candidates/stores/ui-store";
+
+beforeEach(() => {
+  useCandidateUI.setState(useCandidateUI.getInitialState(), true);
+});
 afterEach(cleanup);
 
 // JSDOM has no layout engine. Give actual virtualizers deterministic geometry;

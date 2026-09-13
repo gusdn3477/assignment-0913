@@ -12,7 +12,7 @@ import {
 type QueryState = Pick<
   ReturnType<typeof useCandidates>,
   | "hasData"
-  | "isPending"
+  | "isLoading"
   | "isError"
   | "isFetched"
   | "isFetching"
@@ -52,14 +52,14 @@ export function CandidateQueryGuard({
     if (query.retry(blocked)) restoreSearchFocus.current = !query.hasData;
   }
 
-  const pending = query.isFetching;
+  const loading = query.isFetching;
   // isFetched survives a retry, keeping the initial error panel mounted.
   const initialError = !query.hasData && query.isFetched;
   if (initialError) {
     // Keep this same button mounted throughout retry, preserving keyboard focus.
     return (
       <CandidateLoadError
-        pending={pending}
+        loading={loading}
         error={query.error}
         onRetry={retry}
       />
@@ -67,12 +67,12 @@ export function CandidateQueryGuard({
   }
 
   return (
-    <LoadingGuard loading={query.isPending || !hydrated} fallback={fallback}>
+    <LoadingGuard loading={query.isLoading || !hydrated} fallback={fallback}>
       <div ref={contentRef}>
         <CandidateRefresh
           failed={query.isError}
           error={query.error}
-          pending={pending}
+          loading={loading}
           blocked={blocked}
           onRetry={retry}
         />

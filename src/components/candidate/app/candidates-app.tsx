@@ -14,7 +14,7 @@ import { useCandidates } from "@/features/candidates/hooks/use-candidates";
 import { useMoveCandidate } from "@/features/candidates/hooks/use-move-candidate";
 import { filterCandidates } from "@/features/candidates/utils/selectors";
 import {
-  CandidateUIProvider,
+  useHydrateCandidateUI,
   useCandidateUI,
 } from "@/features/candidates/stores/ui-store";
 
@@ -22,7 +22,7 @@ import {
 const DeferredBoard = memo(CandidateBoard);
 
 function BoardContent() {
-  const { move, pendingIds, undo, undoHistory } = useMoveCandidate();
+  const { move, loadingIds, undo, undoHistory } = useMoveCandidate();
   const search = useCandidateUI((state) => state.search);
   const job = useCandidateUI((state) => state.job);
   const selectedId = useCandidateUI((state) => state.selectedId);
@@ -91,7 +91,7 @@ function BoardContent() {
         </div>
         <CandidateQueryGuard
           query={query}
-          blocked={pendingIds.size > 0}
+          blocked={loadingIds.size > 0}
           fallback={<BoardSkeleton />}
         >
           <CandidateToolbar
@@ -112,7 +112,7 @@ function BoardContent() {
                 <DeferredBoard
                   resetKey={JSON.stringify({ search: deferredSearch, job })}
                   candidates={filtered}
-                  pendingIds={pendingIds}
+                  loadingIds={loadingIds}
                   onMove={move}
                   onUndo={undo}
                   undoHistory={undoHistory}
@@ -135,11 +135,10 @@ function BoardContent() {
 }
 
 export function CandidatesApp() {
+  useHydrateCandidateUI();
   return (
-    <CandidateUIProvider>
-      <CandidateErrorBoundary label="채용 파이프라인">
-        <BoardContent />
-      </CandidateErrorBoundary>
-    </CandidateUIProvider>
+    <CandidateErrorBoundary label="채용 파이프라인">
+      <BoardContent />
+    </CandidateErrorBoundary>
   );
 }

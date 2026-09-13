@@ -24,13 +24,13 @@ function patchCandidate(client: QueryClient, candidate: Candidate) {
 
 export function useMoveCandidate(): {
   move: (id: string, stage: Stage) => void;
-  pendingIds: ReadonlySet<string>;
+  loadingIds: ReadonlySet<string>;
   undo: (id: string) => boolean;
   undoHistory: ReadonlyMap<string, CandidateUndo>;
 } {
   const client = useQueryClient();
   const store = getMoveStore(client);
-  const { pendingIds, undoHistory } = useSyncExternalStore(
+  const { loadingIds, undoHistory } = useSyncExternalStore(
     store.subscribe,
     store.getSnapshot,
     store.getSnapshot,
@@ -73,7 +73,7 @@ export function useMoveCandidate(): {
   });
   const move = useCallback(
     (id: string, stage: Stage) => {
-      if (store.getSnapshot().pendingIds.has(id)) return;
+      if (store.getSnapshot().loadingIds.has(id)) return;
       const candidate = client
         .getQueryData<Candidate[]>(CANDIDATES_QUERY_KEY)
         ?.find((item) => item.id === id);
@@ -86,7 +86,7 @@ export function useMoveCandidate(): {
   const undo = useCallback(
     (id: string) => {
       const snapshot = store.getSnapshot();
-      if (snapshot.pendingIds.has(id)) return false;
+      if (snapshot.loadingIds.has(id)) return false;
       const entry = snapshot.undoHistory.get(id);
       if (!entry) return false;
       const candidate = client
@@ -102,5 +102,5 @@ export function useMoveCandidate(): {
     },
     [client, mutate, store],
   );
-  return { move, pendingIds, undo, undoHistory };
+  return { move, loadingIds, undo, undoHistory };
 }

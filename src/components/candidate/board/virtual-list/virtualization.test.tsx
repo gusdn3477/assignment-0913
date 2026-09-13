@@ -10,7 +10,6 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { CandidateBoard } from "@/components/candidate/board/candidate-board";
 import { CandidateDetail } from "@/components/candidate/detail/candidate-detail";
-import { CandidateUIProvider } from "@/features/candidates/stores/ui-store";
 import { type Candidate } from "@/features/candidates/types/candidate";
 
 const candidates: Candidate[] = Array.from({ length: 1000 }, (_, index) => ({
@@ -24,7 +23,7 @@ const candidates: Candidate[] = Array.from({ length: 1000 }, (_, index) => ({
 }));
 const props = {
   candidates,
-  pendingIds: new Set<string>(),
+  loadingIds: new Set<string>(),
   onMove: vi.fn(),
   onOpenDetail: vi.fn(),
 };
@@ -172,12 +171,7 @@ describe("virtualized candidate navigation", () => {
   });
 
   it("retains the current detail trigger after prior keyboard navigation and scrolling", async () => {
-    render(
-      <CandidateUIProvider>
-        {/* Detail shares the real selection store. */}
-        <DetailHarness />
-      </CandidateUIProvider>,
-    );
+    render(<DetailHarness />);
     act(() => column().focus());
     fireEvent.keyDown(column(), { key: "Tab" });
     await userEvent.click(detail(2));
