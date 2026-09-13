@@ -18,6 +18,8 @@ pnpm verify  # lint → TypeScript → Vitest → production build
 pnpm start  # build 결과 실행
 ```
 
+Production build는 `next build --webpack`을 사용합니다. 개발 환경의 Turbopack CSS 처리 중 내부 포트 권한 오류를 재현하여 검증 가능한 공식 빌드 옵션을 선택했습니다. `pnpm format:check`로 코드 형식도 확인할 수 있습니다.
+
 ## 사용 방법
 
 - 지원자 이름을 검색하고 직무를 선택하면 두 조건을 모두 만족하는 카드가 표시됩니다.

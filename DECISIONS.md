@@ -12,6 +12,9 @@
 - 같은 카드 잠금은 QueryClient별로 공유하여 여러 hook 인스턴스나 unmount/remount에서도 유지합니다. 전체 캐시 snapshot 롤백은 채택하지 않았습니다.
 - 렌더링 예외는 Next.js error.tsx로 복구하고 예상 가능한 API 오류는 UI에서 처리합니다. 현재 부분 경계를 추가할 필요가 없어 react-error-boundary는 설치하지 않았습니다.
 - pnpm 캐시에 포함된 프로젝트 복사본이 테스트에 중복 수집되어 Vitest 범위를 src로 제한했습니다. 실제 프로젝트의 테스트만 최종 결과로 집계합니다.
+- JSDOM 테스트 timeout의 CPU profile에서 nwsapi@2.2.27의 native matches 재진입을 확인했습니다. `jsdom>nwsapi: 2.2.23` override로 고정해 원래 50개 테스트를 모두 통과시켰습니다. 테스트 생략/timeout 증가는 하지 않았습니다.
+- Turbopack production CSS 처리의 내부 포트 권한 오류가 반복되어 공식 지원 옵션 `next build --webpack`을 build 스크립트로 선택했습니다. 개발 서버는 기본 Turbopack을 사용합니다.
+- 리뷰 가능한 코드 형식을 통일하려고 Prettier를 개발 의존성으로 추가했습니다.
 
 ## 알려진 한계
 - 서버가 없는 데모이므로 브라우저/포트마다 데이터가 다르고 다중 탭 동시성은 보장하지 않습니다.
