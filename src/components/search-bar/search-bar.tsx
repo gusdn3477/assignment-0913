@@ -12,6 +12,7 @@ export type SearchBarProps = Omit<InputProps, "clearButton" | "type"> & {
 
 export function SearchBar({
   onClear,
+  value,
   ref,
   disabled,
   readOnly,
@@ -29,6 +30,7 @@ export function SearchBar({
       {...props}
       ref={inputRef}
       type="search"
+      value={value}
       disabled={disabled}
       readOnly={readOnly}
       className={cn(
@@ -38,7 +40,7 @@ export function SearchBar({
       wrapperClassName={cn("border-slate-200 bg-slate-50", wrapperClassName)}
       left={left}
       right={
-        onClear ? (
+        onClear && value !== undefined && String(value).length > 0 ? (
           <>
             {right}
             <CloseButton

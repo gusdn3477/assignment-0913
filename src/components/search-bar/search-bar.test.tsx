@@ -58,7 +58,8 @@ describe("SearchBar", () => {
     expect(input).toHaveFocus();
     expect(ref.current).toBe(input);
     expect(submit).not.toHaveBeenCalled();
-    expect(button).toBeEnabled();
+    expect(button).not.toBeInTheDocument();
+    await userEvent.type(input, "다시");
     await userEvent.tab();
     await userEvent.keyboard(" ");
     expect(clear).toHaveBeenCalledTimes(2);
@@ -68,14 +69,18 @@ describe("SearchBar", () => {
     expect(new FormData(input.closest("form")!).get("search")).toBe("검색");
   });
 
-  it("only renders the close action when onClear is supplied, including empty uncontrolled inputs", () => {
-    const { rerender } = render(<SearchBar defaultValue="검색" />);
+  it("only renders close when onClear and a nonempty explicit value are supplied", () => {
+    const { rerender } = render(<SearchBar value="검색" onChange={vi.fn()} />);
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
-    rerender(<SearchBar defaultValue="검색" onClear={vi.fn()} />);
+    rerender(<SearchBar value="검색" onChange={vi.fn()} onClear={vi.fn()} />);
     expect(screen.getByRole("button", { name: "검색어 지우기" })).toBeEnabled();
-    rerender(<SearchBar key="empty" onClear={vi.fn()} />);
-    expect(screen.getByRole("searchbox")).toHaveValue("");
-    expect(screen.getByRole("button", { name: "검색어 지우기" })).toBeEnabled();
+    rerender(<SearchBar value="" onChange={vi.fn()} onClear={vi.fn()} />);
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    rerender(
+      <SearchBar key="uncontrolled" defaultValue="검색" onClear={vi.fn()} />,
+    );
+    expect(screen.getByRole("searchbox")).toHaveValue("검색");
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 
   it.each([{ disabled: true }, { readOnly: true }])(
@@ -85,7 +90,7 @@ describe("SearchBar", () => {
       const onChange = vi.fn();
       render(
         <SearchBar
-          defaultValue="보존"
+          value="보존"
           onChange={onChange}
           onClear={onClear}
           {...state}
@@ -105,7 +110,7 @@ describe("SearchBar", () => {
   it("preserves slot overrides, uncontrolled native input, constraints and callback refs", async () => {
     const ref = vi.fn();
     const clear = vi.fn();
-    render(
+    const { rerender } = render(
       <SearchBar
         ref={ref}
         defaultValue="홍길동"
@@ -132,12 +137,25 @@ describe("SearchBar", () => {
     ).toHaveTextContent("⌘ K");
     await userEvent.type(input, "가나다");
     expect(input).toHaveValue("홍길동가");
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    rerender(
+      <SearchBar
+        key="controlled"
+        ref={ref}
+        value="홍길동"
+        onChange={vi.fn()}
+        onClear={clear}
+        right={<span>⌘ K</span>}
+      />,
+    );
+    const controlledInput = screen.getByRole("searchbox");
+    expect(screen.getByText("⌘ K")).toBeInTheDocument();
     await userEvent.click(
       screen.getByRole("button", { name: "검색어 지우기" }),
     );
     expect(clear).toHaveBeenCalledOnce();
-    expect(input).toHaveValue("홍길동가");
-    expect(input).toHaveFocus();
+    expect(controlledInput).toHaveValue("홍길동");
+    expect(controlledInput).toHaveFocus();
   });
 
   it("allows an explicit empty left slot", () => {

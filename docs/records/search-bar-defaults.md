@@ -22,3 +22,11 @@
 - 최종 `node_modules/.bin/vitest run`: 13 files, 113/113 통과(68.14s). SearchBar6 + 기존 app14 포함.
 - `node_modules/.bin/prettier --check src '*.ts' '*.mjs' '*.json'`, `tsc --noEmit`, `eslint .`, `git diff --check`: 모두 통과.
 - 미해결 기능 이슈 없음. 전체 검사 중 source 동작 변경 없이 아이콘 버튼 textContent 단언을 정확한 빈 문자열 검사로 강화했고 해당 SearchBar6 테스트는 이후 수집/실행되어 통과.
+
+## 추가 정정: 비어 있지 않은 value 조건
+- 사용자: “onClear가 있고, value.length > 0일때로 변경”. 기존 완료 커밋의 수정 커밋으로 반영.
+- X 조건에 명시 value 존재 및 String(value).length > 0 추가. native value 타입/defaultValue 지원 유지, 내부 상태 없음. disabled/readOnly 버튼 비활성화는 유지.
+- 관련 테스트를 빈값/clear 후 숨김, defaultValue-only X 없음, 비어 있지 않은 value+onClear 표시로 수정. 앱의 직무 유지/persistence/no-refetch/포커스 검증은 그대로 유지.
+- 최초 correction 검사19/20은 이전 single-line enabled assertion 치환 누락으로 실패했고 hidden assertion으로 수정 후 관련20/20 통과(17.92s). SearchBar6/app14 유지.
+- tsc/eslint 통과. 앱 테스트를 쓰는 동안 시작된 format 검사는 경고 후 종료했으며 formatter 완료 뒤 변경 파일 check와 최종 전체 format check를 재수행.
+- 미해결 이슈 없음. 최종 production build/browser는 통합 담당, 직전113 전체 회귀 통과와 이번20 관련 검증을 구분하여 기록.
