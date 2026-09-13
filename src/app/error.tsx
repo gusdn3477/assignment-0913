@@ -1,7 +1,7 @@
 "use client";
 
-import { AlertCircle, RotateCcw } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { AlertCircle } from "lucide-react";
+import { RetryButton } from "@/components/buttons/retry-button";
 
 export default function ErrorPage({
   reset,
@@ -24,10 +24,9 @@ export default function ErrorPage({
           일시적인 문제가 발생했습니다. 다시 시도해 주세요. 저장된 지원자 정보는
           그대로 유지됩니다.
         </p>
-        <Button onClick={reset} className="mt-3">
-          <RotateCcw className="size-4" />
+        <RetryButton variant="default" onClick={reset} className="mt-3">
           다시 시도
-        </Button>
+        </RetryButton>
       </section>
     </main>
   );

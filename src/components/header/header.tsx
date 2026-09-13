@@ -20,7 +20,7 @@ export function Header({
     <header {...props} className={cn("border-b bg-white", className)}>
       <div
         className={cn(
-          "mx-auto grid min-h-18 max-w-[1680px] grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-3 px-5 py-3 sm:px-8 lg:px-10",
+          "mx-auto grid min-h-18 max-w-420 grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-3 px-5 py-3 sm:px-8 lg:px-10",
           center != null &&
             "md:grid-cols-[minmax(0,1fr)_minmax(0,auto)_minmax(0,1fr)]",
           contentClassName,

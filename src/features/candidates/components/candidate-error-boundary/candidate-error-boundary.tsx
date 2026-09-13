@@ -1,7 +1,7 @@
 "use client";
 
 import { Component, type ReactNode } from "react";
-import { Button } from "@/components/ui/button";
+import { RetryButton } from "@/components/buttons/retry-button";
 
 type Props = {
   children: ReactNode;
@@ -30,7 +30,7 @@ export class CandidateErrorBoundary extends Component<
           <p className="mt-2 text-sm text-muted-foreground">
             저장된 정보는 유지됩니다. 다시 시도해 주세요.
           </p>
-          <Button
+          <RetryButton
             type="button"
             variant="outline"
             className="mt-4"
@@ -40,7 +40,7 @@ export class CandidateErrorBoundary extends Component<
             }}
           >
             다시 시도
-          </Button>
+          </RetryButton>
         </section>
       );
     }

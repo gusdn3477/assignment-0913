@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { Orbit } from "lucide-react";
+import { Header } from "@/components/header/header";
 
 export function WorkspaceHeader() {
   return (
-    <header className="border-b bg-white">
-      <div className="mx-auto flex h-18 max-w-[1680px] items-center justify-between px-5 sm:px-8 lg:px-10">
+    <Header
+      left={
         <Link
           href="/"
           aria-label="Orbit 채용 보드 홈"
@@ -20,6 +21,8 @@ export function WorkspaceHeader() {
             채용 워크스페이스
           </span>
         </Link>
+      }
+      right={
         <div className="flex items-center gap-3">
           <span className="hidden text-right text-xs/5  sm:block">
             <span className="block font-medium">채용 담당자</span>
@@ -32,7 +35,7 @@ export function WorkspaceHeader() {
             OR
           </span>
         </div>
-      </div>
-    </header>
+      }
+    />
   );
 }

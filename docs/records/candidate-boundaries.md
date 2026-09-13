@@ -23,3 +23,8 @@
 - 최초 typecheck/test에서 isSuccess 반환 누락 발견(101/102 통과). 기존 성공 상태 계약을 명시적으로 복원하여 수정.
 - pnpm format:check && pnpm verify: format/lint/typecheck/102 tests 통과, build 진행 중.
 - 새 공통 UI 소비처 연결 4f36d6f를 추가 반영 후 최종 검사 예정.
+
+## 공통 UI 통합
+- 102 tests 기준 production build까지 통과했습니다.
+- main 4f36d6f 연결 변경 merge. CandidatesApp import/reset JSX와 WorkspaceHeader 충돌을 server shell 경계 + shared Header/ResetButton 유지로 해결했습니다. 새로운 render boundary도 RetryButton을 사용합니다.
+- canonical 변환 후 lint/typecheck 통과. max-w-420을 사용해 최대폭 표기도 정리했습니다.

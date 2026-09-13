@@ -14,7 +14,7 @@ export default function Page() {
       <WorkspaceHeader />
       <main
         id="main-content"
-        className="mx-auto max-w-[1680px] px-5 py-8 sm:px-8 lg:px-10"
+        className="mx-auto max-w-420 px-5 py-8 sm:px-8 lg:px-10"
       >
         <section
           className="mb-8 flex flex-wrap items-end justify-between gap-6"
