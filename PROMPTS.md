@@ -779,3 +779,8 @@ Codex in-app browser, 127.0.0.1:3101, 기본 viewport 1280×720.
 - 점검: 단계 이동/Undo mutation은 카드별 낙관 반영, 같은 카드 잠금, 실패 카드만 rollback하고 Sonner 오류 toast를 표시한다. 최초 조회 실패는 영역 내 재시도 패널, 배경 조회 실패는 기존 데이터를 유지한 inline alert다.
 - 수정: CandidateEmptyGuard가 결과 있음/없음에 동일한 최소 높이 결과 셸을 유지한다.
 - 검증: main format/lint/typecheck/114 tests/build, 실제 결과 높이 800.5px/800px과 동일 문서 높이·절대 top, console[] 확인. 상세 docs/records/empty-result-stability.md.
+
+## Mutation 성공 토스트
+- 실제 요청: “또한 성공 시에도 토스트 띄워줘.”
+- 출력: API 성공 확정 뒤 일반 이동과 Undo에 구분된 성공 토스트를 표시하고 `지원자 이름 · 확정 단계` 설명을 제공한다. 낙관적 반영 시점에는 표시하지 않는다.
+- 검증: 관련 hook/app 36 tests, main format/lint/typecheck/114 tests/build 통과. 실제 실패 롤백 후 재시도 성공과 Undo 성공 토스트, 원래 단계 복구, console[] 확인. 기능66ba489/main a59904c. 상세 docs/records/mutation-success-toast.md.

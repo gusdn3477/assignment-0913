@@ -18,6 +18,8 @@
 - 대상 Prettier/ESLint 및 strict TypeScript 통과.
 - `vitest run src/features/candidates/hooks/candidate-queries.test.tsx src/components/candidate/app/candidates-app.test.tsx`: 2 files, 36/36 tests 통과.
 - 실제 브라우저에서 mutation 실패 토스트를 한 번 재현한 뒤 재시도 성공 토스트 `단계 이동을 저장했습니다. / 최서연 · 면접`을 확인했다. 이후 Undo 성공 토스트 `단계 되돌리기를 저장했습니다. / 최서연 · 서류검토`를 확인해 테스트 데이터를 원래 단계로 복구했다. console error/warn 없음.
+- main `pnpm format:check && pnpm verify`: format, lint, strict typecheck, 13 files 114/114 tests, webpack production build 모두 통과.
+- 기능 SHA `66ba489`, main 통합 SHA `465b7d9`.
 
 ## 남은 이슈
 

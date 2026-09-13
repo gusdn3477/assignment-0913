@@ -1,6 +1,8 @@
 # 세션 인계 / 현재 상태
 
 ## 현재 결론
+Mutation 성공 토스트 완료: 단계 이동/Undo가 API 성공으로 확정된 뒤 각각 `단계 이동을 저장했습니다.` / `단계 되돌리기를 저장했습니다.`를 표시하고 description에 `지원자 이름 · 확정 단계`를 제공한다. 기능/통합 `66ba489`/`a59904c`, `codex/mutation-success-toast` / `.worktrees/mutation-success-toast`. 관련36 tests 및 main format/lint/typecheck/13 files 114 tests/production build 통과. 실제 실패 롤백→재시도 성공 토스트→Undo 성공 토스트/원상 복구와 console error/warn 없음 확인. 기록: `docs/records/mutation-success-toast.md`. 미해결 이슈 없음.
+
 검색 0건 레이아웃 안정화 완료: CandidateEmptyGuard가 결과 있음/없음에 동일한 결과 셸과 `min-height: calc(max(720px, 75vh) + 5rem)`을 유지한다. 기능/통합 `7719238`/`f4d2e0a`, `codex/empty-result-stability` / `.worktrees/empty-result-stability`. main format/lint/typecheck/13 files 114 tests/production build 통과. 실제 960px viewport에서 결과 셸 높이 800.5px→800px, 문서 높이 1521px 및 절대 top 620px 동일, console error/warn 없음. mutation 실패는 기존 카드별 rollback+Sonner toast, 조회 실패는 인라인 retry UI로 확인했다. 기록: `docs/records/empty-result-stability.md`. 미해결 이슈 없음.
 
 도메인별 상수 배치 완료: src/constants/candidate.ts에 기존 지원자 상수와 Query 키 통합, 소비23파일 import 갱신. 기능b4b81a2/main7227fd0, codex/constants-layout / .worktrees/constants-layout. 공개12선언 동일, lint/type/format/build 통과. 전체 테스트 및 통합 app 테스트에서 시간 초과 각1건은 단독 재실행 통과(제한 변경 없음). production 오류 재시도250명/5단계/검색1명/console[] 확인. 기록: docs/records/constants-layout-integration.md.
