@@ -1,6 +1,13 @@
 "use client";
 
-import { memo, useCallback, useLayoutEffect, useMemo, useRef } from "react";
+import {
+  memo,
+  useCallback,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Check, ChevronDown, LoaderCircle, UserRound } from "lucide-react";
 import {
   DropdownMenu,
@@ -10,10 +17,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  VirtualCandidateList,
+  type CandidateListHandle,
+} from "./virtual-candidate-list";
 import { cn } from "@/lib/utils";
 import { STAGES, STAGE_LABELS, type Candidate, type Stage } from "./types";
 
 interface CandidateBoardProps {
+  resetKey?: string;
   candidates: Candidate[];
   pendingIds: ReadonlySet<string>;
   onMove: (id: string, stage: Stage) => void;
@@ -42,7 +54,7 @@ const CandidateCard = memo(function CandidateCard({
   const selectedMove = useRef(false);
   const date = candidate.appliedAt.slice(0, 10).replaceAll("-", ".");
   return (
-    <li
+    <div
       data-candidate-card={candidate.id}
       className="rounded-xl border border-slate-200/80 bg-white shadow-[0_2px_5px_rgba(27,39,68,0.025)] transition-shadow hover:shadow-md"
     >
@@ -156,18 +168,21 @@ const CandidateCard = memo(function CandidateCard({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-    </li>
+    </div>
   );
 });
 
 export function CandidateBoard({
   candidates,
+  resetKey,
   pendingIds,
   onMove,
   onOpenDetail,
 }: CandidateBoardProps) {
   const boardRef = useRef<HTMLDivElement>(null);
   const focusedCard = useRef<string | null>(null);
+  const [focusId, setFocusId] = useState<string | null>(null);
+  const lists = useRef<Partial<Record<Stage, CandidateListHandle>>>({});
   const requestedMove = useRef<string | null>(null);
   const previousStages = useRef(new Map<string, Stage>());
   const columns = useMemo(() => {
@@ -207,13 +222,7 @@ export function CandidateBoard({
       changedStage &&
       (requestedMove.current || document.activeElement === document.body)
     ) {
-      const detail = Array.from(
-        boardRef.current?.querySelectorAll<HTMLButtonElement>(
-          "[data-candidate-detail]",
-        ) ?? [],
-      ).find((button) => button.dataset.candidateDetail === id);
-      detail?.focus({ preventScroll: true });
-      detail?.scrollIntoView?.({ block: "nearest", inline: "nearest" });
+      lists.current[candidate.stage]?.focusCandidate(candidate.id);
       requestedMove.current = null;
     }
     previousStages.current = new Map(
@@ -228,11 +237,65 @@ export function CandidateBoard({
       aria-label="지원자 채용 단계 보드"
       tabIndex={0}
       className="overflow-x-auto rounded-xl pb-4"
+      onKeyDownCapture={(event) => {
+        if (
+          event.key !== "Tab" ||
+          event.altKey ||
+          event.ctrlKey ||
+          event.metaKey
+        )
+          return;
+        const target = event.target as HTMLElement;
+        // Portalled menus own their keyboard behavior.
+        if (!boardRef.current?.contains(target)) return;
+        const controls: {
+          stage: Stage;
+          id?: string;
+          control?: "detail" | "move";
+        }[] = [];
+        for (const stage of STAGES) {
+          if (!columns[stage].length) continue;
+          controls.push({ stage });
+          for (const candidate of columns[stage]) {
+            controls.push({ stage, id: candidate.id, control: "detail" });
+            if (!pendingIds.has(candidate.id))
+              controls.push({ stage, id: candidate.id, control: "move" });
+          }
+        }
+        const index = controls.findIndex((item) =>
+          item.id
+            ? target.getAttribute(`data-candidate-${item.control}`) === item.id
+            : target.dataset.candidateColumn === item.stage,
+        );
+        const next = controls[index + (event.shiftKey ? -1 : 1)];
+        if (index < 0 || !next) return;
+        event.preventDefault();
+        if (next.id)
+          lists.current[next.stage]?.focusCandidate(next.id, next.control);
+        else
+          boardRef.current
+            ?.querySelector<HTMLElement>(
+              `[data-candidate-column="${next.stage}"]`,
+            )
+            ?.focus();
+      }}
+      onPointerDownCapture={(event) => {
+        if (!boardRef.current?.contains(event.target as Node)) return;
+        const card = (event.target as HTMLElement).closest<HTMLElement>(
+          "[data-candidate-card]",
+        );
+        if (card) {
+          focusedCard.current = card.dataset.candidateCard ?? null;
+          setFocusId(focusedCard.current);
+        }
+      }}
       onFocusCapture={(event) => {
+        if (!boardRef.current?.contains(event.target as Node)) return;
         const card = (event.target as HTMLElement).closest<HTMLElement>(
           "[data-candidate-card]",
         );
         focusedCard.current = card?.dataset.candidateCard ?? null;
+        setFocusId(focusedCard.current);
       }}
     >
       <div className="grid min-w-[1240px] grid-cols-5 items-start gap-4">
@@ -260,12 +323,17 @@ export function CandidateBoard({
                 0{index + 1}
               </span>
             </div>
-            <ul
-              aria-label={`${STAGE_LABELS[stage]} 지원자 목록`}
-              tabIndex={columns[stage].length ? 0 : undefined}
-              className="max-h-[min(60vh,720px)] space-y-2.5 overflow-y-auto overscroll-contain rounded-lg p-0.5"
+            <VirtualCandidateList
+              candidates={columns[stage]}
+              stage={stage}
+              focusId={focusId}
+              resetKey={resetKey}
+              listRef={(handle) => {
+                if (handle) lists.current[stage] = handle;
+                else delete lists.current[stage];
+              }}
             >
-              {columns[stage].map((candidate) => (
+              {(candidate) => (
                 <CandidateCard
                   key={candidate.id}
                   candidate={candidate}
@@ -273,8 +341,8 @@ export function CandidateBoard({
                   onMove={move}
                   onOpenDetail={onOpenDetail}
                 />
-              ))}
-            </ul>
+              )}
+            </VirtualCandidateList>
             {columns[stage].length === 0 && (
               <p className="flex min-h-36 items-center justify-center rounded-lg border border-dashed border-slate-300/70 px-3 text-xs text-slate-500">
                 이 단계의 지원자가 없습니다
