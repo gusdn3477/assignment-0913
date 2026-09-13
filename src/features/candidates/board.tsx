@@ -2,6 +2,7 @@
 
 import {
   memo,
+  type DragEvent,
   useCallback,
   useLayoutEffect,
   useMemo,
@@ -10,6 +11,7 @@ import {
 } from "react";
 import {
   Check,
+  GripVertical,
   ChevronDown,
   LoaderCircle,
   UserRound,
@@ -27,6 +29,7 @@ import {
   VirtualCandidateList,
   type CandidateListHandle,
 } from "./virtual-candidate-list";
+import { useCandidateDrag } from "./use-candidate-drag";
 import { cn } from "@/lib/utils";
 import type { CandidateUndo } from "./queries";
 import { STAGES, STAGE_LABELS, type Candidate, type Stage } from "./types";
@@ -56,7 +59,13 @@ const CandidateCard = memo(function CandidateCard({
   onUndo,
   onMove,
   onOpenDetail,
+  dragging,
+  onDragStart,
+  onDragEnd,
 }: {
+  dragging: boolean;
+  onDragStart: (event: DragEvent<HTMLElement>, candidate: Candidate) => void;
+  onDragEnd: () => void;
   candidate: Candidate;
   pending: boolean;
   undoStage?: Stage;
@@ -69,14 +78,35 @@ const CandidateCard = memo(function CandidateCard({
   return (
     <div
       data-candidate-card={candidate.id}
-      className="rounded-xl border border-slate-200/80 bg-white shadow-[0_2px_5px_rgba(27,39,68,0.025)] transition-shadow hover:shadow-md"
+      data-dragging={dragging || undefined}
+      className="relative rounded-xl border border-slate-200/80 bg-white shadow-[0_2px_5px_rgba(27,39,68,0.025)] transition-shadow hover:shadow-md data-[dragging=true]:opacity-50"
     >
+      <span
+        aria-hidden="true"
+        data-candidate-drag={candidate.id}
+        draggable={!pending}
+        onDragStart={(event) => onDragStart(event, candidate)}
+        onDragEnd={onDragEnd}
+        title={
+          pending
+            ? "저장 중"
+            : "다른 단계로 드래그 · 키보드와 터치는 단계 이동 메뉴 사용"
+        }
+        className={cn(
+          "absolute right-1 top-2 z-10 flex size-7 items-center justify-center rounded-md text-slate-400",
+          pending
+            ? "cursor-wait opacity-40"
+            : "cursor-grab hover:bg-slate-100 active:cursor-grabbing",
+        )}
+      >
+        <GripVertical className="size-4" />
+      </span>
       <button
         type="button"
         data-candidate-detail={candidate.id}
         onClick={() => onOpenDetail(candidate.id)}
         aria-label={`${candidate.name} 지원자 상세 보기`}
-        className="block w-full rounded-t-xl p-4 text-left focus-visible:relative focus-visible:z-10"
+        className="block w-full rounded-t-xl p-4 pr-8 text-left focus-visible:relative focus-visible:z-10"
       >
         <span className="mb-3 flex items-center gap-3">
           <span
@@ -188,7 +218,7 @@ const CandidateCard = memo(function CandidateCard({
                   }}
                 >
                   <Undo2 aria-hidden="true" className="size-3.5" />
-                  {STAGE_LABELS[undoStage]}로 되돌리기
+                  {STAGE_LABELS[undoStage]} 단계로 되돌리기
                 </DropdownMenuItem>
               </>
             )}
@@ -237,6 +267,14 @@ export function CandidateBoard({
     [onMove],
   );
 
+  const drag = useCandidateDrag({
+    candidates,
+    pendingIds,
+    resetKey,
+    boardRef,
+    onMove: move,
+  });
+
   const undo = useCallback(
     (id: string) => {
       if (!onUndo?.(id)) return false;
@@ -275,7 +313,16 @@ export function CandidateBoard({
       aria-label="지원자 채용 단계 보드"
       tabIndex={0}
       className="overflow-x-auto rounded-xl pb-4"
+      onDragOver={(event) => {
+        if (
+          event.target === event.currentTarget ||
+          !(event.target as HTMLElement).closest("[data-drop-stage]")
+        )
+          drag.over(event);
+      }}
+      onDragLeave={drag.leave}
       onKeyDownCapture={(event) => {
+        if (event.key === "Escape") drag.cancel();
         if (
           event.key !== "Tab" ||
           event.altKey ||
@@ -336,12 +383,19 @@ export function CandidateBoard({
         setFocusId(focusedCard.current);
       }}
     >
+      <p role="status" className="sr-only">
+        {drag.message}
+      </p>
       <div className="grid min-w-[1240px] grid-cols-5 items-start gap-4">
         {STAGES.map((stage, index) => (
           <section
             key={stage}
             aria-label={`${STAGE_LABELS[stage]} ${columns[stage].length}명`}
-            className="min-w-0 rounded-xl bg-slate-100/70 p-2.5"
+            data-drop-stage={stage}
+            data-drop-active={drag.target === stage || undefined}
+            onDragOver={(event) => drag.over(event, stage)}
+            onDrop={(event) => drag.drop(event, stage)}
+            className="min-w-0 rounded-xl bg-slate-100/70 p-2.5 data-[drop-active=true]:bg-blue-50 data-[drop-active=true]:ring-2 data-[drop-active=true]:ring-blue-400"
           >
             <div className="flex items-center gap-2 px-1.5 pb-4 pt-2">
               <span
@@ -365,6 +419,7 @@ export function CandidateBoard({
               candidates={columns[stage]}
               stage={stage}
               focusId={focusId}
+              dragId={drag.dragId}
               resetKey={resetKey}
               listRef={(handle) => {
                 if (handle) lists.current[stage] = handle;
@@ -376,6 +431,9 @@ export function CandidateBoard({
                   key={candidate.id}
                   candidate={candidate}
                   pending={pendingIds.has(candidate.id)}
+                  dragging={drag.dragId === candidate.id}
+                  onDragStart={drag.start}
+                  onDragEnd={drag.cancel}
                   undoStage={
                     undoHistory?.get(candidate.id)?.savedStage ===
                     candidate.stage
