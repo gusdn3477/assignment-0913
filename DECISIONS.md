@@ -71,3 +71,9 @@
 - `loading.tsx`는 route streaming skeleton입니다. 현재 정적으로 생성되는 단일 페이지에서 이 경계가 API 조회를 기다린다고 가정하지 않습니다. 클라이언트 useQuery 최초 대기는 BoardSkeleton/metric skeleton, 배경 조회는 기존 데이터 유지, mutation은 카드별 feedback을 사용합니다.
 - 보드와 상세 render 예외는 개별 CandidateErrorBoundary에서 복구하고 외부 후보 영역 boundary는 나머지 client render 예외를 다룹니다. 정적 서버 페이지 예외는 기존 route error.tsx를 사용합니다. API 오류는 throw하지 않고 기존 inline/toast 경로를 유지합니다. 새로운 데이터 API 없이 Suspense용 가짜 Promise를 만들지 않았습니다.
 - Next/TypeScript paths와 Vite 기반 Vitest resolve.alias의 @가 모두 src를 가리킵니다. 이미 작동하는 alias를 사용하므로 중복 Vite 플러그인이나 Next용 vite.config를 추가하지 않았습니다.
+
+## 후속 구현: 검색 조합과 보드 공간
+- Input의 left/right는 ReactNode 슬롯입니다. absolute 위치와 고정 padding으로 아이콘을 겹치는 대신 flex 레이아웃에서 슬롯 폭을 확보합니다. 기존 clearButton controlled 계약은 유지하고 오른쪽 슬롯과 함께 조합합니다.
+- native input props/ref/className을 유지하며 composite border/background는 wrapperClassName으로 지정합니다. SearchBar는 Input을 조합하여 search type/기본 돋보기를 제공하고 좌우 슬롯의 추가·교체를 허용합니다.
+- ResetButton은 초기화, ReloadButton은 배경 새로고침, RetryButton은 실패 후 재시도에 사용합니다. 공통 ActionButton이 native props/ref/pending/disabled를 관리합니다.
+- 컬럼의 max-height를 min(60vh,720px)에서 max(720px,75vh)로 확대합니다. 카드 실측과 가상화를 유지하고 paddingStart/End를 가상화 geometry에 포함해 끝 카드 여백도 스크롤 범위로 계산합니다. 임의 스크롤 위치에서 카드 일부가 보이는 것은 스크롤 목록의 일반 동작이며 마지막 카드 전체는 끝까지 스크롤해 볼 수 있습니다.

@@ -675,3 +675,12 @@ Codex in-app browser, 127.0.0.1:3101, 기본 viewport 1280×720.
 - 브라우저: 초기 skeleton/250명/검색·빈 결과/상세 focus/배경 갱신 보드 유지/reload 필터 복원/390px/console [] 확인. 상세 기록: `docs/records/candidate-boundaries.md`.
 
 - main 최종 `pnpm format:check && pnpm verify`도 format/lint/typecheck/103 tests/build 전체 통과. 검증 기능 브랜치와 main 코드·설정 diff 없음. 최종 결과 및 소유권 인계를 STATUS에 기록했습니다.
+
+
+## SearchBar 조합·카드 공간 보완 (2026-09-13)
+- 실제 요청: “카드 영역 부분 height가 너무 좁음 더 넓혀도 됨. 또한 영역떄문에 카드 하단이 잘려보임”; “SearchBar 같은건데 Input에서 left, right에 돋보기, clearButton 을 넣어서 사용 가능하게 확장성있게”; “초기화 / 새로고침도 ResetButton, ReloadButton 등으로 추상화 가능”.
+- 새 독립 기능 codex/search-board-polish/.worktrees/search-board-polish에 src/task/record 소유권 배정. 통합은 기존 화면 치수 확인/코드 리뷰/build/browser/main 통합 수행.
+- 출력: Input 좌우 슬롯+clear 동시 조합, 실제 SearchBar, ReloadButton, 높이 max(720px,75vh), virtualizer 끝 padding16px. baseline 432px/끝2.5px → 720px/끝16.5px 실제 측정.
+- 리뷰: SearchBar union 타입 손실 및 explicit null 문제 수정. browser에서 global focus outline이 input 내부에 중복되는 문제 발견/한정 CSS 수정. plain Input과 clear 버튼 focus 보존.
+- 기능 ccd5a50, main d378dc0. main pnpm format:check && pnpm verify: 108/108 tests + lint/typecheck/format/build 통과. production 390px/slot gap8px/키보드 clear-focus/Reload pending 보드 유지/console[] 확인.
+- 자세한 명령·결과는 docs/records/search-board-polish.md 및 search-board-polish-integration.md에 기록.

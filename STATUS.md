@@ -1,7 +1,14 @@
 # 세션 인계 / 현재 상태
 
 ## 현재 결론
-필수 기능, 기존 선택 기능, 재사용 UI/구조 정리에 이어 **Query 추상화·서버/클라이언트 경계·영역별 fallback·Tailwind canonical lint 추가사항 완료**. 기능 코드 `044b7b5`, 기능 브랜치 인계 `d1a203e`, main 통합 `93a50eb`.
+기존 기능에 이어 **Input 좌우 슬롯·SearchBar·ReloadButton·카드 목록 높이/끝 여백 보완 구현 완료**. 기능 `ccd5a50`, main 통합 `d378dc0`. main 전체 검사와 production 브라우저 재확인까지 완료했습니다.
+
+## 최신 검색 조합·카드 공간 검증 (2026-09-13)
+- 독립 codex/search-board-polish, `.worktrees/search-board-polish`에서 구현. Input left/right ReactNode와 clearButton 조합, 실제 SearchBar 사용, ReloadButton과 RetryButton 역할 분리.
+- 카드 목록 max-height=max(720px,75vh), 가상화 paddingStart=6/paddingEnd=16. 고정 카드 높이/데이터 전체 렌더를 도입하지 않고 기존 실측/키보드/가상화 유지.
+- 기능 및 main `pnpm format:check && pnpm verify`: 12 files/108 tests, lint/typecheck/format/build 모두 통과. browser 기존 432px 높이→720px, 마지막 카드 아래 2.5px→16.5px 확인.
+- 브라우저에서 발견한 composite input의 중복 내부 outline을 한정 CSS로 수정하고 final main에서 확인. input outline:none + wrapper 3px ring 유지, clear 버튼 자체 outline 유지. 390px document 폭 정상.
+- 상세: `docs/records/search-board-polish.md`, `docs/records/search-board-polish-integration.md`.
 
 ## 최신 Query·렌더링 경계 검증 (2026-09-13)
 - 독립 `codex/candidate-boundaries`, 워크트리 `.worktrees/candidate-boundaries`에서 구현·커밋 후 main 통합.

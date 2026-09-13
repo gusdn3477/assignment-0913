@@ -19,3 +19,7 @@
 - 설치된 binaries 직접 실행: strict typecheck, eslint, prettier check, 12 files 108/108 tests, diff whitespace 검사 통과. pnpm symlink dependency 자동검사 이슈와 해결은 record 참조.
 - source 작업 완료. production build/browser와 main 병합은 통합 담당이 이어서 수행; 브라우저 수정 요청 시 동일 기능 correction commit 유지.
 - 기록: docs/records/search-board-polish.md. 의존성 변경 없음.
+
+
+## 통합 완료
+기능 ccd5a50 → main d378dc0. main format/lint/typecheck/108 tests/build 및 production browser 통과. 720px 높이, 끝 gap16.5px, Input 슬롯 8px 간격, composite focus 보완, 390px 배치 확인. 전체 결과는 docs/records/search-board-polish-integration.md. 미해결 이슈 없음.
