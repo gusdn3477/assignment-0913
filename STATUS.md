@@ -3,6 +3,12 @@
 ## 현재 결론
 필수 기능, concurrent-feedback, virtualization, Undo 및 **DnD 구현·통합·검증 완료**. main이 기준이며 기능 브랜치·워크트리·커밋을 보존했습니다. 진행 중인 기능과 알려진 미해결 기능 결함은 없습니다.
 
+## 최종 요구사항 재감사 (2026-09-13)
+- 초기 커밋 `12ed483`의 PLAN과 현재 승인 범위, 구현·테스트·기능별 기록을 대조했습니다. 필수 기능의 누락이나 승인 범위 위반을 발견하지 못했습니다.
+- 기준 코드 `2878f98`에서 `pnpm format:check && pnpm verify` 재실행: 포맷/lint/strict typecheck/**7 files, 87/87 tests**/production build 모두 통과.
+- 이번에는 코드 검토와 자동 검사를 재수행했습니다. 실제 브라우저 검증은 동일 코드의 기존 production 기록을 검토했으며 새로 수행한 것으로 집계하지 않습니다.
+- 초기 제외 범위와 과거 50 tests 기록을 현재 상태로 오해하지 않도록 문서 제목/설명을 정리했습니다. 코드 변경 없음. 상세: `docs/records/final-audit.md`.
+
 ## 최신 DnD 검증 (2026-09-13)
 - 기능 `ca7687a`, main 통합 `d4ea5f8`. 브랜치 `codex/dnd`, 워크트리 `.worktrees/dnd`.
 - 전용 손잡이로 단계 간 native 드래그, 목적지 강조, 가장자리 가로 스크롤, 원본 가상화 보존. 기존 메뉴/잠금/롤백/Undo 경로 재사용.
@@ -47,7 +53,7 @@
 | undo | codex/undo | a3c8274 | 카드별 성공 이동 되돌리기/실패 재시도, 전체 73 tests |
 | dnd | codex/dnd | ca7687a | 단계 간 드래그/취소·stale 방어/가상화 유지, 전체 87 tests |
 
-## 최종 검증
+## 초기 필수 기능 완료 당시 검증 (후속 기능 추가 전)
 - `pnpm format:check`: 통과.
 - `pnpm verify`: lint → TypeScript strict → 50 tests → production build 전체 통과.
 - `next start --port 3101`: 빌드 결과 실행, 250명 렌더/검색/상세/초기화 확인. error/warn 없음. 검증 서버는 종료했습니다.
