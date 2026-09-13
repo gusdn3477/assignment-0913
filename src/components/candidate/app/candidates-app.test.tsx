@@ -211,10 +211,15 @@ describe("CandidatesApp acceptance", () => {
     expect(screen.getByLabelText("지원자 검색 결과")).toHaveTextContent(
       "전체 3명 중 1명",
     );
+    const populatedResults = document.querySelector("[data-candidate-results]");
+    expect(populatedResults).toHaveClass("min-h-[calc(max(720px,75vh)+5rem)]");
     fireEvent.change(search, { target: { value: "없는 이름" } });
     expect(
       screen.getByText("검색 조건에 맞는 지원자가 없어요"),
     ).toBeInTheDocument();
+    const emptyResults = document.querySelector("[data-candidate-results]");
+    expect(emptyResults).toBe(populatedResults);
+    expect(emptyResults).toHaveClass("min-h-[calc(max(720px,75vh)+5rem)]");
     expect(
       screen.queryByText("아직 등록된 지원자가 없어요"),
     ).not.toBeInTheDocument();
