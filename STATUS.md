@@ -1,6 +1,8 @@
 # 세션 인계 / 현재 상태
 
 ## 현재 결론
+TanStack Query와 React 19 `useOptimistic` 역할 재검토 완료: 지원자 조회·취소·재시도·배경 갱신·mutation lifecycle과 카드별 낙관적 rollback을 공유 Query 캐시에서 일관되게 관리하므로 별도 `useOptimistic` 상태를 중복하지 않는 판단을 README/DECISIONS에 보강했다. 사용자가 실패 UI, 낙관 반영, 성공 알림, 최종 요구사항 대조를 직접 리뷰·검증하도록 지시한 흐름을 PROMPTS 최상단에 핵심 평가 근거로 정리했다. 코드 변경 없음.
+
 후보자 가상 목록 스크롤 복원 훅 분리 완료: 필터 변경 시 상단 복원과 화면 밖 카드의 포커스 복원 effect를 인접한 `useCandidateScrollRestoration`으로 이동했다. 이미 처리한 요청 차단과 키보드·단계 이동·롤백 포커스 계약을 유지했다. 기능/통합 `96cf146`/`72f5258`, `codex/candidate-scroll-restoration` / `.worktrees/candidate-scroll-restoration`. 대상 format/lint/strict typecheck와 가상화 7 tests 통과. 기록: `docs/records/candidate-scroll-restoration.md`. 미해결 이슈 없음.
 
 UI 저장 상태 복원 호출 정리 완료: 불필요한 선두 `void`와 UI store에서 구현을 반복하던 영어 주석 4개를 제거했다. `rehydrate()`의 `Promise<void> | void` 반환형을 정규화하는 `Promise.resolve`와 완료 후 `hydrated` 설정은 유지했다. `codex/ui-hydration-cleanup` / `.worktrees/ui-hydration-cleanup`, 관련 9 tests 및 format/lint/typecheck/diff 검사 통과. 커밋 본문에 AI 초안의 수정 판단을 기록했다. 미해결 이슈 없음.

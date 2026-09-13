@@ -8,6 +8,12 @@
 4. DnD 대신 단계 메뉴를 사용하여 키보드 접근성을 기본 경로로 제공합니다.
 5. 6시간 범위에서 필수 기능·검증·기록을 우선하고 Undo, 가상화, 배포는 제외합니다. 기능별 독립 세션·워크트리로 개발하고 커밋을 보존합니다.
 
+### TanStack Query를 선택하고 `useOptimistic`을 사용하지 않은 이유
+- TanStack Query는 낙관적 UI만이 아니라 최초 조회, Query 캐시 공유, AbortSignal 취소, 재시도, 배경 갱신 실패 시 기존 데이터 유지, mutation 성공·실패 lifecycle까지 지원자 서버 상태 전체를 관리하기 위해 선택했습니다.
+- React 19 `useOptimistic`은 Action이 진행되는 동안 기준 상태 위에 임시 UI를 표시하는 훅입니다. 조회·캐시·취소·재시도·재검증을 대체하지 않으므로 이 프로젝트의 TanStack Query 대체제로는 적합하지 않습니다.
+- 단계 이동의 낙관적 결과를 Query 캐시에 카드 단위로 반영하여 보드·요약·상세가 같은 기준 데이터를 봅니다. `useOptimistic`을 함께 두면 동일한 효과를 위한 별도 임시 상태와 Query 캐시가 중복되므로 추가하지 않았습니다. 같은 카드 중복 차단, 다른 카드 병렬 저장, 실패한 카드만 롤백, 성공 응답만 영속화하는 규칙은 Query mutation과 QueryClient별 이동 저장소가 담당합니다.
+- 근거: [React `useOptimistic` 공식 문서](https://react.dev/reference/react/useOptimistic), [TanStack Query optimistic updates 가이드](https://tanstack.com/query/latest/docs/framework/react/guides/optimistic-updates). 2026-09-13 확인.
+
 ## 검토 중 수정한 선택
 - 시드가 250명이라는 사실은 저장 스키마의 길이 제한이 아닙니다. 저장 배열에는 유효한 빈 배열도 허용합니다.
 - shadcn CLI가 추가한 외부 cn 의존성은 제거하고 로컬 cn 함수로 교체했습니다. 요청한 유틸의 역할이 중복되었기 때문입니다.
@@ -120,11 +126,11 @@ Input의 clearButton과 내장 버튼/focus 처리를 제거합니다. native in
 ## CloseButton 단일 구현
 공용 buttons/close-button만 유지합니다. Sheet는 Radix 닫기 동작과 위치를 담당하고 공용 버튼을 조합합니다. SheetContent의 선택적 closeButtonProps로 접근성 이름과 native props를 전달하므로 상세 전용 래퍼가 필요하지 않습니다. 검색 지우기의 onClear와 value 조건은 유지합니다.
 
-## 도메인별 상수 파일
-사용자 요청을 우선해 src/constants/candidate.ts에 지원자 도메인 상수를 모읍니다. 별도 constants 하위 폴더나 이전 경로의 re-export는 두지 않습니다. 기존 이름·값·타입을 유지하고 호출자는 @/constants/candidate를 참조합니다. queryOptions/상태 생성 함수와 seed 전용 이름 데이터는 원래 구현에 둡니다.
-
 ## Input 슬롯 유무와 무관한 구조
 hasSlots와 조기 반환을 제거하고 wrapper에서 border/background/focus/invalid/disabled를 공통 처리합니다. input은 동일 위치에 유지하므로 동적 슬롯 전환에도 값·선택·포커스가 보존됩니다. 슬롯 DOM은 필요할 때만 추가해 flex gap과 콘텐츠 너비만큼 공간을 확보합니다.
+
+## 도메인별 상수 파일
+사용자 요청을 우선해 src/constants/candidate.ts에 지원자 도메인 상수를 모읍니다. 별도 constants 하위 폴더나 이전 경로의 re-export는 두지 않습니다. 기존 이름·값·타입을 유지하고 호출자는 @/constants/candidate를 참조합니다. queryOptions/상태 생성 함수와 seed 전용 이름 데이터는 원래 구현에 둡니다.
 
 ## SearchBar 고정 조합
 범용 Input은 left/right 슬롯을 제공하지만 검색 전용 SearchBar는 슬롯을 공개하지 않습니다. 내부 left=Search, right=조건부 CloseButton으로 고정합니다. native onChange/ref와 기존 onClear·disabled/readOnly·focus 계약은 유지합니다.

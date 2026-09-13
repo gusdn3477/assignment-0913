@@ -43,10 +43,9 @@ TypeScript strict · Next.js App Router · React · Tailwind CSS · shadcn/ui ·
 
 - 최초 데이터는 결정적으로 생성한 지원자 250명입니다. TanStack Virtual로 컬럼별 가상화를 적용하며 1,000건 데이터도 검증합니다.
 - 성공한 단계 변경만 `hiring-pipeline:candidates:v1`에 저장합니다. 최초 조회는 저장소에 쓰지 않습니다.
-- TanStack Query가 지원자 캐시와 낙관적 변경을 관리합니다.
+- TanStack Query가 지원자 조회 캐시, 요청 취소·재시도·배경 갱신 상태와 카드별 낙관적 변경·실패 롤백을 하나의 서버 상태 경계에서 관리합니다. React 19 `useOptimistic`은 Action 진행 중의 임시 UI만 다루고 조회 캐시·취소·재시도를 제공하지 않으므로 대체제로 사용하지 않았습니다. 보드와 상세가 공유하는 Query 캐시 위에 별도의 optimistic 상태를 중복해 두지 않습니다.
 - Zustand는 검색·필터·선택 ID를 관리하며 검색·필터만 `hiring-pipeline-ui`에 저장합니다.
-- `useDeferredValue`는 검색·직무 조건에만 적용하고 메모된 보드로 입력 렌더링 비용을 줄입니다. 지원자 데이터와 저장 중 잠금은 지연하지 않습니다.
-- `useTransition`의 비동기 Action으로 재시도 대기 상태를 관리합니다. 중복 요청은 별도 잠금으로 막으며 Query/Zustand 자체를 transition 상태로 취급하지 않습니다.
+- `useDeferredValue`는 이름 검색 문자열에만 적용해 입력값은 즉시 갱신하고 카드 목록은 긴급하지 않은 렌더링으로 처리합니다. 직무 조건·지원자 데이터·저장 중 잠금은 지연하지 않으며, 새로고침과 재시도 상태는 TanStack Query가 관리합니다.
 - 공통 Input/Button은 기본 HTML 요소의 props를 확장하여 native 속성·이벤트·ref를 전달합니다.
 - 목록 조회는 `candidatesQueryOptions()`로 query key와 AbortSignal 요청 함수를 함께 정의합니다. 현재 브라우저 저장소 목록은 조회 취소 계약을 위해 `useQuery`를 유지합니다. `useSuspenseQuery` 검토 근거는 [DECISIONS.md](DECISIONS.md)에 있습니다.
 - 저장 데이터는 읽을 때 런타임 검증합니다. 지원자 데이터가 손상되면 조용히 덮어쓰지 않고 오류로 보고합니다. UI 설정 손상은 기본값으로 복구합니다.
