@@ -1,6 +1,7 @@
 "use client";
 
-import { Component, type ReactNode } from "react";
+import type { ReactNode } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 import { RetryButton } from "@/components/buttons/retry-button";
 
 type Props = {
@@ -10,23 +11,13 @@ type Props = {
 };
 
 /** Render exceptions stay within the affected region; API errors use query feedback. */
-export class CandidateErrorBoundary extends Component<
-  Props,
-  { failed: boolean }
-> {
-  state = { failed: false };
-
-  static getDerivedStateFromError() {
-    return { failed: true };
-  }
-
-  render() {
-    if (this.state.failed) {
-      return (
+export function CandidateErrorBoundary({ children, label, onRecover }: Props) {
+  return (
+    <ErrorBoundary
+      onReset={onRecover}
+      fallbackRender={({ resetErrorBoundary }) => (
         <section role="alert" className="rounded-xl border bg-white p-6">
-          <h2 className="font-semibold">
-            {this.props.label} 화면을 표시하지 못했어요
-          </h2>
+          <h2 className="font-semibold">{label} 화면을 표시하지 못했어요</h2>
           <p className="mt-2 text-sm text-muted-foreground">
             저장된 정보는 유지됩니다. 다시 시도해 주세요.
           </p>
@@ -34,16 +25,14 @@ export class CandidateErrorBoundary extends Component<
             type="button"
             variant="outline"
             className="mt-4"
-            onClick={() => {
-              this.props.onRecover?.();
-              this.setState({ failed: false });
-            }}
+            onClick={resetErrorBoundary}
           >
             다시 시도
           </RetryButton>
         </section>
-      );
-    }
-    return this.props.children;
-  }
+      )}
+    >
+      {children}
+    </ErrorBoundary>
+  );
 }
