@@ -709,6 +709,10 @@ Codex in-app browser, 127.0.0.1:3101, 기본 viewport 1280×720.
 
 - 결과: 기능6986331/main통합b69e741, 전체109 tests/lint/typecheck/format/build 통과. production 초기 로딩→250명/검색1명/상세/Enter 닫기/focus 복귀/검색 초기화/console[] 확인. 소스72개 기대 경로 대조에서 이동26개 외 로직 변경 없음.
 
+## SearchBar 기본 조합 정정
+- 실제 요청: SearchBar left 돋보기/right CloseButton 래핑, 사용하는 쪽 최소 props. 기존 구현의 clearButton/onClear 소비처 조립이 의도와 달랐음을 정정.
+- 독립 codex/search-bar-defaults에서 SearchBar 내부에서 기본 아이콘/지우기 버튼/focus를 조합. 후속 사용자 정정에 따라 native onChange + 선택적 onClear 계약을 적용. 통합은 문서/리뷰/build/browser 담당. 상세 records/search-bar-defaults 및 search-bar-defaults-integration 참조.
+
 ## 빈 결과 Guard
 - 요청: === 0 관련 엣지 케이스를 내부에서 처리하고 return children 하는 컴포넌트로 래핑.
 - 결과: CandidateEmptyGuard로 빈 목록/검색 결과 안내와 초기화를 캡슐화.
@@ -721,8 +725,12 @@ Codex in-app browser, 127.0.0.1:3101, 기본 viewport 1280×720.
 - 검증: lint/typecheck/app14 tests/build 통과. production 검색0명/초기화250명, refresh pending 보드 유지/완료, console[] 확인.
 - 기록: docs/records/concurrency-simplification.md.
 
+- 추가 정정: “onClear가 있고, value.length > 0일때로 변경”. 최종 X 조건은 콜백 존재+비어 있지 않은 value, clear후 숨김/focus 복귀로 반영.
+
 ## UI Provider 제거와 loading 명칭
 - 실제 요청: Context 제한은 이해하지만 Zustand와 역할이 겹치는 Provider 삭제. Button이나 다른 컴포넌트의 pending을 loading으로 변경.
 - 결과: CandidateUIProvider/UIContext 제거, Zustand bound store 직접 구독과 effect 복원. loading/loadingIds/isLoading 계약 및 사용처 통일.
 - 검증: lint/typecheck/전체13 files113 tests 통과. 메모리 폐기 후 저장 복원, 손상 데이터, 버튼 상태/포커스, 카드 격리/롤백/Undo/DnD/가상화 포함.
 - 상세 통합 검증: docs/records/zustand-loading.md.
+
+- 최종 결과: native onChange/optional onClear, 콜백+value길이>0일 때 X 표시. 기능19e5d07/보정e9c2baf → maina8f2722/cc2c7f5. 이전 전체113tests 및 최종20관련tests/build/browser 성공. Enter clear후 숨김/focus/250명, console[].

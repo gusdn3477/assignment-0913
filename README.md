@@ -98,11 +98,7 @@ src/features/candidates/
 
 ```tsx
 const { value, onChange, clear } = useCandidateSearch();
-<Input
-  value={value}
-  onChange={onChange}
-  clearButton={{ onClear: clear, label: "검색어 지우기" }}
-/>;
+<SearchBar value={value} onChange={onChange} onClear={clear} />;
 <RetryButton loading={loading} onClick={retry}>다시 불러오기</RetryButton>;
 <Header left={<Brand />} center={<Navigation />} right={<Profile />} />;
 ```
@@ -150,14 +146,14 @@ DnD production 검증에서 실제 드래그·실패 롤백·재시도·키보�
 <SearchBar
   aria-label="지원자 검색"
   value={search}
-  onChange={onChange}
-  clearButton={{ onClear: clear, label: "검색어 지우기" }}
+  onChange={(event) => setSearch(event.currentTarget.value)}
+  onClear={() => setSearch("")}
 />
 <ResetButton onClick={resetFilters} />
 <ReloadButton onClick={reload} loading={isReloading} />
 ```
 
-`SearchBar`는 돋보기와 search input을 조합하며 좌우 슬롯도 전달합니다. `left={null}`로 기본 아이콘을 생략할 수 있습니다. 초기 조회 실패는 `RetryButton`, 배경 새로고침은 `ReloadButton`, 조건 초기화는 `ResetButton`을 사용합니다.
+`SearchBar`는 Input의 `left`에 돋보기, `right`에 `CloseButton`을 기본 조합합니다. `onChange`는 native input 이벤트를 그대로 받습니다. `onClear`가 있고 `value`가 비어 있지 않을 때만 X 버튼이 표시되며 클릭 시 해당 콜백을 호출하고 입력 포커스를 복원합니다. `onClear`가 없거나 값이 비어 있으면 X 버튼이 없고, disabled·readOnly에서는 버튼을 비활성화합니다. 좌우 슬롯도 확장할 수 있으며 `left={null}`로 기본 아이콘을 생략할 수 있습니다. 초기 조회 실패는 `RetryButton`, 배경 새로고침은 `ReloadButton`, 조건 초기화는 `ResetButton`을 사용합니다.
 
 카드 목록의 최대 높이는 `max(720px, 75vh)`로 확대했습니다. 작은 화면에서는 페이지 자체를 스크롤할 수 있으며, 많은 후보는 컬럼별 가상화로 유지됩니다. 가상화 스크롤 계산에 위쪽 6px·끝 16px 여백을 포함해 마지막 카드 아래 공간을 확보합니다.
 

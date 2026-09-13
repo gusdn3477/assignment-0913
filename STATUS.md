@@ -1,6 +1,8 @@
 # 세션 인계 / 현재 상태
 
 ## 현재 결론
+SearchBar 기본 조합 정정 완료: native `onChange`와 선택적 `onClear`, 콜백 존재+비어 있지 않은 `value`일 때만 X 표시. Input left Search/right CloseButton과 지우기 후 focus를 내부 조합하고 toolbar 반복 설정 제거. 기능19e5d07/보정e9c2baf → main a8f2722/cc2c7f5, `codex/search-bar-defaults` / `.worktrees/search-bar-defaults`. 이전 통합 전체113tests 및 최종 조건 관련20tests/lint/type/format/build 검증, 최종 production 빈값 숨김→입력 표시→Tab/Enter 지우기/숨김/focus/250명/console[] 확인. 상세: `docs/records/search-bar-defaults-integration.md`.
+
 
 빈 결과 Guard 완료: `codex/candidate-empty-guard` 기능 `3f068eb` main 통합. CandidateEmptyGuard가 빈 데이터/검색 결과 없음/초기화를 처리하고 정상 결과에 children 반환. lint/typecheck/app14 tests 및 통합 production build 통과. 브라우저 250명→0명 안내(보드 미렌더)→초기화 250명 복원, console error/warn 없음. 미해결 이슈 없음. 기록: docs/records/candidate-empty-guard.md.
 API·지원자 컴포넌트 배치 정리 완료: 기능 `6986331`, main 통합 `b69e741`, `codex/candidate-layout` / `.worktrees/candidate-layout`. API는 `src/api/candidate`, UI는 `src/components/candidate/{app,board,card,detail,...}`, 가상 목록은 `board/virtual-list`. 전체109 tests/lint/typecheck/format 및 main production build 통과. 브라우저 로딩→250명/검색/상세/닫기/focus/console[] 확인. README 구조 갱신, 미해결 이슈 없음. 상세: `docs/records/candidate-layout-integration.md`.

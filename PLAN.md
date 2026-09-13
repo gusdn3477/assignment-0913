@@ -54,7 +54,7 @@ Undo, 가상화, DnD, 로그인, 지원자 생성/삭제, 실제 백엔드, 다�
 사용자 요청에 따라 API는 src/api/candidate로, 지원자 컴포넌트는 src/components/candidate 아래 board/card/detail 등 역할별 폴더로 이동합니다. 기존 동작과 나머지 도메인 계층은 유지합니다.
 
 ## 사용자 정정: SearchBar 기본 조합
-SearchBar가 Input left 돋보기와 right CloseButton 및 지우기/focus 동작을 소유합니다. 최신 사용자 정정에 따라 native onChange를 유지하고 onClear가 전달된 경우 X를 표시합니다.
+SearchBar가 Input left 돋보기와 right CloseButton 및 지우기/focus 동작을 소유합니다. 최신 사용자 정정에 따라 native onChange를 유지하고 onClear가 전달되고 value가 비어 있지 않을 때만 X를 표시합니다.
 
 ## 후속 승인: 빈 결과 Guard
 사용자 요청에 따라 빈 지원자 목록/검색 결과 없음 분기와 초기화를 CandidateEmptyGuard 내부로 이동하고 정상 결과에는 children을 반환합니다.
