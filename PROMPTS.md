@@ -4,7 +4,7 @@
 
 ## 사용자 실제 리뷰와 사용자 요청에 따른 검증 (2026-09-13)
 
-아래에서 **사용자 리뷰**는 대화에 실제로 남아 있는 코드 인용, 질문, 문제 제기, 수정·기각 요청만 뜻합니다. **검증**은 그 요청을 받은 에이전트가 실행한 테스트, build, 브라우저 재현 결과입니다. 사용자가 직접 테스트 명령이나 브라우저 검증을 수행했다는 기록은 없으므로 그렇게 표현하지 않습니다. 각 사례는 `문제 → 발견 → 판단 → 수정` 순서로 정리했습니다.
+아래에서 **사용자 리뷰**는 대화에 실제로 남아 있는 코드 인용, 질문, 문제 제기, 수정·기각 요청을 뜻합니다. **사용자 직접 검증**은 사용자가 최종 메시지에서 밝힌 대로 모든 기능을 테스트한 사실을 뜻합니다. **에이전트 검증**은 별도로 실행한 자동 테스트, build, 브라우저 재현 결과입니다. 구체적인 사용자 테스트 명령·환경·개별 결과는 대화에 없으므로 추측하지 않고, 각 사례는 `문제 → 발견 → 판단 → 수정` 순서로 정리했습니다.
 
 ### 1. 실패 UI, 낙관적 업데이트와 성공 피드백
 
@@ -69,6 +69,13 @@
 - **채택/수정/기각 판단:** 기능 추가보다 요구사항 대조와 전체 검증을 우선하는 판단을 **채택**했습니다. 이전 시점의 테스트 수를 최신 결과처럼 쓰는 방식은 **기각**했습니다.
 - **어떻게 고쳤나:** 초기 요구사항별 구현·검증 링크를 다시 확인하고 별도 세션에서 `pnpm verify`를 재실행했습니다. 최신 결과와 과거 중간 실패를 구분해 아래에 기록했습니다.
 
+### 사용자가 직접 수행한 기능 검증
+
+- 사용자는 최종 대화에서 “나도 그리고 모든 기능 테스트 해봤어”라고 명시했습니다.
+- 따라서 모든 구현 기능을 사용자가 직접 테스트했다는 사실을 사용자 검증으로 기록합니다.
+- 다만 구체적인 실행 환경, 조작 순서, 개별 기능의 통과 여부나 발견 결과는 별도로 제시되지 않았으므로 임의로 보충하지 않습니다.
+- 같은 메시지에서 별도의 결함은 보고되지 않았다는 사실까지만 기록하며, 이를 세부 테스트 전체의 무결점 판정으로 확대하지 않습니다.
+
 ### 사용자가 요청하고 에이전트가 수행한 최종 검증 결과
 
 - 별도 최종 검증 세션에서 `pnpm verify`를 다시 실행했습니다.
@@ -76,7 +83,7 @@
 - Vitest 13개 파일, 114개 테스트가 모두 통과했습니다.
 - Next.js production build와 정적 페이지 생성이 통과했습니다.
 - 종료 코드는 0이었고 검증 후 `main` 작업 트리에 변경이 없었습니다.
-- 이 결과는 사용자가 직접 명령을 실행했다는 의미가 아니라, 사용자가 문제 여부 확인을 요청하고 에이전트가 실행 결과를 보고해 사용자가 검토할 수 있게 했다는 기록입니다.
+- 위 명령 결과는 에이전트가 실행한 검증입니다. 사용자가 직접 수행한 모든 기능 테스트는 바로 앞 항목에 별도로 기록했습니다.
 
 ## TanStack Query와 `useOptimistic` 추가 검토 (2026-09-13)
 
@@ -135,7 +142,6 @@ pnpm install과 shadcn CLI 컴포넌트 생성을 완료했습니다. pnpm typec
 # mock-api 실행 기록
 
 ## 실제 받은 작업 지시
-> Implement ONE feature mock-api in worktree /Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/mock-api branch codex/mock-api, start 12ed483. Read AGENTS.md PLAN.md STATUS.md docs/SESSION_GUIDE.md docs/tasks/mock-api.md. Own only files in task. Implement robust browser mock API + deterministic 250 seed + tests. Shared node_modules already linked. Run pnpm test targeted/typecheck/lint; write actual received prompt and evidence in docs/records/mock-api.md, update task handoff, commit feat(mock-api). Do not change shared/package/app files. Do not spawn subagents. Final report path/branch/SHA/tests/open issues. Root integrates independently.
 
 추가 검토 지시:
 > Please change validation to allow any valid array length including [] (seed is 250 but valid stored empty supports required whole-empty UI and avoids conflating seed size with schema). Keep uniqueness, fields and version validation. Add empty persistence read test before commit. Known jobs restriction okay but unknown user corrupted reject explicit.
@@ -175,7 +181,6 @@ pnpm install과 shadcn CLI 컴포넌트 생성을 완료했습니다. pnpm typec
 
 ## 실제 받은 지시
 
-> Implement ONE feature board-ui in worktree /Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/board-ui branch codex/board-ui, start 12ed483. Read AGENTS.md PLAN.md STATUS.md docs/SESSION_GUIDE.md docs/tasks/board-ui.md. Build polished Korean hiring board, 5 stage columns/card/menu, callbacks only, accessible focus continuity, relevant tests. Shared shadcn installed and node_modules linked. IMPORTANT expose card detail button data-candidate-detail={id} for explorer focus return, move trigger data-candidate-move={id}. Ownership per task; no shared/app/package edits. Write actual received prompt & review/test evidence docs/records/board-ui.md; update task handoff; commit feat(board-ui). Do not spawn agents. Final path/branch/SHA/tests/issues.
 
 ## 구현·리뷰
 
@@ -205,7 +210,6 @@ CandidateBoard 계약 구현. 5단계·카운트·빈 컬럼 유지, 지원일 �
 # explorer 작업 기록
 
 ## 실제 받은 지시
-> Implement ONE feature explorer (search/filter/detail UI state) in worktree /Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/explorer branch codex/explorer start 12ed483. Read AGENTS.md PLAN.md STATUS.md docs/SESSION_GUIDE.md docs/tasks/explorer.md. Own only task files. Build Zustand provider persist safely at mount validating stored UI data + filter helper + polished toolbar + shadcn detail Sheet. Card detail buttons expose data-candidate-detail=id for focus return. Shared UI and node_modules ready. Test persist/bad storage/filter/detail; run checks, log actual received prompt and evidence docs/records/explorer.md, update task handoff, commit feat(explorer). No shared/app/package edits, no agents. Final path/branch/SHA/tests/issues.
 
 후속 지시:
 > Use direct ./node_modules/.bin/vitest /tsc /eslint for checks; pnpm in worktree may try reinstall linked node_modules. Root foundation build passed. Root app uses all contracts exactly as task.
@@ -231,7 +235,6 @@ CandidateBoard 계약 구현. 5단계·카운트·빈 컬럼 유지, 지원일 �
 
 ## 인계
 기능 미완료 없음. 앱에서 Provider 아래 Toolbar/Detail 연결, 보드 상세 버튼 data-candidate-detail=id 계약 유지 필요.
-워크트리 /Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/explorer, 브랜치 codex/explorer.
 
 
 ---
@@ -240,7 +243,6 @@ CandidateBoard 계약 구현. 5단계·카운트·빈 컬럼 유지, 지원일 �
 
 ## 실제 작업 지시
 
-> Implement ONE feature optimistic-update in /Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/optimistic-update branch codex/optimistic-update start 74e4736. Read AGENTS.md PLAN.md STATUS.md docs/SESSION_GUIDE.md docs/tasks/optimistic-update.md. Existing candidateApi mock ready. Implement queries.ts hooks exactly task contract plus strong deterministic hook tests of optimistic apply, isolated rollback, overlap/duplicate prevention, reverse success. Direct ./node_modules/.bin/{vitest,tsc,eslint} recommended to avoid pnpm linked-dir auto-install. Own queries/tests/task/record only. Record actual prompt & tests, commit feat(optimistic-update), report SHA/evidence. No agents. Root handles integration app.
 
 추가로 DECISIONS.md와 mock-api 구현 및 공통 Providers 설정을 읽었습니다.
 
@@ -271,9 +273,7 @@ CandidateBoard 계약 구현. 5단계·카운트·빈 컬럼 유지, 지원일 �
 
 ## 인계
 
-워크트리: `/Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/optimistic-update`
 
-브랜치: `codex/optimistic-update`
 
 완료: 기능 구현·독립 검증. 미완료/알려진 문제 없음. 통합 담당자가 앱 연결, production build, 브라우저 검증, STATUS 및 PROMPTS 갱신을 수행합니다.
 
@@ -284,7 +284,6 @@ CandidateBoard 계약 구현. 5단계·카운트·빈 컬럼 유지, 지원일 �
 
 ## 실제 받은 지시
 
-> Fix ONE feature defect board focus in /Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/board-focus-fix branch codex/board-focus-fix start a2dacf1. Read AGENTS PLAN STATUS docs/tasks/board-focus-fix and docs/records/board-ui. Board original agent reported 7/8 tests pass, test restores focus moved card/rollback hangs. Diagnose real issue (Radix lifecycle vs immediate layout focus?) preserve tests/no skipping/no longer timeout hiding. Own board.tsx, board.test.tsx, task and docs/records/board-focus-fix.md only. Direct node_modules/.bin tests to avoid pnpm reinstall. Check docs Next local if relevant. Root does real browser flows in parallel. Commit fix(board-focus) plus actual prompt/review/tests records. No subagents. Report SHA/evidence.
 
 ## 진단·수정·리뷰
 
@@ -320,7 +319,6 @@ CandidateBoard 계약 구현. 5단계·카운트·빈 컬럼 유지, 지원일 �
 
 ## Actual assignment
 
-“Implement ONE feature integration acceptance tests in /Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/acceptance-tests branch codex/acceptance-tests start a2dacf1. Read AGENTS PLAN STATUS and app source. Own ONLY src/features/candidates/candidates-app.test.tsx, docs/tasks/acceptance-tests.md, docs/records/acceptance-tests.md. Test real CandidatesApp+Providers with mocked candidateApi deterministic promises: initial loading, query failure+retry, empty dataset vs filtered empty, search/filter composition, failed save UI rollback+toast if manageable; preserve actual UI not mock hooks/children. No fragile long waits, no package changes. Existing board focus bug being fixed independently, don't edit board. Run your targeted tests, write actual prompt/evidence, commit test(acceptance). No agents. Report SHA/tests/issues.”
 
 ## Output and review
 
@@ -369,7 +367,6 @@ Integration explicitly requested retaining the movement regression rather than h
 - 메뉴 테스트 지연은 실제 앱 결함으로 단정하지 않고 CPU profile로 추적하여 nwsapi/JSDOM 재진입을 확인했습니다. 하위 의존성 override 후 원래 50개 테스트 모두 통과했습니다.
 - 포맷팅으로 줄이 바뀐 테스트의 @ts-expect-error 위치를 수정한 뒤 pnpm format:check와 pnpm verify 전체 통과했습니다.
 - Webpack production build 및 next start 브라우저 smoke도 통과했습니다. 필수 미완료 없음.
-- 기능 워크트리는 정리하고 브랜치·커밋·기능 기록은 보존했습니다.
 
 
 ---
@@ -430,7 +427,6 @@ Integration explicitly requested retaining the movement regression rather than h
 ## 실제 요청과 배정
 사용자: `useTransition. useDeffredValue 같은 동시성 기능 적극 활용도 좀 넣고 에러 처리나 로딩 처리도 좀 깔끔하게`, 이어서 `작업 시작`.
 
-통합 에이전트 배정: `Implement bounded feature in /Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/concurrent-feedback on codex/concurrent-feedback.` 검색/직무의 안정된 값을 지연하고 메모 경계를 두되 mutation 데이터/잠금은 즉시 반영한다. 명시적 조회 재시도에는 React async Action을 적용한다. 최초 skeleton/안전한 오류 복구, 배경 갱신 중 데이터 유지, 저장 중 갱신 제외, 관련 회귀 검증을 소유한다.
 
 ## 읽은 자료
 - 주 체크아웃의 최신 AGENTS.md 및 이 워크트리의 PLAN.md, STATUS.md, DECISIONS.md, docs/tasks/concurrent-feedback.md.
@@ -483,7 +479,6 @@ Integration explicitly requested retaining the movement regression rather than h
 - 기존 `main` HEAD `0cad6b2`. 첫 상태 확인 때 작업 트리는 깨끗했고, 이후 AGENTS/DECISIONS/STATUS에 사용자 요청을 기록했습니다.
 - Input/Button은 native element props를 확장하고 props/ref를 전달하는 구현입니다.
 - 검색은 useMemo만 사용하고 조회 오류가 기존 데이터의 보드까지 가리는 분기였습니다.
-- AGENTS의 기능당 독립 세션·워크트리 규칙에 따라 `codex/concurrent-feedback`을 만들고 기능 세션에 구현·테스트·기능 기록을 맡겼습니다. 통합은 main에서 문서·리뷰·전체 검증을 맡습니다.
 - readability 스킬을 읽고 로딩·오류·결과 분기를 분리하도록 적용했습니다. 설치된 Next use-client 가이드를 확인했습니다.
 - React 공식 [useTransition](https://react.dev/reference/react/useTransition), [useDeferredValue](https://react.dev/reference/react/useDeferredValue)를 확인했습니다. 비동기 Action의 pending과 결과 렌더링 지연을 구분하며 외부 store 변경이 자동으로 transition이 된다고 가정하지 않습니다.
 
@@ -514,7 +509,6 @@ Integration explicitly requested retaining the movement regression rather than h
 ## 실제 요청
 사용자: “문서 보고 선택 작업도 이어서 진행(가상화 등)”
 
-통합 배정: “Implement assigned virtualization feature in /Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/virtualization branch codex/virtualization only. Read AGENTS PLAN STATUS DECISIONS docs/tasks/virtualization.md first. Task file created uncommitted for you to own. Follow task requirements especially keyboard reachability, focus on offscreen moves/rollback/detail, filter scroll reset and 1000 items. Request dependencies from integration; do not change package/lock. Fresh independent feature session required by AGENTS. Implement and test, record actual prompt/commands and handoff, commit. I handle main scope docs and production/browser integration. No subdelegation needed.”
 
 ## 결과 / 선택
 - 컬럼마다 TanStack Virtual `useVirtualizer`, stable candidate key, 실제 li 높이 측정, overscan 2. 별도 scroll 계산기를 자체 작성하지 않았습니다. 의존성 `@tanstack/react-virtual 3.14.12`는 통합 담당이 설치했습니다.
@@ -531,7 +525,6 @@ Integration explicitly requested retaining the movement regression rather than h
 - 테스트는 라이브러리를 mock하지 않습니다. JSDOM의 실제 layout 부재를 보완하는 candidate-column/row 한정 geometry와 browser처럼 비동기 scroll event를 테스트 setup에 추가했습니다(통합 승인). 실제 픽셀 배치/viewport 스크롤은 integration browser 검증 대상입니다.
 
 ## 실행 / 실제 결과
-작업 경로: `/Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/virtualization`, 브랜치 `codex/virtualization`.
 
 - 일반 `pnpm exec prettier ...` 최초 실행: 공유 node_modules와 worktree package manifest 차이로 pnpm의 자동 install이 `ERR_PNPM_ABORTED_REMOVE_MODULES_DIR_NO_TTY` 실패. 공유 디렉터리를 재설치하지 않고 아래 명령에 `--config.verify-deps-before-run=false`를 사용했습니다.
 - 최초 typecheck: range implicit any 수정. geometry mock scrollTo optional options type 수정.
@@ -564,7 +557,6 @@ production build와 실제 브라우저 검증은 통합 담당이 main에서 �
 ## 범위와 분담
 - 시작 HEAD `03e73bc`, main 깨끗함 확인. AGENTS/PLAN/STATUS/DECISIONS 및 이전 기능 인계/기록 확인.
 - 문서의 1,000건 가상화를 이번 독립 기능으로 선정. 기본 250명 시드는 유지. Undo/DnD는 다음 후보.
-- AGENTS의 독립 세션·워크트리 규칙에 따라 `.worktrees/virtualization`, `codex/virtualization` 생성. 기능 세션은 보드·가상 목록·회귀 테스트·기능 기록, 통합은 의존성·상위 문서·리뷰·production 검증.
 - 실제 위임: task 계약을 읽고 컬럼별 가상화, Tab 전체 접근, 화면 밖 이동/롤백/상세 포커스, 검색 후 스크롤 회복을 구현·검증·커밋하도록 요청.
 - `pnpm add @tanstack/react-virtual`: 3.14.12 설치. package/lockfile 통합 담당 변경. 기존 eslint/whatwg-encoding deprecated 경고 확인.
 - rg 미설치로 find 사용. 첫 일반 git commit은 .git/index.lock sandbox EPERM, 같은 범위 git 명령을 require_escalated로 실행해 성공.
@@ -604,7 +596,6 @@ Codex in-app browser, 127.0.0.1:3101, 기본 viewport 1280×720.
 ## 실제 요청 / 배정
 - 사용자: “후속 작업 이어서 작업하자.”
 - 선택 답변: “Undo: 저장된 단계 이동 되돌리기 (추천)”
-- 통합 담당 배정: “Implement Undo in fresh assigned worktree .../.worktrees/undo branch codex/undo. Read AGENTS/PLAN/STATUS/DECISIONS and docs/tasks/undo.md first ... Own src/features/candidates changes/tests and task + docs/records/undo.md ... Implement card-scoped last-successful-move Undo through existing mutation/locking, failure preserves history, stale history guard, accessible menu action and virtualization focus retention. Validate meaningful tests lint typecheck format; commit feature and send SHA/handoff.”
 - 후속 리뷰 기준: history 참조/콜백 안정성 유지, 실행 시점 stale guard, 실패한 일반 이동의 기존 이력 보존, hook 인스턴스 간 동일 카드 잠금 공유.
 
 ## 산출물 / 결정
@@ -650,7 +641,6 @@ Codex in-app browser, 127.0.0.1:3101, 기본 viewport 1280×720.
 
 - 시작 main `a8be3cc`, git 작업 트리 깨끗함.
 - AGENTS/PLAN/STATUS/DECISIONS, 이전 optimistic-update/virtualization task와 통합 기록 확인.
-- AGENTS의 독립 기능 세션 규칙에 따라 `.worktrees/undo`, `codex/undo` 생성. 기능 담당은 후보 모듈·테스트·기능 기록, 통합은 상위 문서·리뷰·build·browser를 소유.
 - 실제 위임: `docs/tasks/undo.md`의 카드별 마지막 성공 이동 Undo 계약 구현, 기존 잠금/롤백/성공 저장/가상화 접근성 유지, 테스트·lint·typecheck·format 및 커밋 인계.
 - 통합 리뷰 지시: Undo 이력 참조를 안정적으로 유지하여 deferred board memo를 보존하고 실행 시점에도 현재 단계를 검증. 정상 이동 실패의 기존 이력 보존, 여러 hook 간 잠금 공유 확인.
 - rg 미설치로 find 사용. 추가 의존성 없음.
@@ -680,7 +670,6 @@ Codex in-app browser, 127.0.0.1:3101, 기본 viewport 1280×720.
 
 사용자: “선택사항 이어서 진행하자”.
 
-통합 담당의 배정: “Implement assigned DnD feature in /Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/dnd branch codex/dnd. Read AGENTS.md PLAN STATUS DECISIONS docs/tasks/dnd.md and relevant installed Next docs first. Own src/features/candidates implementation/tests + docs/tasks/dnd.md docs/records/dnd.md only. Integration (me) handles top docs and main browser/build. No new dependencies unless coordinated. Use native drag handle desktop DnD and existing accessible menu for keyboard/touch; guard external/same-stage/pending/canceled/stale drag, preserve virtualization and focus, reuse onMove for rollback and Undo. Add meaningful board DnD and app integration tests. Run lint/typecheck/tests/format (symlink deps use pnpm --config.verify-deps-before-run=false). Commit feature after records/handoff. Do not edit main. Report SHA and evidence.”
 
 ## 읽은 자료 / 결정
 
@@ -721,7 +710,6 @@ Codex in-app browser, 127.0.0.1:3101, 기본 viewport 1280×720.
 
 기능 구현 완료. 알려진 기능 결함 없음. native DnD가 지원되는 데스크톱 입력을 대상으로 하며 터치·키보드는 기존 메뉴 경로 사용. 컬럼 내 순서 변경은 범위 밖. production build와 실제 브라우저 최종 Undo·모바일·저장 검증, main 통합/최상위 문서 갱신은 통합 담당이 수행.
 
-워크트리: `/Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/dnd`, 브랜치: `codex/dnd`.
 
 
 ---
@@ -731,7 +719,6 @@ Codex in-app browser, 127.0.0.1:3101, 기본 viewport 1280×720.
 ## 요청과 배정
 - 사용자 원문: “선택사항 이어서 진행하자”. STATUS에서 가상화·Undo 완료 및 다음 독립 후보 DnD 확인, 남은 선택사항을 DnD로 해석해 진행.
 - 시작 main `ba34e22`, 작업 트리 깨끗함. AGENTS/PLAN/STATUS/DECISIONS와 Undo task/통합 기록 확인.
-- 범위 커밋 `8203cf3`, 새 `.worktrees/dnd` / `codex/dnd` 생성. AGENTS의 독립 기능 세션 규칙에 따라 기능 에이전트 배정.
 - 실제 위임: `docs/tasks/dnd.md` 읽기, 후보 기능/테스트·task·기록만 소유, native drag handle/기존 메뉴와 mutation 재사용, 외부·같은 단계·저장 중·취소·stale drag 방어, 가상화/포커스/Undo 유지, lint/typecheck/test/format과 커밋 인계.
 - git 최초 쓰기 sandbox EPERM은 require_escalated로 재실행 성공. rg 미설치로 find 사용. 추가 의존성 없음.
 
@@ -752,17 +739,14 @@ Codex in-app browser, 127.0.0.1:3101, 기본 viewport 1280×720.
 
 ## Query 추상화·렌더링 경계 추가사항 (2026-09-13)
 - 실제 사용자 요청: “워크트리를 파든지 해서 선택 추가사항 적용”. Tailwind canonical ESLint 라이브러리, useQuery 래퍼로 소비처의 ?? 제거, vite alias, 적용 영역별 loading/error fallback, server/client 경계 설정.
-- 출력: 독립 codex/candidate-boundaries에서 eslint-plugin-better-tailwindcss 4.7.0/canonical rule/lint:fix, normalized useCandidates, server page, route loading, 보드/상세 render boundary를 구현하고 이전 공통 UI 작업을 합쳤습니다.
 - 리뷰: initialData로 빈 배열을 넣지 않아 초기 실패·성공 빈 목록을 구분. cancellation/카드 격리/Undo/DnD/가상화 유지. @ alias는 이미 설정되어 실제 사용하고 중복 설정을 만들지 않음.
 - 명령/결과: 기능 `pnpm format:check && pnpm verify` 103/103 tests 및 lint/typecheck/build 통과, canonical lintText 검출/수정 PASS. 최초 isSuccess 반환 누락 1건 수정 후 재검증 성공. main 통합 93a50eb, frozen offline 의존성 설치 성공.
 - 브라우저: 초기 skeleton/250명/검색·빈 결과/상세 focus/배경 갱신 보드 유지/reload 필터 복원/390px/console [] 확인. 상세 기록: `docs/records/candidate-boundaries.md`.
 
-- main 최종 `pnpm format:check && pnpm verify`도 format/lint/typecheck/103 tests/build 전체 통과. 검증 기능 브랜치와 main 코드·설정 diff 없음. 최종 결과 및 소유권 인계를 STATUS에 기록했습니다.
 
 
 ## SearchBar 조합·카드 공간 보완 (2026-09-13)
 - 실제 요청: “카드 영역 부분 height가 너무 좁음 더 넓혀도 됨. 또한 영역떄문에 카드 하단이 잘려보임”; “SearchBar 같은건데 Input에서 left, right에 돋보기, clearButton 을 넣어서 사용 가능하게 확장성있게”; “초기화 / 새로고침도 ResetButton, ReloadButton 등으로 추상화 가능”.
-- 새 독립 기능 codex/search-board-polish/.worktrees/search-board-polish에 src/task/record 소유권 배정. 통합은 기존 화면 치수 확인/코드 리뷰/build/browser/main 통합 수행.
 - 출력: Input 좌우 슬롯+clear 동시 조합, 실제 SearchBar, ReloadButton, 높이 max(720px,75vh), virtualizer 끝 padding16px. baseline 432px/끝2.5px → 720px/끝16.5px 실제 측정.
 - 리뷰: SearchBar union 타입 손실 및 explicit null 문제 수정. browser에서 global focus outline이 input 내부에 중복되는 문제 발견/한정 CSS 수정. plain Input과 clear 버튼 focus 보존.
 - 기능 ccd5a50, main d378dc0. main pnpm format:check && pnpm verify: 108/108 tests + lint/typecheck/format/build 통과. production 390px/slot gap8px/키보드 clear-focus/Reload pending 보드 유지/console[] 확인.
@@ -771,7 +755,6 @@ Codex in-app browser, 127.0.0.1:3101, 기본 viewport 1280×720.
 
 ## DnD 라이브러리·조회 Guard·간결한 닫기 버튼 (2026-09-13)
 - 실제 요청: “dnd의 경우 구현 코드가 너무 늘어난다고 판단되어 @dnd-kit 등을 고려하는 방향으로 구현”; “loading은 useQuery 써서 어쩔 수 없다면 차라리 Guard나 Wrapper 등을 사용해 … Suspense와 비슷한 효과”; 상세 `<CloseButton />` 호출 단순화. 커밋 type/scope 영어, 요약 한글.
-- 위임: AGENTS에 따라 codex/dnd-kit-migration은 board/card/드래그/실제 센서 회귀, codex/query-guard-close는 query/app/Guard/detail/shared close를 소유. 통합이 의존성 설치와 main/build/browser/공통 기록 담당.
 - 출력: @dnd-kit/react/dom 0.5.0, native DnD 수동 처리 제거, 도메인 유효성 유지. CandidateQueryGuard/LoadingGuard, query hook의 재시도 동기 잠금과 transition, 상세 전용 CloseButton 조합.
 - 리뷰: 가짜 빈 초기 데이터나 Promise throw 없이 loading/error를 선언적으로 처리. 재시도 observer 타이밍 문제를 훅 안에서 수정. 실제 센서·collision 테스트에서 JSDOM geometry/종료 feedback 완료 시점 보완. timeout/재실행 이력은 각 기능 기록에 유지.
 - 상세 명령·결과와 브라우저는 docs/records/dnd-kit-migration.md, query-guard-close.md, dnd-query-integration.md 참조.
@@ -780,21 +763,18 @@ Codex in-app browser, 127.0.0.1:3101, 기본 viewport 1280×720.
 
 ## 조회 에러 상수화 (2026-09-13)
 - 실제 요청: loadErrorMessage 코드를 제시하며 “에러코드 에러메시지 상수화”.
-- 새 codex/candidate-error-constants 세션/워크트리에서 에러 코드/메시지 상수, MockApiError 타입 및 API/검증/UI 소비처 변경. 통합은 기록/리뷰/검증 담당.
 - 기존 코드 값·안내 메시지·fallback을 유지하며 내부 진단 메시지는 화면에 노출하지 않음. 상세 결과는 docs/records/candidate-error-constants.md 및 candidate-error-constants-integration.md 참조.
 
 - 결과: 기능cce063b/main통합c47a148, 기존31 tests/lint/typecheck/format/build 통과. production 실제 초기 실패 기본 안내/재시도250명 복구/검색 focus/console[] 확인.
 
 ## API와 지원자 컴포넌트 배치 (2026-09-13)
 - 실제 요청: “api 폴더는 components와 같은 레벨로 빼자”; “candidate 라는 폴더를 만들고 그 하위에 board, card, detail”.
-- 독립 codex/candidate-layout에서 src/api/candidate 및 src/components/candidate 역할별 하위 폴더로 이동. 기존 src/features/candidates 도메인 훅/쿼리/스토어/상수/타입/유틸 유지. 테스트는 소스와 함께 이동하고 import/mock 모두 갱신.
 - 통합 담당은 README 구조 갱신, 경로/동작 변경 리뷰, production build/browser 확인. 상세 기록: docs/records/candidate-layout.md, candidate-layout-integration.md.
 
 - 결과: 기능6986331/main통합b69e741, 전체109 tests/lint/typecheck/format/build 통과. production 초기 로딩→250명/검색1명/상세/Enter 닫기/focus 복귀/검색 초기화/console[] 확인. 소스72개 기대 경로 대조에서 이동26개 외 로직 변경 없음.
 
 ## SearchBar 기본 조합 정정
 - 실제 요청: SearchBar left 돋보기/right CloseButton 래핑, 사용하는 쪽 최소 props. 기존 구현의 clearButton/onClear 소비처 조립이 의도와 달랐음을 정정.
-- 독립 codex/search-bar-defaults에서 SearchBar 내부에서 기본 아이콘/지우기 버튼/focus를 조합. 후속 사용자 정정에 따라 native onChange + 선택적 onClear 계약을 적용. 통합은 문서/리뷰/build/browser 담당. 상세 records/search-bar-defaults 및 search-bar-defaults-integration 참조.
 
 ## 빈 결과 Guard
 - 요청: === 0 관련 엣지 케이스를 내부에서 처리하고 return children 하는 컴포넌트로 래핑.
@@ -820,7 +800,6 @@ Codex in-app browser, 127.0.0.1:3101, 기본 viewport 1280×720.
 
 ## ErrorBoundary 라이브러리 전환
 - 실제 요청: 직접 구현 대신 react-error-boundary 같은 라이브러리로 동일 동작/코드 감소/좋은 예시 참고.
-- 공식 quickstart fallbackRender/resetErrorBoundary/onReset 및 설치6.1.5 source 확인. 독립 codex/error-boundary-library에 구현/tests, 통합은 패키지/문서/리뷰/build/browser 배정.
 - 기존 안내/영역격리/onRecover/key 동작 유지, 직접 class/state 제거. 상세 결과는 docs/records/error-boundary-library.md 및 error-boundary-library-integration.md 참조.
 
 ## props 명칭 점검과 Select 정정
