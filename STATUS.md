@@ -1,7 +1,16 @@
 # 세션 인계 / 현재 상태
 
 ## 현재 결론
-필수 기능과 기존 선택 기능에 이어 **재사용 UI와 지원자 폴더·Query·훅 구조 정리 완료**. 검증 코드 `4f36d6f`. 별도 사용자 작업의 `codex/candidate-boundaries`는 이 기준 이후 추가 변경을 진행 중이며, 이번 검증 결과에 포함하지 않습니다.
+필수 기능, 기존 선택 기능, 재사용 UI/구조 정리에 이어 **Query 추상화·서버/클라이언트 경계·영역별 fallback·Tailwind canonical lint 추가사항 완료**. 기능 코드 `044b7b5`, 기능 브랜치 인계 `d1a203e`, main 통합 `93a50eb`.
+
+## 최신 Query·렌더링 경계 검증 (2026-09-13)
+- 독립 `codex/candidate-boundaries`, 워크트리 `.worktrees/candidate-boundaries`에서 구현·커밋 후 main 통합.
+- Tailwind 4 canonical ESLint error + lint:fix, min-w-310/max-w-420 표기 정리. 실제 오류 검출/autofix 검증 완료.
+- useCandidates의 안정적인 배열/hasData/summary/선택 후보 반환으로 소비 컴포넌트 ?? 제거. Query cache의 미조회와 빈 목록 성공 구분, 취소/롤백 계약 유지.
+- server page가 정적 header/소개/footer를 조합하고 후보 client 영역을 포함. route loading, query 초기/배경 상태, 보드/상세 render 예외 복구 분리.
+- 기능 워크트리 `pnpm format:check && pnpm verify`: format/lint/typecheck/**11 files, 103/103 tests**/production build 통과. main 의존성 offline frozen 설치 및 동일 전체 검사도 모두 통과.
+- production 브라우저: 250명, 초기 skeleton, 검색 1명/0명/초기화, 상세 Escape focus, refresh pending 기존 보드 유지, reload 필터 복원, 390px document 폭 확인. console error/warn 없음. 테스트 탭/서버/viewport 정리 완료.
+- 상세: `docs/records/candidate-boundaries.md`. 기존 브라우저의 Undo/DnD/1,000명 기록은 기능 당시 검증이며 이번에는 103개 회귀 테스트와 위 범위를 새로 확인했습니다.
 
 ## 최신 재사용성·구조 정리 검증 (2026-09-13)
 - `reusable-ui` 기능 `9f97bae`, `candidate-structure` 기능 `2bd8ad9`, 사용처 연결 `4f36d6f`. 각 독립 브랜치/워크트리 보존.

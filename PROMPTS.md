@@ -665,3 +665,13 @@ Codex in-app browser, 127.0.0.1:3101, 기본 viewport 1280×720.
 - 390×844 화면 메뉴 screenshot에서 메뉴/카드 footer가 화면 안에 정상 배치. 검색 초기화로 250명 복구, production console error/warn `[]`.
 - viewport override 초기화, production 탭 닫기 및 서버 종료. 개발 탭은 종료한 서버의 연결 오류(data URL) 화면이 되어 browser URL 정책이 재탐색/닫기를 차단함. 우회하지 않고 임시 탭의 턴 종료 자동 정리에 맡김. production은 새 탭에서 정상 검증 완료.
 - 새 의존성과 알려진 기능 미해결 결함 없음. 터치/키보드는 단계 메뉴를 사용하며 native 마우스 DnD만 제공. 컬럼 내 순서 변경은 제외.
+
+
+## Query 추상화·렌더링 경계 추가사항 (2026-09-13)
+- 실제 사용자 요청: “워크트리를 파든지 해서 선택 추가사항 적용”. Tailwind canonical ESLint 라이브러리, useQuery 래퍼로 소비처의 ?? 제거, vite alias, 적용 영역별 loading/error fallback, server/client 경계 설정.
+- 출력: 독립 codex/candidate-boundaries에서 eslint-plugin-better-tailwindcss 4.7.0/canonical rule/lint:fix, normalized useCandidates, server page, route loading, 보드/상세 render boundary를 구현하고 이전 공통 UI 작업을 합쳤습니다.
+- 리뷰: initialData로 빈 배열을 넣지 않아 초기 실패·성공 빈 목록을 구분. cancellation/카드 격리/Undo/DnD/가상화 유지. @ alias는 이미 설정되어 실제 사용하고 중복 설정을 만들지 않음.
+- 명령/결과: 기능 `pnpm format:check && pnpm verify` 103/103 tests 및 lint/typecheck/build 통과, canonical lintText 검출/수정 PASS. 최초 isSuccess 반환 누락 1건 수정 후 재검증 성공. main 통합 93a50eb, frozen offline 의존성 설치 성공.
+- 브라우저: 초기 skeleton/250명/검색·빈 결과/상세 focus/배경 갱신 보드 유지/reload 필터 복원/390px/console [] 확인. 상세 기록: `docs/records/candidate-boundaries.md`.
+
+- main 최종 `pnpm format:check && pnpm verify`도 format/lint/typecheck/103 tests/build 전체 통과. 검증 기능 브랜치와 main 코드·설정 diff 없음. 최종 결과 및 소유권 인계를 STATUS에 기록했습니다.

@@ -21,4 +21,4 @@
 - 구현 완료. 코드 044b7b5, 브랜치 codex/candidate-boundaries, 워크트리 `.worktrees/candidate-boundaries`.
 - format/lint/typecheck/103 tests/production build 및 실제 production browser 통과. 상세 명령·결과는 docs/records/candidate-boundaries.md.
 - 알려진 미해결 결함 없음. route loading은 route stream에만 적용되며 localStorage query 로딩은 명시적 skeleton으로 처리.
-- 통합 담당의 main 소유권 인계 ce40c73 수신. 마지막 문서를 반영한 뒤 main 통합/설치/기록 갱신 예정.
+- 통합 담당의 main 소유권 인계 ce40c73 수신 후 최종 기능 브랜치 d1a203e를 main 93a50eb에 통합. main frozen offline 설치와 format/lint/typecheck/103 tests/build 모두 통과.

@@ -107,8 +107,18 @@ Input의 clear는 명시적인 `onClear`를 한 번 호출합니다. 일반 입�
 기능마다 별도 세션·브랜치·워크트리를 사용했고, `type(scope): 요약` 커밋과 병합 이력을 유지합니다. 의존성이 없는 기능만 병렬 개발합니다.
 
 ## 최종 검증 결과
-`pnpm verify`와 `pnpm format:check` 통과. 자동 테스트 10개 파일·100개 사례. 공통 Input ref/clear·버튼·Header와 검색 clear 통합 검증을 포함합니다. Undo 성공·실패 재시도·카드 간 격리·키보드·가상화 포커스 회귀를 포함합니다. 기본 250명 및 합성 1,000명 production 보드에서 가상화 DOM 제한·깊은 스크롤·검색·상세·이동·저장 유지·재시도·390px 화면을 확인했습니다. 전체 카드 키보드 순회와 화면 밖 이동/롤백 포커스는 자동 테스트에도 포함됩니다. 자세한 결과는 [STATUS.md](STATUS.md), [가상화 통합 기록](docs/records/virtualization-integration.md)을 참고하세요.
+`pnpm verify`와 `pnpm format:check` 통과. 자동 테스트 11개 파일·103개 사례. 공통 Input ref/clear·버튼·Header와 검색 clear 통합 검증을 포함합니다. Undo 성공·실패 재시도·카드 간 격리·키보드·가상화 포커스 회귀를 포함합니다. 기본 250명 및 합성 1,000명 production 보드에서 가상화 DOM 제한·깊은 스크롤·검색·상세·이동·저장 유지·재시도·390px 화면을 확인했습니다. 전체 카드 키보드 순회와 화면 밖 이동/롤백 포커스는 자동 테스트에도 포함됩니다. 자세한 결과는 [STATUS.md](STATUS.md), [가상화 통합 기록](docs/records/virtualization-integration.md)을 참고하세요.
 
 Undo production 검증에서 키보드 실행·포커스 복귀·되돌린 단계의 새로고침 후 저장 유지와 390px 메뉴를 확인했습니다. [Undo 통합 기록](docs/records/undo-integration.md)을 참고하세요.
 
 DnD production 검증에서 실제 드래그·실패 롤백·재시도·키보드 Undo·새로고침 후 저장 유지와 390px 메뉴를 확인했습니다. [DnD 통합 기록](docs/records/dnd-integration.md)을 참고하세요.
+
+
+## Query와 렌더링 경계
+- `useCandidates()`는 항상 배열인 `data`, 실제 조회 완료 데이터가 있는지 나타내는 `hasData`, 요약 수치와 선택 후보를 반환합니다. 초기 데이터가 없는 상태를 성공한 빈 목록과 혼동하지 않습니다.
+- 서버 `src/app/page.tsx`가 헤더·소개·푸터를 조합합니다. `CandidatesApp`은 브라우저 상태와 상호작용을 담당합니다.
+- route `loading.tsx`는 페이지 스트리밍용입니다. 브라우저 조회는 보드/요약 skeleton 및 배경 갱신 표시를 사용하고, 보드·상세의 렌더 예외는 영역별 재시도 경계로 복구합니다. API 오류는 기존 조회/저장 피드백으로 처리합니다.
+- Next/TypeScript와 Vitest는 동일한 `@ → src` alias를 사용합니다.
+- `pnpm lint`는 Tailwind canonical class를 검사하고 `pnpm lint:fix`는 `min-w-[1240px] → min-w-310` 같은 표기를 자동 수정합니다. 에디터 진단을 숨기지 않습니다.
+
+추가사항의 검증 기록은 [candidate-boundaries](docs/records/candidate-boundaries.md)에 있습니다.

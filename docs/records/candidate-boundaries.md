@@ -36,3 +36,11 @@
 - 390×844에서 빈 검색 0명 안내, documentWidth=390/viewport=390 확인. reload 시 최초 조회 skeleton과 server intro/footer가 함께 남아 있고 완료 후 저장된 검색 필터 복원 확인.
 - 검색 조건 초기화하여 250명 원복. console error/warn [] 확인. 테스트 중 후보 단계 데이터 변경 없음. 임시 탭 닫기/viewport reset/서버 Ctrl-C 종료 완료.
 - 예외 주입/조회 실패/롤백/경쟁 상태는 자동 회귀 테스트로 검증했습니다. browser에서 인위적 render 오류를 주입했다고 집계하지 않습니다.
+
+
+## main 통합 완료
+- 기존 통합 담당에게 main 소유권 인계 ce40c73 수신. 기능 최종 브랜치 d1a203e를 main 93a50eb에 no-ff 통합.
+- `pnpm install --frozen-lockfile --offline` 성공. 새 ESLint 의존성 10개 패키지 캐시 사용.
+- main `pnpm format:check && pnpm verify` 재실행: format/lint/typecheck/**11 files, 103/103 tests**/production build 모두 통과. tests 16.35s.
+- `git diff codex/candidate-boundaries -- src package.json pnpm-lock.yaml eslint.config.mjs` 결과 없음: 실제 production 브라우저 검증 코드와 main 동일. `git diff --check` 통과.
+- README/STATUS/PROMPTS/PLAN/DECISIONS/task/실제 record 갱신. 기존 브랜치·correction·merge 커밋 보존. 배포/외부 메시지/푸시 없음. 미해결 기능 이슈 없음.
