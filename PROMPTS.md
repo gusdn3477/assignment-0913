@@ -720,3 +720,9 @@ Codex in-app browser, 127.0.0.1:3101, 기본 viewport 1280×720.
 - 결과: useTransition 제거, Query isFetching/isFetched 활용, useDeferredValue(search)만 유지.
 - 검증: lint/typecheck/app14 tests/build 통과. production 검색0명/초기화250명, refresh pending 보드 유지/완료, console[] 확인.
 - 기록: docs/records/concurrency-simplification.md.
+
+## UI Provider 제거와 loading 명칭
+- 실제 요청: Context 제한은 이해하지만 Zustand와 역할이 겹치는 Provider 삭제. Button이나 다른 컴포넌트의 pending을 loading으로 변경.
+- 결과: CandidateUIProvider/UIContext 제거, Zustand bound store 직접 구독과 effect 복원. loading/loadingIds/isLoading 계약 및 사용처 통일.
+- 검증: lint/typecheck/전체13 files113 tests 통과. 메모리 폐기 후 저장 복원, 손상 데이터, 버튼 상태/포커스, 카드 격리/롤백/Undo/DnD/가상화 포함.
+- 상세 통합 검증: docs/records/zustand-loading.md.

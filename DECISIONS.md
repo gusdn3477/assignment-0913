@@ -97,3 +97,7 @@
 ## 동시 렌더링 범위 축소
 - 사용자 정정에 따라 useTransition은 제거하고 useDeferredValue(search)만 카드 목록 검색에 유지합니다. 직무/캐시/카드 잠금은 즉시 반영하며 결과 개수/빈 상태는 표시 목록과 일치시킵니다.
 - Query isFetching으로 요청 pending을 표시하고 isFetched와 hasData로 최초 오류 재시도 패널을 유지합니다. 별도 pending 상태는 추가하지 않으며 동일 렌더 내 중복 방지를 위한 ref 잠금은 보존합니다.
+
+## UI 상태 직접 구독과 loading 명칭
+- 사용자 정정에 따라 provider별 Zustand 인스턴스 대신 클라이언트 단일 bound store를 사용합니다. CandidateUIProvider/UIContext 제거, useHydrateCandidateUI는 client effect 최초 복원만 담당합니다. SSR은 초기 snapshot, 브라우저에서만 상태 변경하며 검색/직무만 영속 저장합니다.
+- loading/ loadingIds/ normalized isLoading으로 앱 로딩 계약을 통일합니다. Query 원본 isPending과 API 내부 진행 요청 값은 의미를 보존합니다. QueryClientProvider와 DragDropProvider는 라이브러리 필수 연결로 유지합니다.

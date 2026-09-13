@@ -115,3 +115,6 @@ API·지원자 컴포넌트 배치 정리 완료: 기능 `6986331`, main 통합 
 
 ## 최신 동시 렌더링 단순화 완료
 기능 e735dd0 / main 통합927a3df, codex/concurrency-simplification / .worktrees/concurrency-simplification. useTransition 제거, 검색 문자열 useDeferredValue만 유지. Query 기반 조회 피드백과 재시도 focus/잠금 보존. lint/typecheck/app14 tests/production build 및 브라우저 검색/초기화/refresh pending 보드 유지와 완료 확인. console error/warn 없음, 미해결 이슈 없음. 상세 docs/records/concurrency-simplification.md.
+
+## 최신 UI Provider 제거와 loading 명칭 통합 완료
+기능 d8459d5 / main e07e5ff, codex/zustand-loading / .worktrees/zustand-loading. CandidateUIProvider/UIContext 제거, Zustand 직접 구독과 effect 복원. loading/loadingIds/isLoading 명칭 통일. lint/typecheck/13 files113 tests/production build 통과. 브라우저 250명→이름검색→reload후1명과 입력 복원, 상세/Escape 포커스, 새로고침 완료/초기화250명 확인. console error/warn 없음. 미해결 기능 이슈 없음. docs/records/zustand-loading.md.

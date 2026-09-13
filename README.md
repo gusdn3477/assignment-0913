@@ -103,7 +103,7 @@ const { value, onChange, clear } = useCandidateSearch();
   onChange={onChange}
   clearButton={{ onClear: clear, label: "검색어 지우기" }}
 />;
-<RetryButton pending={pending} onClick={retry}>다시 불러오기</RetryButton>;
+<RetryButton loading={loading} onClick={retry}>다시 불러오기</RetryButton>;
 <Header left={<Brand />} center={<Navigation />} right={<Profile />} />;
 ```
 
@@ -154,7 +154,7 @@ DnD production 검증에서 실제 드래그·실패 롤백·재시도·키보�
   clearButton={{ onClear: clear, label: "검색어 지우기" }}
 />
 <ResetButton onClick={resetFilters} />
-<ReloadButton onClick={reload} pending={isReloading} />
+<ReloadButton onClick={reload} loading={isReloading} />
 ```
 
 `SearchBar`는 돋보기와 search input을 조합하며 좌우 슬롯도 전달합니다. `left={null}`로 기본 아이콘을 생략할 수 있습니다. 초기 조회 실패는 `RetryButton`, 배경 새로고침은 `ReloadButton`, 조건 초기화는 `ResetButton`을 사용합니다.
@@ -166,7 +166,7 @@ DnD production 검증에서 실제 드래그·실패 롤백·재시도·키보�
 드래그의 센서·충돌 판정·표시·자동 스크롤은 `@dnd-kit/react`에 맡깁니다. 앱은 현재 카드 단계·필터·저장 잠금만 검증한 뒤 기존 이동 mutation을 호출합니다. 같은 단계와 영역 밖 드롭은 저장하지 않습니다. 키보드 사용자는 기존 단계 이동 메뉴를 사용할 수 있습니다.
 
 ```tsx
-<CandidateQueryGuard query={query} blocked={pendingIds.size > 0} fallback={<BoardSkeleton />}>
+<CandidateQueryGuard query={query} blocked={loadingIds.size > 0} fallback={<BoardSkeleton />}>
   {children}
 </CandidateQueryGuard>
 <LoadingGuard loading={loading} fallback={<Skeleton />}>{children}</LoadingGuard>

@@ -61,3 +61,6 @@ SearchBar가 Input left 돋보기와 right CloseButton 및 지우기/focus 동�
 
 ## 사용자 정정: 동시 렌더링 범위 축소
 동시 렌더링은 이름 Input에 따른 카드 목록 갱신에만 적용합니다. 새로고침/재시도의 useTransition은 제거하고 Query 조회 상태로 피드백을 유지합니다. 이전 적극 활용 기준보다 이번 사용자 정정을 우선합니다.
+
+## 사용자 정정: UI Provider 제거와 loading 명칭
+Zustand UI 상태의 Context/Provider를 제거하고 bound store를 직접 구독합니다. 저장값은 client effect에서 복원하고 검증/영속 저장 범위를 유지합니다. 앱 소유 컴포넌트의 pending은 loading, 카드 집합은 loadingIds로 통일합니다. Query/DnD 라이브러리 Provider는 유지합니다.
