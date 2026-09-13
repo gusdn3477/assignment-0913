@@ -1,11 +1,12 @@
 # element-props
 
-## 요청
-props 이름이 기본 element 이벤트 핸들러와 유사한지 점검하고 필요하면 수정(pending→loading, onValueChange→onChange).
+## 실제 요청 및 정정
+props 이름이 기본 element 이벤트 핸들러와 유사한지 점검 요청. 후속 정정: “Select는 원래 onValueChange인가? 그럼 유지해”.
 
-## 소유/계약
-codex/element-props / .worktrees/element-props. ui/select.tsx, toolbar 사용처, 이 task/record 소유.
-Input/SearchBar/native Button props 전달과 loading 명칭 확인. Select 공개 onChange(string)를 Radix onValueChange에 연결하고 기존 prop을 공개 타입에서 제외. native DOM 이벤트를 만들어내지 않는다. onClear/onUndo/onMove 등 별도 도메인 동작, Radix open/focus lifecycle, Query mutation 콜백은 의미 유지. 제어/비제어와 keyboard/filter/reset/persist 계약 보존.
+## 최종 계약
+codex/element-props / .worktrees/element-props. Radix Select 원래 onValueChange 유지. 추가했던 onChange 변환과 Omit 제거, 실제 Toolbar도 원상 복원. Input/SearchBar native onChange(event), Button onClick/loading은 정상 확인. 의미별 도메인 액션과 라이브러리 원본 콜백 유지.
 
-## 완료 인계
-공개 SelectProps에서 onValueChange 제외, onChange(string)로 연결. Toolbar 실제 호출 갱신. Input/SearchBar onChange와 native props/ref, Button onClick/loading, Header native props 정상 확인. 의미별 도메인 액션과 라이브러리 lifecycle 콜백은 유지. lint/typecheck/관련23 tests/format/diff-check 통과. 미해결 기능 이슈 없음.
+## 인계
+앞선 변경의 검증은 records에 별도로 남기며 최종 정정 검증 후 갱신. 최초 변경과 correction 커밋을 보존한다.
+
+최종 정정 완료: 관련 lint/strict typecheck/explorer9 tests/diff-check 통과. 두 소스 파일의 2372527^ 대비 diff 없음. 미해결 이슈 없음.
