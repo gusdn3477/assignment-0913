@@ -18,3 +18,12 @@ pnpm install과 shadcn CLI 컴포넌트 생성을 완료했습니다. pnpm typec
 ### 추가 사용자 지시
 “중간 중간 문서를 업데이트 해줘서 새 세션에서 뭘 하면 될 지 바로 참고할 수 있게 해줘” — STATUS와 기능별 작업/기록 문서를 추가했습니다.
 “AGENTS.md 나 Plan.md는 따로 필요 없나? 잘 몰라서” — 공통 작업 규칙 AGENTS.md, 승인 범위 PLAN.md를 추가하고 변경되는 진행 상황과 분리했습니다.
+
+## 공통 기반 후속 검토
+- shadcn CLI 생성물에서 외부 `cn` 패키지 import를 발견했습니다. 요구한 로컬 `cn()`을 사용하도록 전체 primitive를 수정하고 불필요한 패키지를 제거했습니다. `74e4736`에 수정 이력을 보존했습니다.
+- 통합 테스트에서 pnpm 로컬 캐시의 프로젝트 복사본이 중복 수집되는 것을 발견했습니다. Vitest 수집 범위를 `src/**/*.test.{ts,tsx}`로 제한하고 lint/tsc에서도 캐시를 제외했습니다. 중복 집계 결과를 최종 테스트 수로 사용하지 않습니다.
+
+## 기능별 원문과 검증
+아래 기록은 기능 완료 때 병합한 원문이며 개별 기록 파일을 유지합니다.
+- [mock-api](docs/records/mock-api.md): 17개 테스트, empty 배열 검증 조건 수정, 타입/lint 통과.
+- [explorer](docs/records/explorer.md): 9개 테스트, persist 복원/손상/실패, 키보드 필터/상세 검증.

@@ -14,12 +14,13 @@
 
 | 기능 | 브랜치 / 워크트리 | 상태 |
 |---|---|---|
-| mock-api | codex/mock-api / .worktrees/mock-api | 독립 세션 구현·테스트 중 |
+| mock-api | codex/mock-api / .worktrees/mock-api | 540d933 완료·병합, 17 tests |
 | board-ui | codex/board-ui / .worktrees/board-ui | 독립 세션 구현·테스트 중 |
-| explorer | codex/explorer / .worktrees/explorer | 독립 세션 구현·테스트 중 |
+| explorer | codex/explorer / .worktrees/explorer | 57ca2e9 완료·병합, 9 tests |
+| optimistic-update | codex/optimistic-update / .worktrees/optimistic-update | 새 독립 세션 구현·테스트 중 |
 
 ## 다음 작업
-mock-api 병합 후 새 optimistic-update 세션을 시작합니다. 통합 담당자는 화면 연결과 문서 갱신을 준비합니다.
+board-ui/optimistic-update 병합 후 통합 화면을 검사합니다. 루트의 candidates-app/page/error는 연결 작업 중이며 아직 미커밋 상태입니다.
 
 ## 운영 규칙
 - 통합 담당자가 기능 시작·병합·검증 완료 때마다 이 문서를 갱신합니다.
@@ -29,3 +30,5 @@ mock-api 병합 후 새 optimistic-update 세션을 시작합니다. 통합 담�
 
 ## 검증 결과
 - pnpm install 완료. pnpm typecheck 통과. pnpm lint 오류 없음, PostCSS 익명 export 경고 수정.
+- 공통 기반 pnpm build 통과. shadcn CLI가 외부 cn 패키지를 사용한 것을 발견하여 로컬 cn으로 교체하고 별도 수정 커밋 74e4736 보존.
+- mock-api 17 tests, explorer 9 tests 각각 기능 세션에서 통과. 통합 재검사 진행 중.
