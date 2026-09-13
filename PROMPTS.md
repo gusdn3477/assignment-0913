@@ -14,6 +14,37 @@
 
 에이전트는 위 지시에 따라 자동 테스트와 production build를 실행하고, 실제 브라우저에서 조회 실패→재시도, mutation 실패→해당 카드만 롤백, 재시도 성공, Undo 성공, 저장 후 reload, 키보드 포커스 복귀, 390px 화면과 console error/warn 여부를 확인했습니다. 이 문서에서 “사용자 리뷰·검증”은 사용자가 검증 항목과 보완 기준을 제시하고 결과를 재검토하게 한 사실을 뜻하며, 실제 명령 실행이나 브라우저 조작을 사용자가 직접 수행한 것으로 과장하지 않습니다.
 
+### 전체 세션에서 확인된 사용자 리뷰
+
+사용자는 최초 구현 지시 이후 각 세션에서 결과를 그대로 수용하지 않고 코드·구조·동작을 직접 읽으며 다음 항목을 질문하거나 정정했습니다.
+
+- 기반과 진행 방식: TypeScript strict, Next App Router, Tailwind/cn, shadcn, TanStack Query, Zustand를 지정하고 기능별 브랜치·워크트리·새 세션, 병렬 진행, 중간 문서 갱신과 기능별 커밋을 요구했습니다. 기능 경계는 예시에 고정하지 말고 의존성에 따라 유동적으로 조정하도록 했습니다.
+- 상태와 동시성: native element props 확장, `useDeferredValue`·`useTransition`의 올바른 사용, loading/error 구분을 요구했습니다. 이후 실제 코드를 검토해 동시 렌더링은 즉시 입력값과 카드 목록 갱신에만 필요하다고 정정하고, 조회 재시도 등에 쓰인 과도한 `useTransition`은 제거하도록 했습니다.
+- Query 선택: `useCandidates`를 `useSuspenseQuery`로 바꿀 수 없는 이유, 입력마다 검색하는 계약의 필요성, debounce·명시적 검색 버튼과의 비교를 질문했습니다. React 19 `useOptimistic`으로 TanStack Query를 대체할 수 있는지도 검토하고, 최종적으로 Query를 설치한 이유와 `useOptimistic`을 중복 사용하지 않은 이유를 문서에 명시하도록 했습니다.
+- 실패와 낙관적 갱신: 실패를 어떻게 재현하는지, 조회 실패와 mutation 실패에 각각 어떤 UI가 나타나는지, toast 또는 modal이 필요한지 질문했습니다. 낙관적 업데이트의 실제 위치와 카드별 잠금·병렬 처리·rollback을 확인하게 했고, 저장 성공 뒤에도 이동과 Undo 성공 toast를 추가하도록 보완했습니다.
+- 빈 상태와 화면 안정성: `filtered.length === 0` 분기를 children을 반환하는 Guard로 감싸도록 제안했습니다. 검색 결과가 0명이 될 때 결과 영역 높이와 사용자의 화면 위치가 달라지는 문제를 지적해 결과 유무와 무관한 레이아웃 높이를 검증하도록 했습니다.
+- 보드와 상호작용: 카드 영역이 좁고 마지막 카드가 잘려 보이는 문제를 지적하고 목록 높이와 끝 여백을 늘리도록 했습니다. 가상화, 저장된 이동의 Undo, DnD를 차례로 후속 선택 기능으로 승인했으며, DnD 직접 구현 규모를 검토해 `@dnd-kit` 같은 라이브러리를 고려하도록 했습니다.
+- DnD와 React lifecycle: DnD 라이브러리를 써도 도메인 drag hook이 필요한지 질문하고, 훅 이름을 `useCandidateStageDrag`처럼 구체화하도록 정정했습니다. 실제 `flushSync was called from inside a lifecycle method` 경고를 제시하고 원인 수정 또는 필요시 라이브러리 교체까지 허용했습니다.
+- 재사용 UI: Input의 native props·ref와 left/right 슬롯, 의미별 Button, left/center/right Header, 용도별 skeleton을 검토하도록 했습니다. 이후 Input은 스타일과 슬롯만 제공하는 primitive로 축소하고, 슬롯 유무와 무관하게 같은 wrapper와 외형을 렌더링하도록 구체화했습니다.
+- SearchBar: 사용하는 쪽이 아이콘을 조립하는 초기 결과가 의도와 다르다고 정정했습니다. SearchBar가 돋보기와 CloseButton을 직접 배치하고 native `onChange`, 선택적 `onClear`, `onClear` 존재와 비어 있지 않은 `value`를 함께 만족할 때만 X를 표시하도록 단계적으로 리뷰했습니다. 마지막에는 공개 left/right props도 제거해 최소 호출 계약을 확정했습니다.
+- 컴포넌트 계약: 앱 소유 `pending`을 익숙한 `loading`으로 바꾸고 일반 element 이벤트 이름과 비교하도록 했습니다. 다만 Radix Select의 원래 API가 `onValueChange`임을 재확인한 뒤에는 불필요한 `onChange` 변환을 취소하도록 정정했습니다.
+- 상태 경계: Zustand가 이미 UI 상태를 소유하므로 앱 전용 Context/Provider는 역할이 겹친다고 지적해 제거하도록 했습니다. 저장값 검증과 client effect 복원은 유지하도록 했습니다.
+- 오류와 상수: 직접 만든 ErrorBoundary를 `react-error-boundary`의 검증된 패턴으로 바꿔 코드량을 줄이도록 했습니다. 조회 오류 코드·표시 메시지와 지원자 단계·직무·스타일·저장 키·Query 키는 `src/constants` 아래 도메인별 파일로 모으도록 요청했습니다.
+- 폴더 구조: API는 `src/api`로, 지원자 UI는 `src/components/candidate` 아래 board/card/detail 역할별 폴더로 옮기도록 했습니다. hooks를 무조건 최상위로 이동하기보다 재사용 범위를 기준으로 두는 것이 맞는지 질문했고, 가상 목록 전용 스크롤·포커스 복원 훅은 해당 컴포넌트 옆에 두는 결론을 검토했습니다.
+- 중복과 가독성: 상세 전용 CloseButton과 공용 CloseButton 중복을 발견해 하나로 정리하도록 했습니다. 가상 목록의 두 `useLayoutEffect`가 꼭 필요한지 검토하고 `useCandidateScrollRestoration`으로 분리하도록 했으며, 보드 JSX의 긴 capture 이벤트 세 개도 우선 이름 있는 함수로 올려 JSX가 연결 관계만 표현하게 했습니다.
+- React 19 단순화: `DeferredBoard = memo(CandidateBoard)`와 단순 `useMemo`·`useCallback`의 필요성을 질문하고, React Compiler를 production과 Vitest에 함께 적용한 뒤 불필요한 수동 메모이제이션을 제거하도록 했습니다. mutable virtualizer의 `"use no memo"` 지시문과 주석도 별도 세션에서 다시 검토했습니다.
+- AI 초안 수정 흔적: UI store 복원 코드의 선두 `void`와 구현을 반복하는 영어 주석이 불필요하다고 지적했습니다. `rehydrate()`의 `Promise<void> | void` 반환 때문에 필요한 `Promise.resolve`는 유지하되 나머지는 제거하고, AI 초안에서 무엇을 고쳤는지 커밋 본문에 남기도록 요구했습니다.
+- 최종 감사: “더 진행할 거 없나? 마지막으로 초기 요구사항에 어긋난 거 있는지 확실히 확인해”라고 최초 요구사항과 최종 구현을 재대조하게 했습니다. 이어 “빌드 및 테스트 해줘 문제없나 보게”라고 별도 검증 세션을 요청했습니다.
+
+### 사용자 요청에 따른 최종 검증 결과
+
+- 별도 최종 검증 세션에서 `pnpm verify`를 다시 실행했습니다.
+- ESLint와 TypeScript strict 검사가 통과했습니다.
+- Vitest 13개 파일, 114개 테스트가 모두 통과했습니다.
+- Next.js production build와 정적 페이지 생성이 통과했습니다.
+- 종료 코드는 0이었고 검증 후 `main` 작업 트리에 변경이 없었습니다.
+- 이 결과는 사용자가 직접 명령을 실행했다는 의미가 아니라, 사용자가 문제 여부 확인을 요청하고 에이전트가 실행 결과를 보고해 사용자가 검토할 수 있게 했다는 기록입니다.
+
 ## TanStack Query와 `useOptimistic` 추가 검토 (2026-09-13)
 
 - 사용자 검토 요청에 따라 현재 낙관적 업데이트 구현과 React 19 `useOptimistic`의 역할을 다시 비교했습니다.
