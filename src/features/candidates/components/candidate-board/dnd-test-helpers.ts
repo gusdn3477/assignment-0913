@@ -73,8 +73,20 @@ export function setupDragGeometry() {
     Element.prototype.getAnimations = () => [];
 }
 export async function startDrag(id = "a") {
+  if (dragHandle(id).hasAttribute("disabled")) return false;
+  // Accessibility attributes are installed by the library after registration.
+  // A rendered button alone can precede the sensor's ready state.
+  await waitFor(() => {
+    const handle = dragHandle(id);
+    const instructions = handle.getAttribute("aria-describedby");
+    if (
+      !instructions ||
+      !document.getElementById(instructions) ||
+      handle.getAttribute("aria-disabled") !== "false"
+    )
+      throw Error(`Drag handle ${id} is not registered`);
+  });
   const handle = dragHandle(id);
-  if (handle.hasAttribute("disabled")) return false;
   await act(async () => {
     fireEvent.keyDown(handle, { key: " ", code: "Space" });
   });
@@ -84,7 +96,7 @@ export async function startDrag(id = "a") {
         `[data-candidate-card="${id}"][data-dragging="true"]`,
       )
     )
-      throw Error("Drag not started");
+      throw Error(`Drag ${id} not started`);
   });
   return true;
 }

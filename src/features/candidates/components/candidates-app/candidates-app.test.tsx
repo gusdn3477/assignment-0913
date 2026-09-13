@@ -77,7 +77,12 @@ beforeEach(() => {
   vi.resetAllMocks();
   vi.mocked(candidateApi.listCandidates).mockResolvedValue(candidates);
 });
-afterEach(() => vi.useRealTimers());
+afterEach(async () => {
+  // JSDOM implements requestAnimationFrame with an interval. Switching clocks
+  // before flushing it strands dnd-kit's shared scheduler in its pending state.
+  if (vi.isFakeTimers()) await act(async () => vi.runOnlyPendingTimersAsync());
+  vi.useRealTimers();
+});
 
 // Radix scrolls the keyboard-selected option; jsdom has no layout scrolling.
 if (!HTMLElement.prototype.scrollIntoView)

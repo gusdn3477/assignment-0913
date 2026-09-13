@@ -21,3 +21,4 @@
 - src/test/setup.ts ResizeObserver shim 소유권을 통합 담당이 추가 승인. 그 외 공통/최상위/package 파일 변경 없음.
 - 소유 파일 eslint/tsc/prettier 통과. 실제 sensor 기반 DnD11/app14 통과. 전체 검사 결과 record 참조.
 - 통합 담당이 production webpack build와 실제 pointer browser 검증 수행 중. package/lock 및 main 병합은 통합 담당.
+- 통합 후 동일 기능 보정: 기존 app fake timers의 미배출 rAF가 DnD scheduler를 막는 문제를 timer cleanup 및 실제 handle readiness 대기로 수정. production 변경 없음. 보정 검증은 record 참조.

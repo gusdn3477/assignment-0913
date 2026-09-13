@@ -41,3 +41,12 @@
 - 최종 소유 파일 eslint/tsc/prettier 통과. 전체 clean pass는 통합 담당의 단독 main verify에서 다시 확인.
 - 통합 담당 browser 전달 결과: production webpack build 통과, 실제 pointer 단계 이동/저장 중 잠금/포커스/outside drop 취소 확인. Undo 및 첫 복구 저장은 mock random failure로 rollback, 재시도 저장 성공으로 원래 review 복구. 250명 초기화, console 빈 배열, 임시 탭/서버 종료. 기능 세션이 직접 browser 실행했다고 집계하지 않음.
 - 기존 virtualization 단독 재확인: 7/7 통과(전체 Tab 8.4초, suite 9.8초). 동일 테스트의 부하 의존 timeout임을 확인했으며 코드/timeout 변경 없음.
+
+## 통합 후 보정: 테스트 timer 수명
+
+- main 실제 통합 검사에서 `Drag not started`가 다시 발생해 동일 기능 보정을 수행. Guard commit `9bc8066`을 이 워크트리에 merge하여 통합 조건을 맞춤.
+- 처음 feedback 종료 대기만 추가한 수정은 원인을 완전히 해결하지 못했음을 확인. library가 설정한 aria-describedby와 실제 instruction node/aria-disabled 준비 상태를 기다리자 첫 카드 a가 등록 대기에서 멈추는 현상으로 더 정확히 재현(Guard 반영 전체 108/109, 이 한 건 실패).
+- 원인: 앞선 app 테스트 두 건이 setInterval을 fake timer로 전환한다. JSDOM requestAnimationFrame은 내부적으로 interval을 쓰므로, 예약 frame을 처리하지 않고 useRealTimers로 복원하면 library 전역 Scheduler의 pending 상태에 해당하는 예약 callback을 잃을 수 있다. dom Scheduler와 JSDOM clock 동작을 대조했다.
+- app afterEach는 fake timers가 켜졌을 때 act 안에서 runOnlyPendingTimersAsync를 실행한 뒤 real timers로 복원한다. 입력 helper는 library 준비 상태를 기다리고 keyDown을 한 번만 보낸다. 실패 입력 재시도/임의 sleep/timeout 증가/provider mock/production 변경 없음.
+- 보정 후 app14 통과, stderr/useInsertionEffect 경고 없음. 이 경고는 실패한 활성 drag가 cleanup에서 manager.destroy로 취소될 때 발생하는 후속 현상이었다.
+- 보정 최종 전체 `vitest run --maxWorkers=1`: 13 files / 109 tests 모두 통과(62.6초). 기존 1000-card Tab도 16.8초 통과. 전체 stderr/useInsertionEffect 경고 없음. 보정 파일 eslint/tsc 통과.
