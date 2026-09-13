@@ -18,11 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import {
-  STAGES,
-  STAGE_LABELS,
-} from "@/features/candidates/constants/candidate";
-import { stageStyles } from "@/features/candidates/constants/stage-styles";
+import { STAGES, STAGE_LABELS, stageStyles } from "@/constants/candidate";
 import type { Candidate, Stage } from "@/features/candidates/types/candidate";
 export const CandidateCard = memo(function CandidateCard({
   candidate,

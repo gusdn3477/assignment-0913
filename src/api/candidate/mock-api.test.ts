@@ -1,8 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createMockApi } from "@/api/candidate/mock-api";
-import { STORAGE_KEY } from "@/features/candidates/constants/storage";
+import { STORAGE_KEY, JOBS, STAGES } from "@/constants/candidate";
 import { createSeedCandidates } from "@/api/candidate/seed";
-import { JOBS, STAGES } from "@/features/candidates/constants/candidate";
 
 function setup(raw: string | null = null) {
   let value = raw;

@@ -2,7 +2,7 @@
 
 import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import type { DragDropEventHandlers } from "@dnd-kit/react";
-import { STAGES } from "@/features/candidates/constants/candidate";
+import { STAGES } from "@/constants/candidate";
 import type { Candidate, Stage } from "@/features/candidates/types/candidate";
 
 type Session = { id: string; stage: Stage; resetKey?: string };

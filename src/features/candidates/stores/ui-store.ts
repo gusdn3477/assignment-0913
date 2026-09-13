@@ -7,12 +7,8 @@ import {
   persist,
   type StateStorage,
 } from "zustand/middleware";
-import { JOBS } from "@/features/candidates/constants/candidate";
+import { JOBS, UI_STORAGE_KEY, MAX_SEARCH_LENGTH } from "@/constants/candidate";
 
-import {
-  UI_STORAGE_KEY,
-  MAX_SEARCH_LENGTH,
-} from "@/features/candidates/constants/storage";
 export interface CandidateUIState {
   search: string;
   job: string;

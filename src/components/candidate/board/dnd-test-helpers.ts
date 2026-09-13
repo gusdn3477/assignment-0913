@@ -1,6 +1,6 @@
 import { act, fireEvent, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
-import { STAGES } from "@/features/candidates/constants/candidate";
+import { STAGES } from "@/constants/candidate";
 
 export const dragHandle = (id = "a") =>
   document.querySelector<HTMLElement>(`[data-candidate-drag="${id}"]`)!;

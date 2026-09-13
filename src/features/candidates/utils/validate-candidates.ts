@@ -1,5 +1,4 @@
-import { MOCK_API_ERROR_CODES } from "@/features/candidates/constants/candidate-errors";
-import { JOBS, STAGES } from "@/features/candidates/constants/candidate";
+import { MOCK_API_ERROR_CODES, JOBS, STAGES } from "@/constants/candidate";
 import type { Candidate } from "@/features/candidates/types/candidate";
 import { MockApiError } from "@/api/candidate/mock-api-error";
 function isCandidate(value: unknown): value is Candidate {

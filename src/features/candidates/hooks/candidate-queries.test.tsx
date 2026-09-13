@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { toast } from "sonner";
 import { candidateApi } from "@/api/candidate/mock-api";
-import { CANDIDATES_QUERY_KEY } from "@/features/candidates/queries/candidate-keys";
+import { CANDIDATES_QUERY_KEY } from "@/constants/candidate";
 import { useCandidates } from "@/features/candidates/hooks/use-candidates";
 import { useMoveCandidate } from "@/features/candidates/hooks/use-move-candidate";
 import { createSeedCandidates } from "@/api/candidate/seed";

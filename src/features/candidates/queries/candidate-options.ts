@@ -1,6 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 import { candidateApi } from "@/api/candidate/mock-api";
-import { CANDIDATES_QUERY_KEY } from "./candidate-keys";
+import { CANDIDATES_QUERY_KEY } from "@/constants/candidate";
 
 export function candidatesQueryOptions() {
   return queryOptions({

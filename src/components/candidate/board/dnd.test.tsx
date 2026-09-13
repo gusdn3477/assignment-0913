@@ -9,7 +9,7 @@ import {
   dragHandle,
 } from "./dnd-test-helpers";
 import { CandidateBoard } from "@/components/candidate/board/candidate-board";
-import { JOBS } from "@/features/candidates/constants/candidate";
+import { JOBS } from "@/constants/candidate";
 import { type Candidate } from "@/features/candidates/types/candidate";
 
 const candidate: Candidate = {

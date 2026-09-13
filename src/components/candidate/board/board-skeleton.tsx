@@ -1,4 +1,4 @@
-import { STAGES } from "@/features/candidates/constants/candidate";
+import { STAGES } from "@/constants/candidate";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CandidateCardSkeleton } from "@/components/candidate/card/candidate-card-skeleton";
 export function BoardSkeleton() {

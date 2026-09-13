@@ -16,17 +16,13 @@ import {
 import { useCandidateStageDrag } from "@/features/candidates/hooks/use-candidate-stage-drag";
 import { cn } from "@/lib/utils";
 import { CandidateUndo } from "@/features/candidates/types/candidate";
-import {
-  STAGES,
-  STAGE_LABELS,
-} from "@/features/candidates/constants/candidate";
+import { STAGES, STAGE_LABELS, stageStyles } from "@/constants/candidate";
 import {
   type Candidate,
   type Stage,
 } from "@/features/candidates/types/candidate";
 
 import { CandidateCard } from "@/components/candidate/card/candidate-card";
-import { stageStyles } from "@/features/candidates/constants/stage-styles";
 
 interface CandidateBoardProps {
   resetKey?: string;

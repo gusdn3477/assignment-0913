@@ -1,4 +1,4 @@
-import type { MockApiErrorCode } from "@/features/candidates/constants/candidate-errors";
+import type { MockApiErrorCode } from "@/constants/candidate";
 
 export class MockApiError extends Error {
   constructor(

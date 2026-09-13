@@ -1,7 +1,7 @@
 "use client";
 import { useCandidateSearch } from "@/features/candidates/hooks/use-candidate-search";
 
-import { MAX_SEARCH_LENGTH } from "@/features/candidates/constants/storage";
+import { MAX_SEARCH_LENGTH } from "@/constants/candidate";
 import { useId } from "react";
 import { SlidersHorizontal } from "lucide-react";
 import { ResetButton } from "@/components/buttons/reset-button";
