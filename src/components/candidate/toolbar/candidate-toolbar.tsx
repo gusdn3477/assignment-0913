@@ -59,7 +59,7 @@ export function CandidateToolbar({
         <label htmlFor={`${id}-job`} className="sr-only">
           직무 필터
         </label>
-        <Select value={job} onChange={setJob}>
+        <Select value={job} onValueChange={setJob}>
           <SelectTrigger id={`${id}-job`} className="h-10 min-w-44 bg-white">
             <SelectValue placeholder="전체 직무" />
           </SelectTrigger>
