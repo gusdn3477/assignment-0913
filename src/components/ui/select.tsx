@@ -5,10 +5,22 @@ import { cn } from "@/lib/utils";
 import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { Select as SelectPrimitive } from "radix-ui";
 
-function Select({
-  ...props
-}: React.ComponentProps<typeof SelectPrimitive.Root>) {
-  return <SelectPrimitive.Root data-slot="select" {...props} />;
+type SelectProps = Omit<
+  React.ComponentProps<typeof SelectPrimitive.Root>,
+  "onValueChange"
+> & {
+  // This composite control emits the selected value, not a native DOM event.
+  onChange?: (value: string) => void;
+};
+
+function Select({ onChange, ...props }: SelectProps) {
+  return (
+    <SelectPrimitive.Root
+      data-slot="select"
+      {...props}
+      onValueChange={onChange}
+    />
+  );
 }
 
 function SelectGroup({
