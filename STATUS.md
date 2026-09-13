@@ -1,6 +1,8 @@
 # 세션 인계 / 현재 상태
 
 ## 현재 결론
+도메인별 상수 배치 완료: src/constants/candidate.ts에 기존 지원자 상수와 Query 키 통합, 소비23파일 import 갱신. 기능b4b81a2/main7227fd0, codex/constants-layout / .worktrees/constants-layout. 공개12선언 동일, lint/type/format/build 통과. 전체 테스트 및 통합 app 테스트에서 시간 초과 각1건은 단독 재실행 통과(제한 변경 없음). production 오류 재시도250명/5단계/검색1명/console[] 확인. 기록: docs/records/constants-layout-integration.md.
+
 DnD lifecycle 경고 수정 완료: `useCandidateDrag`를 구체적인 `useCandidateStageDrag`와 `use-candidate-stage-drag.ts`로 변경하고 AGENTS.md에 훅 이름·파일명 일치 규칙을 추가했다. 원인은 단계 이동 중 가상 행 재측정이 TanStack Virtual의 동기 `flushSync` 렌더를 React lifecycle 안에서 호출한 것이며, 해당 목록에 `useFlushSync: false`를 적용해 React 스케줄링에 맡겼다. 라이브러리 교체 없이 기존 DnD/가상화 계약을 유지했다. 기능67fd1d3/main통합f047184, `codex/dnd-lifecycle-fix` / `.worktrees/dnd-lifecycle-fix`. 기능 전체113 tests/lint/type/format/build, 최신 main 관련32 tests/lint/type/build 및 production pointer DnD/console 경고0건 확인. 기록: `docs/records/dnd-lifecycle-fix.md`. 미해결 DnD 이슈 없음.
 
 CloseButton 중복 정리 완료: 상세 래퍼 삭제, SheetContent에서 공용 버튼 조합. 기능304de15/main818e3c4, codex/close-button-consolidation / .worktrees/close-button-consolidation. 관련23 tests/lint/type/format/main build 및 production 상세 Enter 닫기·focus 복귀/검색 지우기·250명 복원/console[] 확인. 미해결 이슈 없음. 기록: docs/records/close-button-consolidation-integration.md.

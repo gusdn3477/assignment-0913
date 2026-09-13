@@ -767,3 +767,9 @@ Codex in-app browser, 127.0.0.1:3101, 기본 viewport 1280×720.
 - 요청: “SearchBar도 left right 없애고 돋보기, closebutton 배치해줘.”
 - 결과: 공개 타입/구조분해/슬롯 합성을 제거하고 내부 고정 아이콘 조합. 지우기 표시 조건과 키보드/focus 유지.
 - 검증: lint/typecheck/관련20 tests 통과. 상세 docs/records/search-bar-fixed-icons.md.
+
+## 도메인별 최상위 constants
+- 실제 요청: “constants도 component와 같은 레벨로 빼자. 차라리 constants 하위에서 도메인별로 파일 만드는 방식으로 진행.”
+- 출력: src/constants/candidate.ts, 이전5파일 제거 및 소비23파일 import 갱신. 공개12선언 AST 비교 동일.
+- 검증: lint/type/format/build 통과. 전체114개·통합app14개 실행에서 시간 초과 각1건은 단독 재실행 통과. 브라우저 초기 오류 재시도/250명/단계·직무/검색1명/console[] 확인.
+- 기능b4b81a2/main7227fd0. 상세 명령·결과·검증 한계는 docs/records/constants-layout.md 및 constants-layout-integration.md.
