@@ -52,3 +52,6 @@ Undo, 가상화, DnD, 로그인, 지원자 생성/삭제, 실제 백엔드, 다�
 
 ## 후속 승인: API와 지원자 컴포넌트 위치 정리
 사용자 요청에 따라 API는 src/api/candidate로, 지원자 컴포넌트는 src/components/candidate 아래 board/card/detail 등 역할별 폴더로 이동합니다. 기존 동작과 나머지 도메인 계층은 유지합니다.
+
+## 사용자 정정: SearchBar 기본 조합
+SearchBar가 Input left 돋보기와 right CloseButton 및 지우기/focus 동작을 소유하고 사용처는 value/onValueChange와 도메인 설정만 전달하도록 수정합니다.
