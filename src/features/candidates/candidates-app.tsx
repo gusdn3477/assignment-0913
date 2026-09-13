@@ -1,6 +1,14 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import {
+  memo,
+  useCallback,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useRef,
+  useTransition,
+} from "react";
 import Link from "next/link";
 import {
   ArrowUpRight,
@@ -9,17 +17,22 @@ import {
   Layers3,
   Orbit,
   Users,
-  Wifi,
-  RotateCcw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CandidateBoard } from "./board";
 import { CandidateDetail } from "./candidate-detail";
 import { CandidateToolbar } from "./candidate-toolbar";
+import {
+  CandidateLoadError,
+  CandidateRefresh,
+} from "./candidate-load-feedback";
 import { useCandidates, useMoveCandidate } from "./queries";
 import { filterCandidates } from "./selectors";
 import { CandidateUIProvider, useCandidateUI } from "./ui-store";
+
+// Urgent input renders can skip the board until deferred filters catch up.
+const DeferredBoard = memo(CandidateBoard);
 
 function BoardContent() {
   const query = useCandidates();
@@ -31,9 +44,50 @@ function BoardContent() {
   const selectCandidate = useCandidateUI((state) => state.selectCandidate);
   const resetFilters = useCandidateUI((state) => state.resetFilters);
   const candidates = query.data;
+  const filters = useMemo(() => ({ search, job }), [search, job]);
+  const deferredFilters = useDeferredValue(filters);
+  const isStale = filters !== deferredFilters;
+  const [isRetryPending, startRetryTransition] = useTransition();
+  const retryInFlight = useRef(false);
+  const restoreSearchFocus = useRef(false);
+  const pipelineRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (candidates !== undefined && restoreSearchFocus.current) {
+      restoreSearchFocus.current = false;
+      if (document.activeElement === document.body) {
+        pipelineRef.current
+          ?.querySelector<HTMLInputElement>('input[type="search"]')
+          ?.focus();
+      }
+    }
+  }, [candidates]);
+  const isRefreshing = isRetryPending || query.isFetching;
+  const hasPendingMoves = pendingIds.size > 0;
+  const showInitialError =
+    candidates === undefined && (query.isError || isRetryPending);
+  const showInitialLoading = query.isPending || !hydrated;
+  function retry() {
+    if (retryInFlight.current || query.isFetching || hasPendingMoves) return;
+    retryInFlight.current = true;
+    restoreSearchFocus.current = candidates === undefined;
+    // The Action tracks the async retry; Query remains an external, urgent store.
+    // A separate lock excludes repeated requests; transitions do not order them.
+    startRetryTransition(async () => {
+      try {
+        await query.refetch({ throwOnError: false, cancelRefetch: false });
+      } finally {
+        retryInFlight.current = false;
+      }
+    });
+  }
   const filtered = useMemo(
-    () => filterCandidates(candidates ?? [], search, job),
-    [candidates, search, job],
+    () =>
+      filterCandidates(
+        candidates ?? [],
+        deferredFilters.search,
+        deferredFilters.job,
+      ),
+    [candidates, deferredFilters],
   );
   const jobs = useMemo(
     () =>
@@ -105,6 +159,7 @@ function BoardContent() {
 
       <section
         id="pipeline"
+        ref={pipelineRef}
         aria-labelledby="pipeline-title"
         className="min-w-0 scroll-mt-6"
       >
@@ -125,68 +180,64 @@ function BoardContent() {
             카드 메뉴에서 단계를 이동할 수 있어요
           </span>
         </div>
-        {query.isError ? (
-          <div
-            role="alert"
-            className="flex min-h-72 flex-col items-center justify-center rounded-xl border border-dashed bg-white p-8 text-center"
-          >
-            <Wifi className="mb-4 size-8 text-muted-foreground" aria-hidden />
-            <h3 className="font-semibold">지원자를 불러오지 못했어요</h3>
-            <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
-              {query.error.message}
-            </p>
-            <Button
-              variant="outline"
-              className="mt-5"
-              onClick={() => void query.refetch()}
-              disabled={query.isFetching}
-            >
-              <RotateCcw className="size-4" />
-              {query.isFetching ? "다시 불러오는 중…" : "다시 불러오기"}
-            </Button>
-          </div>
-        ) : query.isPending || !hydrated ? (
+        {showInitialError ? (
+          <CandidateLoadError
+            pending={isRefreshing}
+            error={query.error}
+            onRetry={retry}
+          />
+        ) : showInitialLoading ? (
           <BoardSkeleton />
         ) : (
           <>
+            <CandidateRefresh
+              failed={query.isError}
+              error={query.error}
+              pending={isRefreshing}
+              blocked={hasPendingMoves}
+              onRetry={retry}
+            />
             <CandidateToolbar
               jobs={jobs}
               total={candidates?.length ?? 0}
               filtered={filtered.length}
+              stale={isStale}
             />
-            {filtered.length === 0 && (
-              <div
-                role="status"
-                className="my-5 rounded-xl border border-dashed bg-white p-6 text-center"
-              >
-                <p className="font-medium">
-                  {candidates?.length
-                    ? "검색 조건에 맞는 지원자가 없어요"
-                    : "아직 등록된 지원자가 없어요"}
-                </p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {candidates?.length
-                    ? "다른 이름이나 직무로 검색해 보세요."
-                    : "지원자가 등록되면 이곳에서 채용 단계를 관리할 수 있어요."}
-                </p>
-                {!!candidates?.length && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="mt-3"
-                    onClick={resetFilters}
-                  >
-                    검색 조건 초기화
-                  </Button>
-                )}
-              </div>
-            )}
-            <CandidateBoard
-              candidates={filtered}
-              pendingIds={pendingIds}
-              onMove={move}
-              onOpenDetail={onOpenDetail}
-            />
+            <div
+              aria-busy={isStale}
+              className={isStale ? "opacity-60" : undefined}
+            >
+              {filtered.length === 0 && (
+                <div className="my-5 rounded-xl border border-dashed bg-white p-6 text-center">
+                  <p className="font-medium">
+                    {candidates?.length
+                      ? "검색 조건에 맞는 지원자가 없어요"
+                      : "아직 등록된 지원자가 없어요"}
+                  </p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {candidates?.length
+                      ? "다른 이름이나 직무로 검색해 보세요."
+                      : "지원자가 등록되면 이곳에서 채용 단계를 관리할 수 있어요."}
+                  </p>
+                  {!!candidates?.length && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="mt-3"
+                      onClick={resetFilters}
+                    >
+                      검색 조건 초기화
+                    </Button>
+                  )}
+                </div>
+              )}
+              <DeferredBoard
+                candidates={filtered}
+                pendingIds={pendingIds}
+                onMove={move}
+                onOpenDetail={onOpenDetail}
+              />
+            </div>
           </>
         )}
       </section>
@@ -244,15 +295,17 @@ function BoardSkeleton() {
     <div role="status" aria-label="지원자를 불러오는 중" className="space-y-5">
       <span className="sr-only">지원자를 불러오는 중입니다.</span>
       <Skeleton className="h-10 max-w-lg" />
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
-        {Array.from({ length: 5 }, (_, i) => (
-          <div key={i} className="space-y-3 rounded-xl border p-3">
-            <Skeleton className="mb-5 h-6 w-24" />
-            {Array.from({ length: 3 }, (_, j) => (
-              <Skeleton key={j} className="h-36 w-full bg-slate-200/50" />
-            ))}
-          </div>
-        ))}
+      <div className="overflow-x-auto rounded-xl pb-4">
+        <div className="grid min-w-[1240px] grid-cols-5 gap-4">
+          {Array.from({ length: 5 }, (_, i) => (
+            <div key={i} className="space-y-3 rounded-xl border p-3">
+              <Skeleton className="mb-5 h-6 w-24" />
+              {Array.from({ length: 3 }, (_, j) => (
+                <Skeleton key={j} className="h-36 w-full bg-slate-200/50" />
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

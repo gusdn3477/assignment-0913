@@ -17,10 +17,12 @@ export function CandidateToolbar({
   jobs,
   total,
   filtered,
+  stale = false,
 }: {
   jobs: string[];
   total: number;
   filtered: number;
+  stale?: boolean;
 }) {
   const search = useCandidateUI((state) => state.search);
   const job = useCandidateUI((state) => state.job);
@@ -89,12 +91,14 @@ export function CandidateToolbar({
       </Button>
       <p
         role="status"
-        aria-live="polite"
-        aria-atomic="true"
+        aria-live="off"
+        aria-label="지원자 검색 결과"
+        aria-busy={stale}
         className="w-full text-sm text-slate-500 sm:ml-auto sm:w-auto"
       >
         전체 {total}명 중{" "}
         <strong className="font-semibold text-slate-900">{filtered}명</strong>
+        {stale && <span className="ml-2 text-xs">결과 업데이트 중…</span>}
       </p>
     </section>
   );
