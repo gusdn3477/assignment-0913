@@ -28,3 +28,11 @@
 - 102 tests 기준 production build까지 통과했습니다.
 - main 4f36d6f 연결 변경 merge. CandidatesApp import/reset JSX와 WorkspaceHeader 충돌을 server shell 경계 + shared Header/ResetButton 유지로 해결했습니다. 새로운 render boundary도 RetryButton을 사용합니다.
 - canonical 변환 후 lint/typecheck 통과. max-w-420을 사용해 최대폭 표기도 정리했습니다.
+
+## 최종 기능 검증
+- 코드 044b7b5: `pnpm format:check && pnpm verify` 전체 통과. 11 files / 103 tests, ESLint canonical 포함, strict typecheck, production webpack build 성공.
+- `pnpm start --port 3103`는 sandbox listen EPERM, 승인된 `pnpm start --hostname 127.0.0.1 --port 3103`로 검증 서버 실행.
+- production 브라우저: 250명 및 5단계, 최서연 검색 1명, 상세 열기/Escape 후 정확한 카드로 focus 복귀, 검색어 clear, 재조회 pending 동안 250명 보드 유지 확인.
+- 390×844에서 빈 검색 0명 안내, documentWidth=390/viewport=390 확인. reload 시 최초 조회 skeleton과 server intro/footer가 함께 남아 있고 완료 후 저장된 검색 필터 복원 확인.
+- 검색 조건 초기화하여 250명 원복. console error/warn [] 확인. 테스트 중 후보 단계 데이터 변경 없음. 임시 탭 닫기/viewport reset/서버 Ctrl-C 종료 완료.
+- 예외 주입/조회 실패/롤백/경쟁 상태는 자동 회귀 테스트로 검증했습니다. browser에서 인위적 render 오류를 주입했다고 집계하지 않습니다.

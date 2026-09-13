@@ -63,3 +63,11 @@
 - `queryOptions` factory가 실제 목록 hook에 query key와 AbortSignal을 전달하는 queryFn을 제공합니다. key와 API 요청을 각각 별도 파일로 관리합니다.
 - `useSuspenseQuery` 도입은 검토 후 현재 목록에서는 보류합니다. 공식 API는 cancellation 미지원과 enabled 미지원 제약을 명시합니다. 현재 목록은 카드 mutation 전에 이전 조회를 취소하는 계약, 브라우저 localStorage 기반 API, 최초 실패 화면의 버튼 유지 및 재시도 포커스 복구를 갖습니다. 이를 유지하기 위해 `useQuery(candidateQueryOptions())`를 사용하며 미사용 Suspense hook을 추가하지 않습니다. 추후 서버 API/새 조회 화면 도입 시 경계와 오류 복구를 함께 설계하여 재검토합니다.
 - 근거: 설치된 `@tanstack/react-query/src/useSuspenseQuery.ts`, `suspense.ts`, `queryOptions.ts` 및 [useSuspenseQuery 공식 API](https://tanstack.com/query/latest/docs/framework/react/reference/functions/useSuspenseQuery), [queryOptions 가이드](https://tanstack.com/query/latest/docs/framework/react/guides/query-options), [Suspense 가이드](https://tanstack.com/query/latest/docs/framework/react/guides/suspense). 2026-09-13 확인.
+
+## 후속 구현: Query와 렌더링 경계
+- `eslint-plugin-better-tailwindcss` 4.7.0을 개발 의존성으로 설치하고 `enforce-canonical-classes`를 error로 적용했습니다. 앱 CSS entryPoint와 rootFontSize 16을 명시합니다. `pnpm lint:fix`로 `min-w-[1240px]` 등을 canonical 표기로 고칩니다. IntelliSense 경고 자체를 숨기지 않고 코드와 lint에서 원인을 해결합니다.
+- `useCandidates`가 안정적인 기본 배열/hasData/summary/선택 후보를 반환합니다. 초기 빈 배열을 Query의 initialData/placeholderData로 넣지 않으며 정상적으로 읽은 빈 목록만 조회 성공으로 취급합니다. 실제 undefined 처리를 소비 컴포넌트에서 제거하면서 조회 취소와 재시도 포커스 계약을 유지합니다.
+- `page.tsx`는 서버 컴포넌트로 header/소개/main/footer를 조합합니다. 클라이언트 `CandidatesApp`에는 브라우저 저장소/UI provider/필터/카드 상호작용을 남깁니다. 서버 shell을 클라이언트 파일에서 import하지 않습니다.
+- `loading.tsx`는 route streaming skeleton입니다. 현재 정적으로 생성되는 단일 페이지에서 이 경계가 API 조회를 기다린다고 가정하지 않습니다. 클라이언트 useQuery 최초 대기는 BoardSkeleton/metric skeleton, 배경 조회는 기존 데이터 유지, mutation은 카드별 feedback을 사용합니다.
+- 보드와 상세 render 예외는 개별 CandidateErrorBoundary에서 복구하고 외부 후보 영역 boundary는 나머지 client render 예외를 다룹니다. 정적 서버 페이지 예외는 기존 route error.tsx를 사용합니다. API 오류는 throw하지 않고 기존 inline/toast 경로를 유지합니다. 새로운 데이터 API 없이 Suspense용 가짜 Promise를 만들지 않았습니다.
+- Next/TypeScript paths와 Vite 기반 Vitest resolve.alias의 @가 모두 src를 가리킵니다. 이미 작동하는 alias를 사용하므로 중복 Vite 플러그인이나 Next용 vite.config를 추가하지 않았습니다.
