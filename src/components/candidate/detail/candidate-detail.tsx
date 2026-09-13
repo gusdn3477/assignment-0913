@@ -10,7 +10,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { STAGE_LABELS } from "@/features/candidates/constants/candidate";
+import { STAGE_LABELS } from "@/constants/candidate";
 import { type Candidate } from "@/features/candidates/types/candidate";
 import { useCandidateUI } from "@/features/candidates/stores/ui-store";
 

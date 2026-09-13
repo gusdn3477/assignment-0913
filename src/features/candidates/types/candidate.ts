@@ -1,4 +1,4 @@
-import type { STAGES } from "@/features/candidates/constants/candidate";
+import type { STAGES } from "@/constants/candidate";
 export type Stage = (typeof STAGES)[number];
 export interface Candidate {
   id: string;

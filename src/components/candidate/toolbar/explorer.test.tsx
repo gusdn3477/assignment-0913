@@ -5,11 +5,10 @@ import {
   useHydrateCandidateUI,
   useCandidateUI,
 } from "@/features/candidates/stores/ui-store";
-import { UI_STORAGE_KEY } from "@/features/candidates/constants/storage";
+import { UI_STORAGE_KEY, JOBS } from "@/constants/candidate";
 import { CandidateToolbar } from "@/components/candidate/toolbar/candidate-toolbar";
 import { CandidateDetail } from "@/components/candidate/detail/candidate-detail";
 import { filterCandidates } from "@/features/candidates/utils/selectors";
-import { JOBS } from "@/features/candidates/constants/candidate";
 import { type Candidate } from "@/features/candidates/types/candidate";
 
 const candidate: Candidate = {

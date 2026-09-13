@@ -6,7 +6,7 @@ import { RetryButton } from "@/components/buttons/retry-button";
 import {
   CANDIDATE_LOAD_ERROR_MESSAGES,
   DEFAULT_CANDIDATE_LOAD_ERROR_MESSAGE,
-} from "@/features/candidates/constants/candidate-errors";
+} from "@/constants/candidate";
 import { MockApiError } from "@/api/candidate/mock-api-error";
 
 function loadErrorMessage(error: Error | null) {

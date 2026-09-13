@@ -3,10 +3,7 @@ import { fireEvent, render, screen, within, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { CandidateBoard } from "@/components/candidate/board/candidate-board";
-import {
-  STAGES,
-  STAGE_LABELS,
-} from "@/features/candidates/constants/candidate";
+import { STAGES, STAGE_LABELS } from "@/constants/candidate";
 import { type Candidate } from "@/features/candidates/types/candidate";
 
 const candidate: Candidate = {

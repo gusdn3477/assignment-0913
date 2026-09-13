@@ -9,12 +9,12 @@ import { Providers } from "@/app/providers";
 import Page from "@/app/page";
 import { candidateApi } from "@/api/candidate/mock-api";
 import { MockApiError } from "@/api/candidate/mock-api-error";
-import { UI_STORAGE_KEY } from "@/features/candidates/constants/storage";
 import {
+  UI_STORAGE_KEY,
   JOBS,
   STAGES,
   STAGE_LABELS,
-} from "@/features/candidates/constants/candidate";
+} from "@/constants/candidate";
 import { type Candidate } from "@/features/candidates/types/candidate";
 
 vi.mock("@/api/candidate/mock-api", async (importOriginal) => ({

@@ -1,4 +1,4 @@
-import { JOBS, STAGES } from "@/features/candidates/constants/candidate";
+import { JOBS, STAGES } from "@/constants/candidate";
 import { type Candidate } from "@/features/candidates/types/candidate";
 
 const FAMILY_NAMES = [

@@ -14,7 +14,7 @@ import type {
   Stage,
 } from "@/features/candidates/types/candidate";
 import { getMoveStore } from "@/features/candidates/stores/move-store";
-import { CANDIDATES_QUERY_KEY } from "@/features/candidates/queries/candidate-keys";
+import { CANDIDATES_QUERY_KEY } from "@/constants/candidate";
 type StageMutation = MoveCandidateInput & { undo?: boolean };
 function patchCandidate(client: QueryClient, candidate: Candidate) {
   client.setQueryData<Candidate[]>(CANDIDATES_QUERY_KEY, (current) =>
