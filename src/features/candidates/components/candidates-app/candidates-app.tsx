@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  memo,
-  useCallback,
-  useDeferredValue,
-  useEffect,
-  useMemo,
-  useRef,
-  useTransition,
-} from "react";
+import { memo, useCallback, useDeferredValue, useMemo } from "react";
 import { ArrowUpRight, CircleHelp, Layers3, Users } from "lucide-react";
 import { CandidateErrorBoundary } from "@/features/candidates/components/candidate-error-boundary/candidate-error-boundary";
 import { ResetButton } from "@/components/buttons/reset-button";
@@ -17,10 +9,7 @@ import { BoardSkeleton } from "@/features/candidates/components/candidate-board/
 import { CandidateBoard } from "@/features/candidates/components/candidate-board/candidate-board";
 import { CandidateDetail } from "@/features/candidates/components/candidate-detail/candidate-detail";
 import { CandidateToolbar } from "@/features/candidates/components/candidate-toolbar/candidate-toolbar";
-import {
-  CandidateLoadError,
-  CandidateRefresh,
-} from "@/features/candidates/components/candidate-load-feedback/candidate-load-feedback";
+import { CandidateQueryGuard } from "@/features/candidates/components/candidate-load-feedback/candidate-query-guard";
 import { useCandidates } from "@/features/candidates/hooks/use-candidates";
 import { useMoveCandidate } from "@/features/candidates/hooks/use-move-candidate";
 import { filterCandidates } from "@/features/candidates/utils/selectors";
@@ -38,45 +27,12 @@ function BoardContent() {
   const job = useCandidateUI((state) => state.job);
   const selectedId = useCandidateUI((state) => state.selectedId);
   const query = useCandidates(selectedId);
-  const hydrated = useCandidateUI((state) => state.hydrated);
   const selectCandidate = useCandidateUI((state) => state.selectCandidate);
   const resetFilters = useCandidateUI((state) => state.resetFilters);
   const candidates = query.data;
   const filters = useMemo(() => ({ search, job }), [search, job]);
   const deferredFilters = useDeferredValue(filters);
   const isStale = filters !== deferredFilters;
-  const [isRetryPending, startRetryTransition] = useTransition();
-  const retryInFlight = useRef(false);
-  const restoreSearchFocus = useRef(false);
-  const pipelineRef = useRef<HTMLElement>(null);
-  useEffect(() => {
-    if (query.hasData && restoreSearchFocus.current) {
-      restoreSearchFocus.current = false;
-      if (document.activeElement === document.body) {
-        pipelineRef.current
-          ?.querySelector<HTMLInputElement>('input[type="search"]')
-          ?.focus();
-      }
-    }
-  }, [query.hasData]);
-  const isRefreshing = isRetryPending || query.isFetching;
-  const hasPendingMoves = pendingIds.size > 0;
-  const showInitialError = !query.hasData && (query.isError || isRetryPending);
-  const showInitialLoading = query.isPending || !hydrated;
-  function retry() {
-    if (retryInFlight.current || query.isFetching || hasPendingMoves) return;
-    retryInFlight.current = true;
-    restoreSearchFocus.current = !query.hasData;
-    // The Action tracks the async retry; Query remains an external, urgent store.
-    // A separate lock excludes repeated requests; transitions do not order them.
-    startRetryTransition(async () => {
-      try {
-        await query.refetch({ throwOnError: false, cancelRefetch: false });
-      } finally {
-        retryInFlight.current = false;
-      }
-    });
-  }
   const filtered = useMemo(
     () =>
       filterCandidates(candidates, deferredFilters.search, deferredFilters.job),
@@ -115,7 +71,6 @@ function BoardContent() {
 
       <section
         id="pipeline"
-        ref={pipelineRef}
         aria-labelledby="pipeline-title"
         className="min-w-0 scroll-mt-6"
       >
@@ -137,71 +92,58 @@ function BoardContent() {
             수 있어요
           </span>
         </div>
-        {showInitialError ? (
-          <CandidateLoadError
-            pending={isRefreshing}
-            error={query.error}
-            onRetry={retry}
+        <CandidateQueryGuard
+          query={query}
+          blocked={pendingIds.size > 0}
+          fallback={<BoardSkeleton />}
+        >
+          <CandidateToolbar
+            jobs={query.summary.jobs}
+            total={query.summary.total}
+            filtered={filtered.length}
+            stale={isStale}
           />
-        ) : showInitialLoading ? (
-          <BoardSkeleton />
-        ) : (
-          <>
-            <CandidateRefresh
-              failed={query.isError}
-              error={query.error}
-              pending={isRefreshing}
-              blocked={hasPendingMoves}
-              onRetry={retry}
-            />
-            <CandidateToolbar
-              jobs={query.summary.jobs}
-              total={query.summary.total}
-              filtered={filtered.length}
-              stale={isStale}
-            />
-            <div
-              aria-busy={isStale}
-              className={isStale ? "opacity-60" : undefined}
-            >
-              {filtered.length === 0 && (
-                <div className="my-5 rounded-xl border border-dashed bg-white p-6 text-center">
-                  <p className="font-medium">
-                    {candidates.length
-                      ? "검색 조건에 맞는 지원자가 없어요"
-                      : "아직 등록된 지원자가 없어요"}
-                  </p>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {candidates.length
-                      ? "다른 이름이나 직무로 검색해 보세요."
-                      : "지원자가 등록되면 이곳에서 채용 단계를 관리할 수 있어요."}
-                  </p>
-                  {!!candidates.length && (
-                    <ResetButton
-                      variant="outline"
-                      size="sm"
-                      className="mt-3"
-                      onClick={resetFilters}
-                    >
-                      검색 조건 초기화
-                    </ResetButton>
-                  )}
-                </div>
-              )}
-              <CandidateErrorBoundary label="지원자 보드">
-                <DeferredBoard
-                  resetKey={JSON.stringify(deferredFilters)}
-                  candidates={filtered}
-                  pendingIds={pendingIds}
-                  onMove={move}
-                  onUndo={undo}
-                  undoHistory={undoHistory}
-                  onOpenDetail={onOpenDetail}
-                />
-              </CandidateErrorBoundary>
-            </div>
-          </>
-        )}
+          <div
+            aria-busy={isStale}
+            className={isStale ? "opacity-60" : undefined}
+          >
+            {filtered.length === 0 && (
+              <div className="my-5 rounded-xl border border-dashed bg-white p-6 text-center">
+                <p className="font-medium">
+                  {candidates.length
+                    ? "검색 조건에 맞는 지원자가 없어요"
+                    : "아직 등록된 지원자가 없어요"}
+                </p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {candidates.length
+                    ? "다른 이름이나 직무로 검색해 보세요."
+                    : "지원자가 등록되면 이곳에서 채용 단계를 관리할 수 있어요."}
+                </p>
+                {!!candidates.length && (
+                  <ResetButton
+                    variant="outline"
+                    size="sm"
+                    className="mt-3"
+                    onClick={resetFilters}
+                  >
+                    검색 조건 초기화
+                  </ResetButton>
+                )}
+              </div>
+            )}
+            <CandidateErrorBoundary label="지원자 보드">
+              <DeferredBoard
+                resetKey={JSON.stringify(deferredFilters)}
+                candidates={filtered}
+                pendingIds={pendingIds}
+                onMove={move}
+                onUndo={undo}
+                undoHistory={undoHistory}
+                onOpenDetail={onOpenDetail}
+              />
+            </CandidateErrorBoundary>
+          </div>
+        </CandidateQueryGuard>
       </section>
       <CandidateErrorBoundary
         key={selectedId}

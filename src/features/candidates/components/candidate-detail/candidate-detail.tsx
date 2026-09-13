@@ -3,10 +3,9 @@
 import { useRef } from "react";
 import { Mail, CalendarDays, BriefcaseBusiness } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { CloseButton } from "@/components/buttons/close-button";
+import { CloseButton } from "./close-button";
 import {
   Sheet,
-  SheetClose,
   SheetContent,
   SheetDescription,
   SheetHeader,
@@ -51,16 +50,7 @@ export function CandidateDetail({
           }
         }}
       >
-        <SheetClose asChild>
-          <CloseButton
-            variant="ghost"
-            size="icon"
-            aria-label="상세 닫기"
-            className="absolute top-5 right-5 z-10"
-          >
-            {null}
-          </CloseButton>
-        </SheetClose>
+        <CloseButton />
         <SheetHeader className="border-b border-slate-100 bg-slate-50 px-7 pt-10 pb-7">
           <p className="mb-4 text-xs font-semibold tracking-widest text-slate-500">
             CANDIDATE PROFILE
