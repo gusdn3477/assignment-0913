@@ -1,21 +1,15 @@
 # 세션 인계 / 현재 상태
 
-## 진행 중: virtualization (2026-09-13)
-- 사용자 후속 요청으로 가상화를 승인 범위에 추가했습니다.
-- 기능 세션: `codex/virtualization`, `.worktrees/virtualization`, `docs/tasks/virtualization.md`.
-- 1,000건 대응, 컬럼별 가상화와 키보드/포커스/검색 회귀 검증. 통합은 main 문서와 production 검증 담당.
-- 아래 완료 기록은 이번 작업 전의 기준 상태입니다.
-
 ## 현재 결론
-기존 필수 작업과 추가 승인된 `concurrent-feedback`(검색 동시 렌더링과 로딩·오류 피드백) 구현·검증 완료. 기준 브랜치는 `main`이며 기능 브랜치와 커밋 이력을 보존했습니다.
+필수 기능, concurrent-feedback, 후속 선택 작업 **virtualization** 구현·통합·검증 완료. main이 기준 브랜치이며 기능 브랜치/워크트리/커밋 이력을 보존했습니다. 진행 중인 기능과 알려진 미해결 결함은 없습니다.
 
-## 최신 추가 기능 검증
-- 기능 커밋 `4ceb4f7`, main 통합 `b02690c`. 브랜치 `codex/concurrent-feedback`, 검토용 워크트리 `.worktrees/concurrent-feedback` 보존.
-- `useDeferredValue` 검색·필터 결과 + memo 보드, `useTransition` 재시도 Action, 기존 데이터를 유지하는 갱신/오류 처리, 재시도 포커스 복구 완료.
-- main에서 `pnpm format:check` 및 `pnpm verify`: lint → strict typecheck → **56/56 tests** → production build 통과.
-- production `127.0.0.1:3101`: 250명, 검색/빈 상태/초기화, 새로고침 pending 중 보드 유지, 재조회 실패/복구, 초기 실패 후 재시도 반복 실패/최종 성공과 검색창 포커스 복구, 상세 Enter/Escape 포커스 복귀 확인. error/warn 로그 없음.
-- 모바일 390×844: document 폭 390, toolbar/board 폭 350. viewport 복원 및 검증 서버 종료 완료.
-- 상세 증거: `docs/records/concurrent-feedback.md`, `docs/records/concurrent-feedback-integration.md`. 아래 50 tests 기록은 이전 필수 기능 완료 시점의 기록입니다.
+## 최신 가상화 검증 (2026-09-13)
+- 기능 `2c0a912`, main 통합 `da3da3f`. 브랜치 `codex/virtualization`, 워크트리 `.worktrees/virtualization`.
+- TanStack Virtual 컬럼별 가상화, 전체 Tab/Shift+Tab 탐색, 상세·메뉴·단계 이동·롤백 포커스 보존, 검색/직무 변경 스크롤 초기화. 기본 250명 유지.
+- main `pnpm format:check && pnpm verify`: 포맷/lint/strict typecheck/**62/62 tests**/production build 통과.
+- production 1,000명 초기 카드 DOM 30개, 끝 스크롤/검색 축소/키보드 경계/화면 밖 이동/저장 영속성/오류 재시도/빈 상태 확인. 390px document/350px board, console error/warn 없음.
+- QA 데이터 250명 원복, 임시 파일/탭/검증 서버 정리 완료.
+- 상세: `docs/records/virtualization.md`, `docs/records/virtualization-integration.md`. 아래 50 tests는 이전 필수 기능 완료 시점의 기록입니다.
 
 ## 새 세션 시작 순서
 1. `AGENTS.md` → `PLAN.md` → 이 문서 → `DECISIONS.md`를 읽습니다.
@@ -33,6 +27,7 @@
 | board-focus-fix | codex/board-focus-fix | 1d41614 | 메뉴 종료 후 포커스 검증 보강 |
 | acceptance-tests | codex/acceptance-tests | a0755c8 | 실제 통합 UI 상태, 5 tests |
 | concurrent-feedback | codex/concurrent-feedback | 4ceb4f7 | 동시 렌더링·재시도·갱신 피드백, app 11 tests / 전체 56 tests |
+| virtualization | codex/virtualization | 2c0a912 | 1,000건 가상화/키보드/포커스, 전체 62 tests |
 
 ## 최종 검증
 - `pnpm format:check`: 통과.
@@ -43,8 +38,8 @@
 - Turbopack production CSS 내부 포트 오류 때문에 build는 공식 `--webpack` 옵션을 사용합니다.
 
 ## 실행과 다음 작업
-2026-09-13 추가 요청의 문서화와 실제 구현·검증을 모두 완료했습니다. 공통 Input/Button의 기본 HTML 요소 확장과 카드 저장 동시성 계약을 유지했습니다. 진행 중인 기능과 알려진 미해결 사항은 없습니다.
+2026-09-13 가상화 추가 요청의 문서화와 실제 구현·검증을 모두 완료했습니다. 공통 Input/Button의 기본 HTML 요소 확장과 카드 저장 동시성 계약을 유지했습니다. 진행 중인 기능과 알려진 미해결 사항은 없습니다.
 
 개발 미리보기: http://localhost:3100 (서버가 종료되면 `pnpm dev --port 3100`). 기본 실행은 `pnpm install` → `pnpm dev`입니다.
 
-필수 미완료 없음. Undo·가상화·DnD·로그인·실제 백엔드·다중 탭 동기화·공개 저장소 생성/푸시/배포는 승인 범위 밖입니다. 새 기능 요청 전에는 이 범위를 임의로 확장하지 않습니다.
+필수 미완료 없음. 선택 작업 중 명시된 가상화를 완료했습니다. 다음 독립 기능 후보는 Undo·DnD이며 이번에는 구현하지 않았습니다. 로그인·실제 백엔드·다중 탭 동기화·공개 저장소 생성/푸시/배포는 승인 범위 밖입니다.

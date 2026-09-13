@@ -30,6 +30,7 @@ Production build는 `next build --webpack`을 사용합니다. 개발 환경의 
 - 검색 입력은 즉시 반영되며 결과가 따라오는 동안 이전 결과와 갱신 중 표시를 유지합니다.
 - 새로고침 중에도 기존 보드를 사용할 수 있습니다. 재조회 실패는 보드 위에 안내하며 다시 불러올 수 있습니다. 카드 저장 중에는 새로고침이 잠시 비활성화됩니다.
 - 좁은 화면에서는 보드를 가로 스크롤하고, 각 컬럼의 목록은 독립적으로 스크롤합니다.
+- 컬럼은 보이는 카드와 키보드 접근에 필요한 카드만 렌더링합니다. Tab/Shift+Tab으로 전체 지원자에 접근할 수 있으며, 검색·직무 조건이 바뀌면 각 목록을 맨 위로 되돌립니다.
 
 ## 기술과 mock API
 
@@ -37,7 +38,7 @@ TypeScript strict · Next.js App Router · React · Tailwind CSS · shadcn/ui ·
 
 실제 백엔드나 HTTP mock 서버는 없습니다. 비동기 브라우저 API가 요청마다 **200~800ms 지연**과 **약 15% 실패**를 재현합니다. 초기 조회도 실패할 수 있으며 오류 화면의 다시 불러오기를 사용하면 됩니다.
 
-- 최초 데이터는 결정적으로 생성한 지원자 250명입니다.
+- 최초 데이터는 결정적으로 생성한 지원자 250명입니다. TanStack Virtual로 컬럼별 가상화를 적용하며 1,000건 데이터도 검증합니다.
 - 성공한 단계 변경만 `hiring-pipeline:candidates:v1`에 저장합니다. 최초 조회는 저장소에 쓰지 않습니다.
 - TanStack Query가 지원자 캐시와 낙관적 변경을 관리합니다.
 - Zustand는 검색·필터·선택 ID를 관리하며 검색·필터만 `hiring-pipeline-ui`에 저장합니다.
@@ -46,7 +47,7 @@ TypeScript strict · Next.js App Router · React · Tailwind CSS · shadcn/ui ·
 - 공통 Input/Button은 기본 HTML 요소의 props를 확장하여 native 속성·이벤트·ref를 전달합니다.
 - 저장 데이터는 읽을 때 런타임 검증합니다. 지원자 데이터가 손상되면 조용히 덮어쓰지 않고 오류로 보고합니다. UI 설정 손상은 기본값으로 복구합니다.
 
-저장은 **현재 브라우저·현재 origin·단일 탭** 기준입니다. 다른 브라우저/포트에는 공유되지 않습니다. 여러 탭의 동시 수정·인증·실제 지원자 CRUD·Undo·가상화·DnD·배포는 구현 범위 밖입니다.
+저장은 **현재 브라우저·현재 origin·단일 탭** 기준입니다. 다른 브라우저/포트에는 공유되지 않습니다. 여러 탭의 동시 수정·인증·실제 지원자 CRUD·Undo·DnD·배포는 구현 범위 밖입니다.
 
 ### 데모 데이터 초기화와 빈 상태 확인
 
@@ -69,4 +70,4 @@ TypeScript strict · Next.js App Router · React · Tailwind CSS · shadcn/ui ·
 기능마다 별도 세션·브랜치·워크트리를 사용했고, `type(scope): 요약` 커밋과 병합 이력을 유지합니다. 의존성이 없는 기능만 병렬 개발합니다.
 
 ## 최종 검증 결과
-`pnpm verify`와 `pnpm format:check` 통과. 자동 테스트 5개 파일·56개 사례가 있으며, 개발/프로덕션 브라우저에서 검색·상세·이동·새로고침·실패 복구·390px 화면을 확인했습니다. 동시 렌더링과 재시도·갱신 개선 후 프로덕션 브라우저 검증도 완료했습니다. 자세한 결과는 [STATUS.md](STATUS.md), [브라우저 기록](docs/records/browser-qa.md), [후속 통합 기록](docs/records/concurrent-feedback-integration.md)을 참고하세요.
+`pnpm verify`와 `pnpm format:check` 통과. 자동 테스트 6개 파일·62개 사례. 기본 250명 및 합성 1,000명 production 보드에서 가상화 DOM 제한·깊은 스크롤·검색·상세·이동·저장 유지·재시도·390px 화면을 확인했습니다. 전체 카드 키보드 순회와 화면 밖 이동/롤백 포커스는 자동 테스트에도 포함됩니다. 자세한 결과는 [STATUS.md](STATUS.md), [가상화 통합 기록](docs/records/virtualization-integration.md)을 참고하세요.

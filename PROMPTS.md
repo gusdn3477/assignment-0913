@@ -409,3 +409,93 @@ Integration explicitly requested retaining the movement regression rather than h
 
 ## 결론과 한계
 승인된 추가 기능과 검증 완료. 알려진 기능 이슈 없음. 이전 기능의 카드별 rollback/같은 카드 잠금/다른 카드 병렬 저장은 전체 자동 테스트에서 재검증했습니다. React 지연 렌더링의 시간·성능 향상 수치를 측정한 것은 아니며, 250명 동작 및 입력/결과 일관성을 확인했습니다. 다중 탭·가상화 등 기존 제외 범위는 유지합니다.
+
+
+---
+
+# virtualization 작업 기록
+
+## 실제 요청
+사용자: “문서 보고 선택 작업도 이어서 진행(가상화 등)”
+
+통합 배정: “Implement assigned virtualization feature in /Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/virtualization branch codex/virtualization only. Read AGENTS PLAN STATUS DECISIONS docs/tasks/virtualization.md first. Task file created uncommitted for you to own. Follow task requirements especially keyboard reachability, focus on offscreen moves/rollback/detail, filter scroll reset and 1000 items. Request dependencies from integration; do not change package/lock. Fresh independent feature session required by AGENTS. Implement and test, record actual prompt/commands and handoff, commit. I handle main scope docs and production/browser integration. No subdelegation needed.”
+
+## 결과 / 선택
+- 컬럼마다 TanStack Virtual `useVirtualizer`, stable candidate key, 실제 li 높이 측정, overscan 2. 별도 scroll 계산기를 자체 작성하지 않았습니다. 의존성 `@tanstack/react-virtual 3.14.12`는 통합 담당이 설치했습니다.
+- 보드의 표시 결과를 바꾸지 않고 화면 부분만 mount합니다. 결과 개수/빈 상태/정렬은 기존 전체 데이터 기준이며 `aria-posinset`/`aria-setsize`도 전체 컬럼 기준입니다.
+- 실제 모든 카드에 Tab/Shift+Tab으로 도달하도록 논리적 순서를 계산하여 필요한 카드만 mount 후 focus합니다. 마지막 카드는 외부에서 native Shift+Tab 진입을 보장하도록 유지합니다. 현재 focus 및 최근 focus request도 bounded pin하여 상세/메뉴가 scroll로 사라지지 않습니다.
+- 단계 이동/롤백은 기존 board focus 판단을 유지하며 컬럼 handle에 요청합니다. 이미 처리한 요청은 unrelated update 때 다시 focus하지 않습니다. 검색 입력을 훔치지 않습니다.
+- deferred search/job 조건을 resetKey로 전달하여 검색 결과 축소 시 scroll을 0으로 되돌립니다. 캐시/mutation 값은 지연시키지 않았으며 새로운 transition은 필요하지 않았습니다.
+- Next 설치 guide `node_modules/next/dist/docs/01-app/03-api-reference/01-directives/use-client.md`를 먼저 읽었습니다. API 참고: https://tanstack.com/virtual/latest/docs/api/virtualizer .
+- 가상화 인스턴스는 mutable이므로 해당 컴포넌트에 `use no memo`를 선언하고 반환 API를 memo component에 전달하지 않습니다. 이 지점만 근거 주석으로 `react-hooks/incompatible-library` 경고를 제외했습니다.
+
+## 리뷰와 수정
+- 통합 리뷰: 처리한 request가 현재 focusId를 가리지 않도록 두 카드 pin; portal focus가 board focus state를 초기화하지 않도록 DOM contains 가드; 최종 카드 native Shift+Tab 접근 보존. 모두 반영.
+- 통합 담당은 변경 소스 리뷰 완료 및 blocking finding 없음을 보고했습니다.
+- 테스트는 라이브러리를 mock하지 않습니다. JSDOM의 실제 layout 부재를 보완하는 candidate-column/row 한정 geometry와 browser처럼 비동기 scroll event를 테스트 setup에 추가했습니다(통합 승인). 실제 픽셀 배치/viewport 스크롤은 integration browser 검증 대상입니다.
+
+## 실행 / 실제 결과
+작업 경로: `/Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/virtualization`, 브랜치 `codex/virtualization`.
+
+- 일반 `pnpm exec prettier ...` 최초 실행: 공유 node_modules와 worktree package manifest 차이로 pnpm의 자동 install이 `ERR_PNPM_ABORTED_REMOVE_MODULES_DIR_NO_TTY` 실패. 공유 디렉터리를 재설치하지 않고 아래 명령에 `--config.verify-deps-before-run=false`를 사용했습니다.
+- 최초 typecheck: range implicit any 수정. geometry mock scrollTo optional options type 수정.
+- 최초 UI test: JSDOM height 0 때문에 가상 DOM 미생성 실패. 실제 virtualizer를 유지하면서 위 geometry 추가로 수정. 동기 scroll mock의 lifecycle flushSync 경고는 비동기 scroll event로 수정.
+- `pnpm --config.verify-deps-before-run=false typecheck`: 통과.
+- `pnpm --config.verify-deps-before-run=false lint`: 오류/경고 없이 통과.
+- `pnpm --config.verify-deps-before-run=false test`: 6 files / 61 tests 통과 (portal menu 회귀 1개 추가 전).
+- `pnpm --config.verify-deps-before-run=false format:check`: 통과.
+- 신규 가상화 검증: 1,000명 DOM < 12 items, 깊은 스크롤 500번째/마지막 도달, 검색 1건 축소 및 scrollTop 0, 1,000명 모든 카드 2,000회 Tab 순회, Shift+Tab, 외부 역방향 진입, offscreen 이동/rollback/search focus, 이전 keyboard 요청 후 다른 카드 상세/scroll/닫기 focus. 추가 portal 메뉴/스크롤/닫기 trigger focus 검사.
+
+## 남은 사항
+production build와 실제 브라우저 검증은 통합 담당이 main에서 실행합니다. 기능 범위의 알려진 미해결 결함은 없습니다. Undo/DnD는 이 기능에 포함하지 않았습니다.
+
+## 최종 리뷰 보강
+- portal-menu 회귀 신규 테스트가 첫 실행에서 실패하여 추가 결함을 발견했습니다. Radix pointer open은 trigger focus를 생략할 수 있으므로 `onFocusCapture`의 DOM contains 가드만으로는 pointer로 연 카드가 pin되지 않았습니다.
+- `onPointerDownCapture`에서도 클릭한 카드 ID를 보존하여 menu open 후 깊은 scroll에도 trigger가 유지되도록 수정했습니다. portal 내부 pointer/focus는 contains 가드로 무시합니다. Safari처럼 pointer click이 button focus를 만들지 않는 환경에도 적용되는 보강입니다.
+- `vitest run src/features/candidates/virtualization.test.tsx -t portalled`: 해당 회귀 1개 통과, 나머지 5개는 targeted 실행으로 제외. 이어 최종 전체 suite를 실행했습니다.
+- 최종 `pnpm --config.verify-deps-before-run=false typecheck`, `lint`, `format:check`: 모두 통과, lint 오류/경고 없음.
+- 최종 `pnpm --config.verify-deps-before-run=false test`: **6 files / 62 tests 통과**, 전체 17.70s. 신규 6 tests 중 1,000카드 Tab 순회 10.31s. 실패·경고 없음.
+- `git diff --check`: 통과.
+
+
+---
+
+# 가상화 통합 기록
+
+## 실제 요청
+> 문서 보고 선택 작업도 이어서 진행(가상화 등)
+
+## 범위와 분담
+- 시작 HEAD `03e73bc`, main 깨끗함 확인. AGENTS/PLAN/STATUS/DECISIONS 및 이전 기능 인계/기록 확인.
+- 문서의 1,000건 가상화를 이번 독립 기능으로 선정. 기본 250명 시드는 유지. Undo/DnD는 다음 후보.
+- AGENTS의 독립 세션·워크트리 규칙에 따라 `.worktrees/virtualization`, `codex/virtualization` 생성. 기능 세션은 보드·가상 목록·회귀 테스트·기능 기록, 통합은 의존성·상위 문서·리뷰·production 검증.
+- 실제 위임: task 계약을 읽고 컬럼별 가상화, Tab 전체 접근, 화면 밖 이동/롤백/상세 포커스, 검색 후 스크롤 회복을 구현·검증·커밋하도록 요청.
+- `pnpm add @tanstack/react-virtual`: 3.14.12 설치. package/lockfile 통합 담당 변경. 기존 eslint/whatwg-encoding deprecated 경고 확인.
+- rg 미설치로 find 사용. 첫 일반 git commit은 .git/index.lock sandbox EPERM, 같은 범위 git 명령을 require_escalated로 실행해 성공.
+- 실제 browser 1,000건 검증을 위해 public에 임시 QA HTML 준비. 버튼으로 기존 localStorage를 sessionStorage에 백업한 뒤 합성 1,000건 적용, 복원 버튼 제공. 앱 기본 데이터/실패율은 변경하지 않음. 검증 종료 후 데이터 복원 확인 및 임시 파일 삭제 완료.
+
+## 리뷰 기준
+- [TanStack 공식 Virtualizer 문서](https://tanstack.com/virtual/latest/docs/api/virtualizer)의 measureElement/rangeExtractor/scrollToIndex 계약 확인. 실제 크기 측정, 화면 밖 포커스 대상의 추가 렌더링, 해당 index 스크롤을 조합합니다.
+- 중간 리뷰에서 이전 키보드 요청 ID가 이후 마우스 상세 카드의 pin을 가리는 문제를 지적했고, 현재 focus ID도 함께 보존하도록 기능 담당에게 전달했습니다.
+- JSDOM은 레이아웃을 계산하지 않으므로 virtualizer를 통째로 mock하지 않고 관련 요소의 geometry/scroll만 한정하여 지원하도록 요청했습니다. 실제 화면 측정은 production browser로 별도 확인합니다.
+
+## 검증
+- 기능 `2c0a912`를 main `da3da3f`로 병합. 추가 실행 코드 수정 없음.
+- main `pnpm format:check && pnpm verify`: format/lint/strict typecheck/**62 tests**/webpack production build 모두 통과. 6 test files, 12.58s.
+- 최초 sandbox server listen EPERM. require_escalated로 `pnpm start --hostname 127.0.0.1 --port 3101` 실행 성공.
+
+## 실제 production 브라우저 (2026-09-13)
+Codex in-app browser, 127.0.0.1:3101, 기본 viewport 1280×720.
+- 기본 250명, 초기 실제 카드 DOM **30개**, 각 컬럼 viewport 432px 확인.
+- 임시 QA 버튼으로 합성 1,000명(컬럼별 200명) 적용. 전체 결과 1,000명, 초기 실제 카드 DOM **30개**. DOM 수 측정이며 처리 시간 벤치마크는 아닙니다.
+- 서류검토 컬럼 실제 wheel scroll 100 pages: scrollTop 36222, 196~200번째 카드 표시, 전체 DOM 29개. 첫 Control+End는 문서만 이동했고 AX 대상이 자식에 가려져 coordinate wheel로 전환했습니다.
+- 깊은 스크롤에서 가상지원자0100 검색: 결과 1명/카드 1개/scrollTop 0. Enter 상세 열기, Escape 닫기 후 같은 상세 버튼 focus 복귀.
+- 초기화 후 컬럼에서 Tab 및 추가 12회 Tab: 처음 가시 범위 밖의 7번째 상세 버튼 focus, scrollTop 748, DOM 32개. 전체 1,000명 순회는 자동 테스트에서 확인했습니다.
+- 불합격 마지막 카드 qa-1000을 서류검토로 이동: 즉시 상세 focus, 목적지 scrollTop 36322, 해당 카드 저장 중 표시. 완료 후 서류검토 유지/버튼 복구. reload 후 검색해 저장 영속성 확인.
+- reload 및 원복 후 로드에서 각각 기본 15% 확률의 최초 조회 실패가 발생해 searchbox 대기 timeout. 에러 DOM 확인 후 다시 불러오기 각 1회로 복구. 실패율은 변경하지 않았습니다.
+- 390×844: document width 390, board width 350, 컬럼 높이 506, DOM 35개. 모바일 screenshot 배치 확인. viewport override 원복.
+- 빈 이름 검색: 결과 0명과 빈 안내 일치. browser error/warn logs `[]`.
+- QA 버튼으로 기존 localStorage 복원, 전체 250명 복구 확인. 임시 tab 닫기, production 서버 Ctrl-C 종료, public QA 파일 삭제 완료.
+
+## 결론 / 남은 사항
+가상화 구현·리뷰·자동/production 검증 완료. 알려진 미해결 결함 없음. 기본 시드는 250명이며 1,000건은 합성 QA 데이터로 확인했습니다. Undo/DnD는 다음 독립 기능 후보입니다.
