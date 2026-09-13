@@ -24,7 +24,7 @@ export function WorkspaceHeader() {
       }
       right={
         <div className="flex items-center gap-3">
-          <span className="hidden text-right text-xs leading-5 sm:block">
+          <span className="hidden text-right text-xs/5  sm:block">
             <span className="block font-medium">채용 담당자</span>
             <span className="text-muted-foreground">Orbit 팀</span>
           </span>

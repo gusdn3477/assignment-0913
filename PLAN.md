@@ -37,3 +37,6 @@ Undo, 가상화, DnD, 로그인, 지원자 생성/삭제, 실제 백엔드, 다�
 
 ## 후속 승인: 재사용 컴포넌트와 구조 정리 (2026-09-13)
 사용자의 선택사항 1~4 추가 요청을 구현합니다. `reusable-ui`는 clearButton을 포함한 Input, 의미 있는 버튼 래퍼, left/center/right Header를 담당합니다. `candidate-structure`는 컴포넌트별 폴더와 상수/타입/유틸/훅/API/query key·queryOptions 분리, 용도별 skeleton, 실제 입력 로직 추상화를 담당합니다. 두 독립 세션·워크트리에서 서로 다른 소유 파일을 수정하고 통합합니다. useSuspenseQuery는 브라우저 저장소·조회 취소·오류 복구 계약과 비교해 적합한 곳에만 적용하며 판단 근거를 기록합니다. 억지 추상화 및 사용되지 않는 컴포넌트는 추가하지 않습니다. 기존 전체 회귀 검사와 production 브라우저 검증을 완료합니다.
+
+## 후속 승인: Query와 렌더링 경계 (2026-09-13)
+사용자의 추가 요청을 독립 `codex/candidate-boundaries` 워크트리에서 적용합니다. Tailwind 4 canonical class ESLint와 자동 수정, useQuery의 데이터/조회 상태 정규화, 기존 @ alias 활용, route loading 및 영역별 render 예외 복구, 정적 서버 page와 interactive client 후보 영역 분리를 포함합니다. 기존 cancellation/카드 잠금/롤백/Undo/DnD/가상화 계약을 유지하며 통합 검증합니다.

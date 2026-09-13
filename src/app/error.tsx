@@ -20,7 +20,7 @@ export default function ErrorPage({
           aria-hidden
         />
         <h1 className="text-xl font-semibold">화면을 불러오지 못했어요</h1>
-        <p className="my-3 text-sm leading-6 text-muted-foreground">
+        <p className="my-3 text-sm/6  text-muted-foreground">
           일시적인 문제가 발생했습니다. 다시 시도해 주세요. 저장된 지원자 정보는
           그대로 유지됩니다.
         </p>

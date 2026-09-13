@@ -187,7 +187,7 @@ export function CandidateBoard({
       <p role="status" className="sr-only">
         {drag.message}
       </p>
-      <div className="grid min-w-[1240px] grid-cols-5 items-start gap-4">
+      <div className="grid min-w-310 grid-cols-5 items-start gap-4">
         {STAGES.map((stage, index) => (
           <section
             key={stage}

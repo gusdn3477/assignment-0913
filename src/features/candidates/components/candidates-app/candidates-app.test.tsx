@@ -2,7 +2,7 @@ import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Providers } from "@/app/providers";
-import { CandidatesApp } from "@/features/candidates/components/candidates-app/candidates-app";
+import Page from "@/app/page";
 import { candidateApi } from "@/features/candidates/api/mock-api";
 import { MockApiError } from "@/features/candidates/api/mock-api-error";
 import { UI_STORAGE_KEY } from "@/features/candidates/constants/storage";
@@ -62,7 +62,7 @@ function deferred<T>() {
 const mount = () =>
   render(
     <Providers>
-      <CandidatesApp />
+      <Page />
     </Providers>,
   );
 const detail = (name: string) =>

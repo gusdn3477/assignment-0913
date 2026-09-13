@@ -48,6 +48,39 @@ beforeEach(() => {
 });
 
 describe("candidate query", () => {
+  it("normalizes pending data without populating cache and distinguishes a successful empty list", async () => {
+    const context = setup(false);
+    const list = deferred<Candidate[]>();
+    vi.mocked(candidateApi.listCandidates).mockReturnValue(list.promise);
+    const hook = renderHook(useCandidates, { wrapper: context.wrapper });
+    const pendingData = hook.result.current.data;
+    expect(pendingData).toEqual([]);
+    expect(hook.result.current.hasData).toBe(false);
+    expect(context.client.getQueryData(CANDIDATES_QUERY_KEY)).toBeUndefined();
+    hook.rerender();
+    expect(hook.result.current.data).toBe(pendingData);
+    await act(async () => list.resolve([]));
+    await waitFor(() => expect(hook.result.current.hasData).toBe(true));
+    expect(hook.result.current.summary.total).toBe(0);
+    expect(hook.result.current.isPending).toBe(false);
+    expect(context.client.getQueryData(CANDIDATES_QUERY_KEY)).toEqual([]);
+  });
+
+  it("retains normalized data and summary after a background refresh fails", async () => {
+    const context = setup();
+    vi.mocked(candidateApi.listCandidates).mockRejectedValue(
+      new Error("offline"),
+    );
+    const hook = renderHook(useCandidates, { wrapper: context.wrapper });
+    await act(async () => {
+      await hook.result.current.refetch();
+    });
+    await waitFor(() => expect(hook.result.current.isError).toBe(true));
+    expect(hook.result.current.hasData).toBe(true);
+    expect(hook.result.current.data).toEqual(context.candidates);
+    expect(hook.result.current.summary.total).toBe(context.candidates.length);
+  });
+
   it("passes the query AbortSignal and aborts an in-flight list when moving", async () => {
     const context = setup();
     const list = deferred<Candidate[]>();

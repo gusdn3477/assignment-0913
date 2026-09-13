@@ -14,7 +14,7 @@ export function BoardSkeleton() {
         <Skeleton className="h-8 w-16" />
       </div>
       <div className="overflow-x-auto rounded-xl pb-4">
-        <div className="grid min-w-[1240px] grid-cols-5 gap-4">
+        <div className="grid min-w-310 grid-cols-5 gap-4">
           {STAGES.map((stage) => (
             <div key={stage} className="space-y-3 rounded-xl border p-3">
               <Skeleton className="mb-5 h-6 w-24" />
