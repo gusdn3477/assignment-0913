@@ -19,3 +19,9 @@
 
 ## 다음 검증
 보드 포커스 timeout, 검색·필터·이동·새로고침·상세 실제 조작, 반응형 및 최종 빌드.
+
+## 최종 결과
+- 메뉴 테스트 지연은 실제 앱 결함으로 단정하지 않고 CPU profile로 추적하여 nwsapi/JSDOM 재진입을 확인했습니다. 하위 의존성 override 후 원래 50개 테스트 모두 통과했습니다.
+- 포맷팅으로 줄이 바뀐 테스트의 @ts-expect-error 위치를 수정한 뒤 pnpm format:check와 pnpm verify 전체 통과했습니다.
+- Webpack production build 및 next start 브라우저 smoke도 통과했습니다. 필수 미완료 없음.
+- 기능 워크트리는 정리하고 브랜치·커밋·기능 기록은 보존했습니다.

@@ -27,3 +27,300 @@ pnpm install과 shadcn CLI 컴포넌트 생성을 완료했습니다. pnpm typec
 아래 기록은 기능 완료 때 병합한 원문이며 개별 기록 파일을 유지합니다.
 - [mock-api](docs/records/mock-api.md): 17개 테스트, empty 배열 검증 조건 수정, 타입/lint 통과.
 - [explorer](docs/records/explorer.md): 9개 테스트, persist 복원/손상/실패, 키보드 필터/상세 검증.
+
+<!-- GENERATED-FEATURE-RECORDS -->
+
+## 최종 검증 및 기능별 원문
+
+최종 pnpm verify/format:check 통과, 50 tests 통과. 아래 기록의 중간 실패는 당시의 실제 관찰이며 최종 해결은 test-environment-fix와 STATUS.md에 정리되어 있습니다. 사용자 본인의 검증으로 가장하지 않고 에이전트 실행 결과로 기록합니다.
+
+---
+
+# mock-api 실행 기록
+
+## 실제 받은 작업 지시
+> Implement ONE feature mock-api in worktree /Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/mock-api branch codex/mock-api, start 12ed483. Read AGENTS.md PLAN.md STATUS.md docs/SESSION_GUIDE.md docs/tasks/mock-api.md. Own only files in task. Implement robust browser mock API + deterministic 250 seed + tests. Shared node_modules already linked. Run pnpm test targeted/typecheck/lint; write actual received prompt and evidence in docs/records/mock-api.md, update task handoff, commit feat(mock-api). Do not change shared/package/app files. Do not spawn subagents. Final report path/branch/SHA/tests/open issues. Root integrates independently.
+
+추가 검토 지시:
+> Please change validation to allow any valid array length including [] (seed is 250 but valid stored empty supports required whole-empty UI and avoids conflating seed size with schema). Keep uniqueness, fields and version validation. Add empty persistence read test before commit. Known jobs restriction okay but unknown user corrupted reject explicit.
+
+## 구현 결과
+- `createSeedCandidates`: 한국어 이름 250개, 고유 ID/이름, 직무 5개 × 단계 5개별 각 10명. 호출마다 새 객체를 반환합니다.
+- `createMockApi` / `candidateApi`: 조회와 단계 변경, 200~800ms 지연과 15% 미만 난수 실패, 주입 가능한 storage getter/random/sleep.
+- 조회는 AbortSignal을 지원하고 취소 시 타이머/리스너를 정리합니다. 주입한 sleep이 signal을 무시하더라도 대기 후 취소를 재확인합니다.
+- 저장 키 `hiring-pipeline:candidates:v1`; `{ version: 1, candidates }`를 저장합니다. 버전, 필드 형식, 날짜, 알려진 직무/단계, ID 중복을 검사합니다. 손상 데이터는 오류로 보고하고 덮어쓰지 않습니다.
+- 최초 조회는 시드만 반환합니다. 성공한 변경만 저장하며, 지연 뒤 최신 저장 값을 동기적으로 읽고 대상 카드만 변경하므로 다른 카드의 먼저 완료된 변경을 보존합니다.
+- 같은 ID의 진행 중 변경은 busy 오류로 제외합니다. finally에서 잠금을 풀어 실패 후 재시도를 허용합니다.
+- 저장소 접근/읽기/쓰기 오류는 명시적인 MockApiError로 전달합니다. 의존성/공유 타입 변경 없음.
+
+## 검토 및 결정
+- 최초 구현은 저장 배열 길이도 250으로 제한했으나 통합 검토에 따라 빈 배열을 포함한 모든 배열 길이를 허용했습니다. 시드 크기와 저장 스키마를 분리하고 전체 빈 상태를 지원합니다.
+- 저장소에 접근할 수 없을 때 메모리 성공으로 위장하지 않고 실패 처리하여 영속 저장 계약을 지킵니다.
+- 조회 시 저장하지 않아 초기 렌더 또는 실패 요청이 영속 상태를 변경하지 않습니다.
+- UI 낙관적 반영과 카드 단위 롤백은 통합 담당자의 Query 계층 책임입니다.
+
+## 실행 명령과 결과
+- `pnpm test src/features/candidates/mock-api.test.ts`: pnpm의 공유 node_modules 사전 검사에서 자동 install을 시도하다 ERR_PNPM_ABORTED_REMOVE_MODULES_DIR_NO_TTY로 중단.
+- `pnpm --config.verify-deps-before-run=false test src/features/candidates/mock-api.test.ts`: 최초 **17 tests passed**.
+- `pnpm --config.verify-deps-before-run=false typecheck`: 최초 **통과**, tsc --noEmit.
+- `pnpm --config.verify-deps-before-run=false lint`: 최초 **통과**, eslint .
+- 최종 검토 수정 후 `./node_modules/.bin/vitest run src/features/candidates/mock-api.test.ts`: **17 tests passed**, 1 file, 1.85s.
+- `./node_modules/.bin/tsc --noEmit`: **통과**.
+- `./node_modules/.bin/eslint src/features/candidates/mock-api.ts src/features/candidates/seed.ts src/features/candidates/mock-api.test.ts`: **통과**.
+- 테스트: 시드 결정성/독립성, 성공 저장과 재로드, 실패 경계/무저장, 역순 완료/같은 카드 배제, 손상 JSON·버전·단계·중복 ID·날짜, 유효 빈 배열, 저장 접근/쓰기 실패 후 재시도, 미존재 ID/잘못된 입력, 사전/진행 중 취소, signal 무시 sleep, 지연 최솟값/최댓값.
+
+## 남은 사항
+기능 범위 미완료 없음. production build, 브라우저 검증, Query 롤백과 UI 연결은 통합 담당자가 수행합니다. 다중 탭 동기화는 승인 범위 밖입니다.
+
+
+---
+
+# board-ui 작업 기록
+
+## 실제 받은 지시
+
+> Implement ONE feature board-ui in worktree /Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/board-ui branch codex/board-ui, start 12ed483. Read AGENTS.md PLAN.md STATUS.md docs/SESSION_GUIDE.md docs/tasks/board-ui.md. Build polished Korean hiring board, 5 stage columns/card/menu, callbacks only, accessible focus continuity, relevant tests. Shared shadcn installed and node_modules linked. IMPORTANT expose card detail button data-candidate-detail={id} for explorer focus return, move trigger data-candidate-move={id}. Ownership per task; no shared/app/package edits. Write actual received prompt & review/test evidence docs/records/board-ui.md; update task handoff; commit feat(board-ui). Do not spawn agents. Final path/branch/SHA/tests/issues.
+
+## 구현·리뷰
+
+CandidateBoard 계약 구현. 5단계·카운트·빈 컬럼 유지, 지원일 내림차순/id 오름차순. 흰 카드와 단계별 색상, 아바타·직무·지원일. 상세와 이동은 별도 버튼이며 중첩 없음. shadcn 메뉴는 현재단계와 pending 이동 차단. Query/persist는 부모 책임. memo 카드/메모된 그룹/안정적 이동 콜백. 카드 재마운트 시 상세 버튼 포커스 복원, 외부 검색 포커스 유지.
+
+통합 리뷰 반영: 단계 h3, 컬럼 목록 독립 스크롤 max min(60vh,720px), 목록 탭 포커스와 이름 제공. 메뉴는 nonmodal로 카드 재배치 포커스와 modal trap 충돌 가능성을 줄임.
+
+## 검증
+
+- pnpm typecheck는 링크된 node_modules 자동 install 시도 중 ERR_PNPM_ABORTED_REMOVE_MODULES_DIR_NO_TTY. 의존성 변경 없이 직접 바이너리 사용.
+- node_modules/.bin/tsc --noEmit: 명시적 Record 초기화 수정 후 통과.
+- node_modules/.bin/eslint src/features/candidates/board.tsx src/features/candidates/board.test.tsx: 통과.
+- Vitest 보드 8개 중 6개 통과; 메뉴 user-event 2개 timeout(Node22/24, forks/threads). 상세 Enter/Tab 단독 150ms 통과.
+- 메뉴 입력을 직접 keyDown으로 검증하도록 수정 후 현재단계 비활성/면접 콜백 테스트 통과. 이동·롤백 포커스 테스트 실행 지연은 통합 진단 필요.
+- 임시 콘솔 로그와 act 전역 설정 제거. 중단한 작업 뒤 프로세스 목록으로 이전 테스트 worker 없음 확인.
+- 통합 지시에 따라 공유 shadcn cn import를 로컬 @/lib/utils로 수정했지만 해당 공유 파일은 커밋 제외(통합에서 동일 변경 소유).
+
+## 남은 사항
+
+통합 전체 테스트와 실제 브라우저 키보드 메뉴·이동/롤백 포커스·스크롤 검증 필요. 공유 UI 로컬 변경과 node_modules 링크는 커밋 제외.
+
+최종 실행 결과: Node24 `vitest run src/features/candidates/board.test.tsx --maxWorkers=1 --reporter=verbose`는 **7 passed, 1 failed**, 55.41s. 유일한 실패는 `restores focus to the moved card and again on rollback` (5000ms timeout, 보고된 실행 40866ms). 실패 테스트를 유지하여 통합 진단에 제공함. 마지막 tsc 재실행 통과.
+
+
+---
+
+# explorer 작업 기록
+
+## 실제 받은 지시
+> Implement ONE feature explorer (search/filter/detail UI state) in worktree /Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/explorer branch codex/explorer start 12ed483. Read AGENTS.md PLAN.md STATUS.md docs/SESSION_GUIDE.md docs/tasks/explorer.md. Own only task files. Build Zustand provider persist safely at mount validating stored UI data + filter helper + polished toolbar + shadcn detail Sheet. Card detail buttons expose data-candidate-detail=id for focus return. Shared UI and node_modules ready. Test persist/bad storage/filter/detail; run checks, log actual received prompt and evidence docs/records/explorer.md, update task handoff, commit feat(explorer). No shared/app/package edits, no agents. Final path/branch/SHA/tests/issues.
+
+후속 지시:
+> Use direct ./node_modules/.bin/vitest /tsc /eslint for checks; pnpm in worktree may try reinstall linked node_modules. Root foundation build passed. Root app uses all contracts exactly as task.
+
+## 구현 및 검토
+- provider마다 독립 Zustand store; SSR 초기값 이후 mount에서 persist.rehydrate 실행.
+- hiring-pipeline-ui 키에 search/job만 저장. 저장된 selectedId/hydrated/action 무시. search 타입/길이, job 목록 검사. JSON 손상 및 localStorage 접근/할당 오류에서도 메모리 상태 이용 가능.
+- 이름 trim/대소문자 무시 부분 검색과 직무 AND 필터.
+- shadcn Input/Select/Button 도구, 접근 가능한 label, 결과 수 live region, 초기화.
+- shadcn Sheet 이름/직무/지원일/단계/이메일/소개. 한국어 닫기, Escape, 포커스 잠금 및 data-candidate-detail 버튼 포커스 복귀.
+- 지원자 객체를 UI store에 포함하지 않아 낙관적 Query 데이터 저장 방지.
+- 저장된 임의 action/선택을 펼치지 않고 허용 필드만 병합. localStorage 불능이 기능 사용을 막지 않음.
+- 고정 공유 JOBS로 저장 직무 검증. 향후 동적 직무 도입 시 정책 조정 필요.
+- 속성 selector에 ID를 삽입하지 않아 escaping 의존성 없음.
+
+## 검증 명령 / 결과
+- `pnpm test`: 연결된 node_modules 재설치 시도, ERR_PNPM_ABORTED_REMOVE_MODULES_DIR_NO_TTY. 의존성 변경 없이 직접 바이너리 사용.
+- `./node_modules/.bin/vitest run`: 1 파일 / 9 테스트 통과 (AND 필터, 복원, 선택 비영속, 손상 JSON/타입/null, 리마운트/초기화, 키보드 직무 선택, 저장소 예외, 상세 포커스).
+- `./node_modules/.bin/tsc --noEmit`: exit 0.
+- `./node_modules/.bin/eslint src/features/candidates`: exit 0.
+- git add 최초 실행은 worktree git index sandbox 제한으로 실패, 승인된 escalation 경로로 재시도.
+- 브라우저 및 production build는 통합 담당.
+
+## 인계
+기능 미완료 없음. 앱에서 Provider 아래 Toolbar/Detail 연결, 보드 상세 버튼 data-candidate-detail=id 계약 유지 필요.
+워크트리 /Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/explorer, 브랜치 codex/explorer.
+
+
+---
+
+# optimistic-update 작업 기록
+
+## 실제 작업 지시
+
+> Implement ONE feature optimistic-update in /Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/optimistic-update branch codex/optimistic-update start 74e4736. Read AGENTS.md PLAN.md STATUS.md docs/SESSION_GUIDE.md docs/tasks/optimistic-update.md. Existing candidateApi mock ready. Implement queries.ts hooks exactly task contract plus strong deterministic hook tests of optimistic apply, isolated rollback, overlap/duplicate prevention, reverse success. Direct ./node_modules/.bin/{vitest,tsc,eslint} recommended to avoid pnpm linked-dir auto-install. Own queries/tests/task/record only. Record actual prompt & tests, commit feat(optimistic-update), report SHA/evidence. No agents. Root handles integration app.
+
+추가로 DECISIONS.md와 mock-api 구현 및 공통 Providers 설정을 읽었습니다.
+
+## 구현 산출물
+
+- `queries.ts`: CANDIDATES_QUERY_KEY, useCandidates, useMoveCandidate 계약 구현.
+- 목록 요청에 Query의 AbortSignal 전달. 이동 시작 시 실행 중 목록 요청 취소 후 해당 카드만 낙관 갱신.
+- QueryClient별 WeakMap 저장소 + useSyncExternalStore로 동일 tick·다른 hook·재마운트에도 공유되는 동기 잠금 제공. pendingIds는 변경 때마다 새 Set을 만들어 이전 스냅샷을 보존.
+- 다른 카드 요청은 병렬 허용. 성공 응답은 해당 카드만 patch, 실패는 해당 카드의 이전 값만 복구하고 한국어 sonner 오류 알림.
+- Hook-level mutation lifecycle로 컴포넌트 unmount 이후에도 성공·실패 및 잠금 해제 처리. mutation 호출별 콜백에는 의존하지 않음.
+- 현재 단계 이동, 없는 카드 및 아직 읽지 않은 목록에는 요청하지 않음. 저장은 기존 candidateApi에 위임하며 Zustand/localStorage에 낙관적 상태를 쓰지 않음.
+
+## 검토와 결정
+
+- 전체 목록 snapshot 복구 대신 카드 단위 snapshot을 사용해 다른 카드의 성공이나 진행 중 변경을 보존.
+- useState/useRef의 훅별 잠금 대신 QueryClient 범위 잠금을 사용해 중복 훅과 재마운트의 빈틈을 방지.
+- 완료마다 invalidateQueries를 하지 않아 다른 카드의 낙관적 상태가 목록 재요청으로 덮이는 것을 방지. API의 성공 응답을 정본으로 캐시에 반영.
+- 추가 의존성/공유 파일 변경 없음. API·UI와의 계약 변경 없음.
+
+## 실행한 검증과 실제 결과
+
+- `./node_modules/.bin/vitest run src/features/candidates/queries.test.tsx`: 1 파일, 11 테스트 통과.
+- `./node_modules/.bin/tsc --noEmit`: 종료 0.
+- `./node_modules/.bin/eslint src/features/candidates/queries.ts src/features/candidates/queries.test.tsx`: 종료 0, 오류/경고 없음.
+- `./node_modules/.bin/vitest run`: 2 파일, 28 테스트 통과(기존 mock API 17 + 훅 11).
+- 테스트는 임의 지연 대신 수동 resolve/reject 가능한 promise로 실행 순서를 제어함.
+- 훅 검증 범위: AbortSignal 전달·진행 중 목록 취소와 늦은 응답 무시, 표준 query 성공, 완료 전 낙관 반영, 서버 응답 patch, 불변 pending snapshot, 실패 롤백·재시도, A 실패/B 성공 양쪽 완료 순서, 동일 tick/다른 훅의 중복 차단, 역순 성공, 성공/실패 각각 unmount·remount, no-op 입력.
+
+## 인계
+
+워크트리: `/Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/optimistic-update`
+
+브랜치: `codex/optimistic-update`
+
+완료: 기능 구현·독립 검증. 미완료/알려진 문제 없음. 통합 담당자가 앱 연결, production build, 브라우저 검증, STATUS 및 PROMPTS 갱신을 수행합니다.
+
+
+---
+
+# board-focus-fix 작업 기록
+
+## 실제 받은 지시
+
+> Fix ONE feature defect board focus in /Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/board-focus-fix branch codex/board-focus-fix start a2dacf1. Read AGENTS PLAN STATUS docs/tasks/board-focus-fix and docs/records/board-ui. Board original agent reported 7/8 tests pass, test restores focus moved card/rollback hangs. Diagnose real issue (Radix lifecycle vs immediate layout focus?) preserve tests/no skipping/no longer timeout hiding. Own board.tsx, board.test.tsx, task and docs/records/board-focus-fix.md only. Direct node_modules/.bin tests to avoid pnpm reinstall. Check docs Next local if relevant. Root does real browser flows in parallel. Commit fix(board-focus) plus actual prompt/review/tests records. No subagents. Report SHA/evidence.
+
+## 진단·수정·리뷰
+
+- 원본 테스트를 Node 22.13.0에서 재현: 해당 테스트 5000ms timeout, 실제 보고 시간 19768ms. 임시 DOM 로그로 이동 직후 상세 버튼에 이미 포커스가 있음을 확인했습니다. 로그는 제거했습니다.
+- `waitFor` 대신 일반 assertion으로 즉시 확인하면 이동과 롤백 모두 통과했습니다. 별도 `act` 내 실제 `setTimeout(0)` 대기를 넣으면 동일하게 timeout이 발생했습니다. 따라서 누락된 최초 포커스보다 실제 타이머를 기다리는 테스트 경로의 지연이 문제였습니다. 환경 내 지연의 하위 원인을 확정한 것은 아닙니다.
+- 설치된 Radix `react-focus-scope` 소스를 읽고 unmount cleanup이 `setTimeout(0)`에서 `onUnmountAutoFocus`를 호출한다는 것을 확인했습니다. Next 로컬 accessibility guide도 읽었습니다.
+- 메뉴 이동을 `onSelect`에서 `onCloseAutoFocus`로 지연하는 실험은 메뉴 콜백 검사까지 실패시켰습니다. 브라우저에서 결함이 재현되지 않은 점과 함께 검토하여 해당 프로덕션 변경은 전부 되돌렸습니다.
+- 최종 수정은 기존 테스트에 한정합니다. fake timers를 켜고 키보드 메뉴 선택 후 메뉴 제거/예약 타이머 존재를 확인합니다. `act` 안에서 예약 타이머를 실제 실행한 후 이동 포커스를 검사하고, rollback 후에도 타이머를 실행하고 포커스를 검사합니다. 단순히 즉시 통과하거나 timeout을 늘리는 방식이 아닙니다. afterEach에서 실제 타이머를 복원합니다.
+- 기존 8개 테스트와 기존 포커스 assertion을 유지했습니다. production board.tsx는 수정하지 않았습니다. 의존성 추가·설정 변경·테스트 skip 없음.
+- 통합 담당자 전달 증거: 실제 브라우저에서 상세 Enter/Escape 복귀, 단계 이동 후 상세 버튼 포커스, reload 영속 저장, 다섯 번째 API 실패 후 rollback 포커스 유지 모두 통과. 이 브라우저 확인은 통합 담당자가 수행했습니다.
+- 통합 담당자도 production 변경 불필요에 동의했고, acceptance test 담당자에게 타이머 제어 방법을 공유했습니다.
+
+## 검증
+
+- `node_modules/.bin/eslint src/features/candidates/board.tsx src/features/candidates/board.test.tsx`: 통과.
+- `node_modules/.bin/tsc --noEmit`: 통과.
+- Node24 직접 Vitest 실행으로 보드 전체 및 저장소 전체 검사 진행; 최종 결과 아래 기록.
+
+## 남은 사항
+
+실제 타이머 지연의 하위 환경 원인은 확정하지 않았습니다. 단위 테스트에서는 예약된 Radix 종료 동작을 명시적으로 실행하여 해당 지연에 의존하지 않습니다.
+
+## 최종 결과
+
+- Node24 `node node_modules/vitest/vitest.mjs run src/features/candidates/board.test.tsx --maxWorkers=1 --reporter=verbose`: **8/8 통과**, 86.41s. 이후 추가한 메뉴 제거/예약 타이머 존재 assertion도 해당 테스트 단독 검사에서 통과했습니다.
+- Node24 `node node_modules/vitest/vitest.mjs run --maxWorkers=1 --reporter=verbose`: **44/45 통과**, 107.72s. focus regression은 통과했습니다. 기존 `renders 250 candidates with distinct controls`가 이 실행에서 5000ms timeout(보고 실행 13648ms)으로 실패했습니다. scoped 실행에서는 같은 테스트가 통과했습니다. timeout 변경 없이 통합 담당자에게 환경 지연 및 전체 재검증 필요를 보고했습니다.
+- 최종 assertion 추가 후 대상 파일 ESLint 재검사 통과.
+
+
+---
+
+# Acceptance test record
+
+## Actual assignment
+
+“Implement ONE feature integration acceptance tests in /Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/acceptance-tests branch codex/acceptance-tests start a2dacf1. Read AGENTS PLAN STATUS and app source. Own ONLY src/features/candidates/candidates-app.test.tsx, docs/tasks/acceptance-tests.md, docs/records/acceptance-tests.md. Test real CandidatesApp+Providers with mocked candidateApi deterministic promises: initial loading, query failure+retry, empty dataset vs filtered empty, search/filter composition, failed save UI rollback+toast if manageable; preserve actual UI not mock hooks/children. No fragile long waits, no package changes. Existing board focus bug being fixed independently, don't edit board. Run your targeted tests, write actual prompt/evidence, commit test(acceptance). No agents. Report SHA/tests/issues.”
+
+## Output and review
+
+Added five full client-screen tests using production Providers, Query hooks, Zustand provider, toolbar, board, and Sonner toaster. Only API methods are mocked. Deferred promises expose loading and mutation transitions without random network delays. Tests assert visible columns, explicit retry, differing empty messages, combined filters/reset, pending-card exclusion, rollback and error toast. Read the installed Next.js Vitest guide before implementation. No async server component is under test.
+
+Initial retry assertion expected a disabled retry button, but actual query state returns to the loading skeleton; corrected the expectation to the observed UI. Filter selection uses native events and controlled Radix timers. No hooks or child components are replaced. Production source and shared config remain untouched.
+
+## Commands and actual results
+
+- `pnpm test src/features/candidates/candidates-app.test.tsx`: aborted because pnpm attempted automatic dependency installation against the shared node_modules symlink and required TTY confirmation. Did not reinstall or change dependencies.
+- `node_modules/.bin/vitest run src/features/candidates/candidates-app.test.tsx -t 'composes|initial|query failure|empty dataset' --maxWorkers=1 --reporter=verbose`: four passed, movement excluded by selector, 4.08 seconds (final recorded run).
+- Full file: four passed, movement timed out. Separate movement runs also stalled after opening the real menu and beginning async state updates. Tried real timers, limited fake timers, and explicit pending-timer drains; unresolved. Interrupted stalled diagnostic runs.
+- `node_modules/.bin/eslint src/features/candidates/candidates-app.test.tsx`: passed.
+- `node_modules/.bin/tsc --noEmit --incremental false`: passed.
+
+## Coordination and remaining issue
+
+Integration explicitly requested retaining the movement regression rather than hiding or skipping it. Board focus agent reports synchronous board tests pass with controlled timers, but acceptance also crosses asynchronous Query mutation lifecycle. The movement test remains unskipped for integration to diagnose. This record does not claim the entire file passed. Browser validation and production build remain integration-owned.
+
+
+---
+
+# integration 실행 기록
+
+## 실제 사용자 지시
+승인된 TypeScript 기반 병렬 개발 계획을 구현하며 한 기능당 새 세션·워크트리를 사용하고 중간 문서를 갱신하라는 요청입니다. 기능 분할은 유동적입니다.
+
+## 구현과 검토
+- 공통 기반 후 mock-api, board-ui, explorer를 독립 세션에 분배하고 API 병합 후 새로운 optimistic-update 세션을 시작했습니다.
+- 통합 페이지는 기능의 공유 계약을 그대로 사용해 Query 데이터·Zustand 필터·보드·상세를 연결합니다.
+- Orbit 헤더, 전체/진행/합격 요약, 조회 로딩/오류/빈 상태, Next 렌더 오류 경계를 추가했습니다.
+- 최초 lint에서 홈 anchor 지적을 확인해 Next Link로 수정했습니다.
+- 250명 시드와 저장 스키마의 길이 제한을 혼동한 제안을 수정 요청했습니다.
+- shadcn 외부 cn import 및 캐시 중복 테스트 수집을 발견해 수정 커밋으로 보존했습니다.
+
+## 검증
+- 기반 production build 통과.
+- mock API + explorer + queries 통합 37 tests 통과.
+- board 기능은 7개 통과/포커스 1개 timeout을 보고했습니다. 통과로 간주하지 않고 후속 수정 세션에서 진단합니다.
+- localhost:3100 브라우저에서 250명/150명 진행/50명 합격, 5컬럼·검색 도구·컬럼 스크롤이 렌더된 것을 시각 확인했습니다.
+
+## 다음 검증
+보드 포커스 timeout, 검색·필터·이동·새로고침·상세 실제 조작, 반응형 및 최종 빌드.
+
+## 최종 결과
+- 메뉴 테스트 지연은 실제 앱 결함으로 단정하지 않고 CPU profile로 추적하여 nwsapi/JSDOM 재진입을 확인했습니다. 하위 의존성 override 후 원래 50개 테스트 모두 통과했습니다.
+- 포맷팅으로 줄이 바뀐 테스트의 @ts-expect-error 위치를 수정한 뒤 pnpm format:check와 pnpm verify 전체 통과했습니다.
+- Webpack production build 및 next start 브라우저 smoke도 통과했습니다. 필수 미완료 없음.
+- 기능 워크트리는 정리하고 브랜치·커밋·기능 기록은 보존했습니다.
+
+
+---
+
+# 테스트 환경 지연 원인과 수정
+
+## 지시와 접근
+남은 통합/보드 테스트 timeout을 생략·시간 제한 증가 없이 해결한다는 승인된 검증 기준에 따라 진단했습니다.
+
+## 실제 관찰
+- 실제 브라우저에서는 키보드 메뉴 이동·rollback·포커스·알림이 정상 동작했습니다.
+- JSDOM 통합 테스트에서는 메뉴 선택 및 mock API 호출까지 진행된 뒤 100ms 타이머도 약 26~29초 후 실행됐습니다.
+- 보드 세션은 Radix close 타이머를 명시적으로 flush하는 검증을 추가했지만 전체 환경의 간헐적 지연은 남았습니다.
+- 임시 CPU profile을 생성해 hot frames를 집계했습니다. nwsapi@2.2.27의 get 5.2s, has 4.4s, isFullscreen 2.6s, Element.matches/matchesNative 등 선택자 처리에서 대부분의 시간이 소모됐습니다.
+- 설치된 소스에서 isFullscreen → matchesNative(node, ':fullscreen') → JSDOM Element.matches → nwsapi라는 재진입 경로를 확인했습니다. 브라우저 네이티브 matches를 가정한 경로가 JSDOM에서는 동일 엔진으로 돌아옵니다.
+
+## 채택 / 기각
+- 채택: pnpm overrides에서 `jsdom>nwsapi`만 2.2.23으로 고정. 앱 런타임 의존성에는 영향을 주지 않습니다.
+- 기각: 프로덕션 onMove 타이밍 변경, 실패 테스트 제외, timeout 증가, 낙관적 저장 단계 검증 축소. 최종 acceptance 테스트는 원래 deferred API·저장중 잠금·rollback·알림 검증을 모두 유지했습니다.
+- 임시 console 계측과 축소 테스트는 제거했습니다. CPU profile은 추적하지 않는 artifacts에만 있습니다.
+
+## 결과
+`pnpm test`: 5 files / **50 tests passed**, **3.91s**. board 8개 모두 통과(250명 렌더 1.26s), acceptance 5개 모두 통과(문제였던 optimistic/rollback 372ms).
+위 비교는 이 개발 환경의 관찰 결과이며 모든 버전/환경에 대한 일반 성능 보장은 아닙니다.
+
+
+---
+
+# 브라우저 검증 기록
+
+2026-09-13, Codex in-app browser, http://localhost:3100, 기본 viewport와 390×844에서 실제 UI 조작으로 확인했습니다. 테스트 대상은 생성된 데모 지원자입니다.
+
+## 수행과 결과
+1. 최초 로딩 스켈레톤 이후 250명/진행 150명/합격 50명, 5단계 컬럼이 표시됐습니다.
+2. 이름 `최서연` 검색 시 250명 중 1명으로 필터됐습니다.
+3. 상세 버튼 Enter로 Sheet를 열어 이름/직무/단계/날짜/이메일/요약을 확인했습니다. Escape 후 상세 버튼으로 포커스가 돌아왔습니다.
+4. 단계 메뉴 Enter → 면접 Enter 조작 직후 UI에 면접과 저장 중이 표시됐고 메뉴가 닫혔습니다. 포커스는 이동한 카드의 상세 버튼에 유지됐습니다.
+5. 새로고침 후 검색어 `최서연`과 면접 단계가 유지됐습니다.
+6. 직무 프론트엔드 개발자를 추가 선택해 복합 조건 0명과 검색 결과 없음 안내를 확인했습니다. 검색 조건 초기화 후 250명으로 복원됐습니다.
+7. viewport 390×844: documentWidth 375 ≤ viewport390, boardWidth335 < boardScrollWidth1240. 페이지 전체 넘침 없이 보드 가로스크롤을 확인했습니다. 모바일 상세 Sheet는 화면 너비에 맞춰 표시됐습니다.
+8. `최지우` 카드로 서류검토↔면접 이동을 반복했습니다. 4회 성공 후 5번째 면접 이동에서 기본 15% 실패가 발생했습니다. 카드가 서류검토로 복구됐고 "단계 이동을 저장하지 못했습니다. 다시 시도해 주세요." 알림이 표시됐습니다. 포커스도 최지우 상세 버튼에 유지됐습니다.
+9. 개발 브라우저 error/warn 로그는 비어 있었습니다.
+10. 새로고침을 통한 초기 조회에서도 기본 실패를 재현했습니다(두 번째 조회). 오류 설명과 다시 불러오기 버튼을 확인하고 클릭한 뒤 로딩 → 250명 보드 복원을 확인했습니다.
+
+11. `next start --port 3101`로 최종 Webpack build 결과를 실행했습니다. 250명 렌더, 김서준 검색·상세·초기화를 확인했고 error/warn 로그는 비어 있었습니다. 검증 후 서버와 임시 탭을 종료했습니다.
+
+## 정리 / 한계
+검색 조건을 초기화하고 viewport override를 해제했습니다. 최서연의 면접 이동은 해당 브라우저 origin의 데모 저장소에 남아 있습니다. 다른 브라우저/포트의 초기 데이터에는 영향을 주지 않습니다.
+전체 빈 데이터·손상 데이터는 자동 테스트와 README 재현 절차로 검증합니다. 이 기록은 수동 UI 관찰이며 성능 수치 벤치마크를 의미하지 않습니다.
+

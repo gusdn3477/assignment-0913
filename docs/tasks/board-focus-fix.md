@@ -12,3 +12,6 @@
 - 검사: 보드 8/8 통과, lint/typecheck 통과. 저장소 전체 44/45 통과; focus는 통과했지만 별도 기존 250명 렌더 테스트가 이 실행에서 timeout. 통합 재검증 필요, 시간 제한 변경 없음.
 - 실제 브라우저 이동·rollback 포커스는 통합 담당자 확인 통과.
 - 상세 기록: docs/records/board-focus-fix.md. 환경의 실제 타이머 지연 원인은 미확정이며 제품 결함으로 주장하지 않음.
+
+## 통합 후 최종 상태
+JSDOM 선택자 엔진의 지연 원인을 CPU profile로 확인하고 하위 의존성 override로 해결했습니다. 기존 테스트를 모두 유지한 채 통합 50 tests가 통과했습니다. 상세: [test-environment-fix](../records/test-environment-fix.md).

@@ -62,3 +62,6 @@ TypeScript strict · Next.js App Router · React · Tailwind CSS · shadcn/ui ·
 - [docs/records](docs/records): 기능별 상세 실행 기록.
 
 기능마다 별도 세션·브랜치·워크트리를 사용했고, `type(scope): 요약` 커밋과 병합 이력을 유지합니다. 의존성이 없는 기능만 병렬 개발합니다.
+
+## 최종 검증 결과
+`pnpm verify`와 `pnpm format:check` 통과. 자동 테스트 5개 파일·50개 사례가 있으며, 개발/프로덕션 브라우저에서 검색·상세·이동·새로고침·실패 복구·390px 화면을 확인했습니다. 자세한 결과와 중간 실패의 해결 과정은 [STATUS.md](STATUS.md) 및 [브라우저 기록](docs/records/browser-qa.md)을 참고하세요.
