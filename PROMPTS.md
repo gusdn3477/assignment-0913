@@ -701,3 +701,10 @@ Codex in-app browser, 127.0.0.1:3101, 기본 viewport 1280×720.
 - 기존 코드 값·안내 메시지·fallback을 유지하며 내부 진단 메시지는 화면에 노출하지 않음. 상세 결과는 docs/records/candidate-error-constants.md 및 candidate-error-constants-integration.md 참조.
 
 - 결과: 기능cce063b/main통합c47a148, 기존31 tests/lint/typecheck/format/build 통과. production 실제 초기 실패 기본 안내/재시도250명 복구/검색 focus/console[] 확인.
+
+## API와 지원자 컴포넌트 배치 (2026-09-13)
+- 실제 요청: “api 폴더는 components와 같은 레벨로 빼자”; “candidate 라는 폴더를 만들고 그 하위에 board, card, detail”.
+- 독립 codex/candidate-layout에서 src/api/candidate 및 src/components/candidate 역할별 하위 폴더로 이동. 기존 src/features/candidates 도메인 훅/쿼리/스토어/상수/타입/유틸 유지. 테스트는 소스와 함께 이동하고 import/mock 모두 갱신.
+- 통합 담당은 README 구조 갱신, 경로/동작 변경 리뷰, production build/browser 확인. 상세 기록: docs/records/candidate-layout.md, candidate-layout-integration.md.
+
+- 결과: 기능6986331/main통합b69e741, 전체109 tests/lint/typecheck/format/build 통과. production 초기 로딩→250명/검색1명/상세/Enter 닫기/focus 복귀/검색 초기화/console[] 확인. 소스72개 기대 경로 대조에서 이동26개 외 로직 변경 없음.

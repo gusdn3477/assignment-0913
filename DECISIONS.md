@@ -89,3 +89,7 @@
 ## 조회 오류 코드와 안내 상수
 - 에러 코드를 단일 as const 객체로 정의하고 타입을 값에서 유도합니다. MockApiError 생성처와 조회 메시지 매핑이 같은 코드를 참조합니다.
 - 조회 안내 메시지와 기본 fallback은 지원자 도메인 상수로 관리합니다. 내부 진단 메시지를 화면에 그대로 노출하지 않는 기존 정책을 유지합니다.
+
+## API와 지원자 컴포넌트 위치 정리
+- 사용자 요청에 따라 API를 src/api/candidate로 분리하고 UI를 src/components/candidate 아래 board/card/detail 등으로 묶습니다. 반복되는 candidate- 폴더 접두사를 줄이고 가상 목록은 board/virtual-list에 배치합니다.
+- API 오류/시드/테스트를 함께 옮깁니다. 기존 도메인 훅·스토어·상수·타입·쿼리·유틸은 유지하고 모든 실제 import/mock 참조를 갱신합니다. 이전 경로의 호환 re-export나 실행 동작 변경은 추가하지 않습니다.
