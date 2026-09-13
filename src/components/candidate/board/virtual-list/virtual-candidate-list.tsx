@@ -3,7 +3,6 @@
 import {
   useCallback,
   useImperativeHandle,
-  useLayoutEffect,
   useRef,
   useState,
   type ReactNode,
@@ -19,6 +18,10 @@ import {
   type Candidate,
   type Stage,
 } from "@/features/candidates/types/candidate";
+import {
+  useCandidateScrollRestoration,
+  type CandidateFocusRequest,
+} from "@/components/candidate/board/virtual-list/use-candidate-scroll-restoration";
 
 export interface CandidateListHandle {
   focusCandidate: (id: string, control?: "detail" | "move") => void;
@@ -43,11 +46,7 @@ export function VirtualCandidateList({
 }) {
   "use no memo"; // Virtualizer is mutable; do not compiler-memoize its reads.
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [request, setRequest] = useState<{
-    id: string;
-    control: "detail" | "move";
-  } | null>(null);
-  const handledRequest = useRef<typeof request>(null);
+  const [request, setRequest] = useState<CandidateFocusRequest | null>(null);
   const pinnedIndex = candidates.findIndex(
     (candidate) => candidate.id === (request?.id ?? focusId),
   );
@@ -104,25 +103,13 @@ export function VirtualCandidateList({
     }),
     [],
   );
-  useLayoutEffect(() => {
-    virtualizer.scrollToOffset(0);
-  }, [resetKey, virtualizer]);
-  useLayoutEffect(() => {
-    if (!request || request === handledRequest.current || pinnedIndex < 0)
-      return;
-    handledRequest.current = request;
-    virtualizer.scrollToIndex(pinnedIndex, { align: "auto" });
-    const button = Array.from(
-      scrollRef.current?.querySelectorAll<HTMLButtonElement>(
-        `[data-candidate-${request.control}]`,
-      ) ?? [],
-    ).find(
-      (node) =>
-        node.getAttribute(`data-candidate-${request.control}`) === request.id,
-    );
-    button?.focus({ preventScroll: true });
-    button?.scrollIntoView?.({ block: "nearest", inline: "nearest" });
-  }, [request, pinnedIndex, virtualizer]);
+  useCandidateScrollRestoration({
+    resetKey,
+    request,
+    pinnedIndex,
+    scrollRef,
+    virtualizer,
+  });
 
   return (
     <div
