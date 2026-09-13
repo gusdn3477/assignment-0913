@@ -13,7 +13,7 @@ import {
   VirtualCandidateList,
   type CandidateListHandle,
 } from "@/components/candidate/board/virtual-list/virtual-candidate-list";
-import { useCandidateDrag } from "@/features/candidates/hooks/use-candidate-drag";
+import { useCandidateStageDrag } from "@/features/candidates/hooks/use-candidate-stage-drag";
 import { cn } from "@/lib/utils";
 import { CandidateUndo } from "@/features/candidates/types/candidate";
 import {
@@ -76,7 +76,7 @@ export function CandidateBoard({
     [onMove],
   );
 
-  const drag = useCandidateDrag({
+  const drag = useCandidateStageDrag({
     candidates,
     loadingIds,
     resetKey,

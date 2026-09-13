@@ -60,6 +60,9 @@ export function VirtualCandidateList({
   // Instance stays local and this component opts out of compiler memoization.
   // eslint-disable-next-line react-hooks/incompatible-library
   const virtualizer = useVirtualizer({
+    // A stage move remounts measured rows while dnd-kit is completing its
+    // lifecycle. Let React schedule that render instead of nesting flushSync.
+    useFlushSync: false,
     count: candidates.length,
     getScrollElement: () => scrollRef.current,
     estimateSize: () => 174,

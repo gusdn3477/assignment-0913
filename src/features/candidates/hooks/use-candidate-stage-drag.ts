@@ -7,7 +7,7 @@ import type { Candidate, Stage } from "@/features/candidates/types/candidate";
 
 type Session = { id: string; stage: Stage; resetKey?: string };
 
-export function useCandidateDrag({
+export function useCandidateStageDrag({
   candidates,
   loadingIds,
   resetKey,

@@ -509,6 +509,20 @@ describe("drag moves through the real mutation flow", () => {
   });
   it("rolls back only a failed dragged card, keeps another save, and offers Undo after success", async () => {
     setupDragGeometry();
+    const measuredHeight = Object.getOwnPropertyDescriptor(
+      HTMLElement.prototype,
+      "offsetHeight",
+    )?.get;
+    vi.spyOn(HTMLElement.prototype, "offsetHeight", "get").mockImplementation(
+      function (this: HTMLElement) {
+        return this.hasAttribute("data-index")
+          ? 180
+          : (measuredHeight?.call(this) ?? 0);
+      },
+    );
+    const consoleError = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
     const first = deferred<Candidate>();
     const second = deferred<Candidate>();
     vi.mocked(candidateApi.updateCandidateStage).mockImplementation(({ id }) =>
@@ -516,6 +530,7 @@ describe("drag moves through the real mutation flow", () => {
     );
     mount();
     await screen.findByRole("searchbox");
+    consoleError.mockClear();
     await sensorDrag("a", "offer");
     await screen.findByRole("button", { name: "김하늘 단계 변경 (저장 중)" });
     expect(detail("김하늘")).toHaveFocus();
@@ -550,5 +565,14 @@ describe("drag moves through the real mutation flow", () => {
       id: "b",
       stage: "interview",
     });
+    expect(
+      consoleError.mock.calls.some((call) =>
+        call.some((value) =>
+          String(value).includes(
+            "flushSync was called from inside a lifecycle method",
+          ),
+        ),
+      ),
+    ).toBe(false);
   });
 });

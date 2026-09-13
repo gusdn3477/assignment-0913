@@ -1,16 +1,20 @@
 # Repository working agreement
 
 ## Start here
+
 Read `PLAN.md`, `STATUS.md`, `DECISIONS.md`, and your assigned `docs/tasks/<feature>.md` before work. STATUS is the live handoff; PLAN is the accepted scope.
 
 ## Feature sessions
+
 - One independently verifiable feature per fresh agent session and `codex/<feature>` worktree. Feature boundaries may change with dependencies.
 - Work only in your assigned worktree and owned files. Main checkout is for integration.
 - At most three feature agents alongside the integration agent. Coordinate shared types, UI primitives, package.json and lockfile changes with the integration agent.
 - Do not reuse a completed feature session for a different feature.
 
 ## Implementation
+
 - TypeScript strict; React/Next App Router; Tailwind and cn; shadcn; TanStack Query for candidate data; Zustand for UI state.
+- Name custom hooks after the concrete domain behavior they coordinate. Avoid broad names when a narrower action is available; for example, use `useCandidateStageDrag` rather than `useCandidateDrag` for dragging a candidate between stages, with the matching `use-candidate-stage-drag.ts` filename.
 - Build shared controls such as Input and Button by extending the corresponding native element props (for example, React.ComponentProps<"input">), forwarding native props and refs, and preserving HTML semantics and keyboard behavior.
 - Actively use concurrency where it benefits independent requests or rendering responsiveness. Preserve request ordering and card-scoped isolation; keep controlled input updates immediate, and use React concurrent rendering APIs only for suitable non-urgent rendering work.
 - Actively consider `useTransition` for non-urgent React state updates and `useDeferredValue` for expensive derived views such as search/filter results. Keep input values immediate, expose pending/stale feedback when useful, and keep result counts and empty states consistent with the displayed results. Do not treat transitions as request locks or assume wrapping Zustand writes makes them non-blocking; validate behavior against the installed React version.
@@ -21,6 +25,7 @@ Read `PLAN.md`, `STATUS.md`, `DECISIONS.md`, and your assigned `docs/tasks/<feat
 - No external messages, publishing, deployment, force-push, or squash as part of this scope.
 
 ## Verification and records
+
 - Run relevant tests, lint and typecheck for your feature. Integration runs production build and browser checks.
 - Record actual prompt, output, review, commands/results, decisions and remaining issues in `docs/records/<feature>.md`.
 - Update your task handoff before committing. Integration updates STATUS and compiles records into PROMPTS.md at feature milestones.
@@ -28,6 +33,7 @@ Read `PLAN.md`, `STATUS.md`, `DECISIONS.md`, and your assigned `docs/tasks/<feat
 - Finish with worktree path, branch, SHA, verification evidence and open issues.
 
 ## Commands
+
 `pnpm dev`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`, `pnpm verify`.
 
 <!-- BEGIN:nextjs-agent-rules -->
