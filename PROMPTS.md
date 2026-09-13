@@ -773,3 +773,9 @@ Codex in-app browser, 127.0.0.1:3101, 기본 viewport 1280×720.
 - 출력: src/constants/candidate.ts, 이전5파일 제거 및 소비23파일 import 갱신. 공개12선언 AST 비교 동일.
 - 검증: lint/type/format/build 통과. 전체114개·통합app14개 실행에서 시간 초과 각1건은 단독 재실행 통과. 브라우저 초기 오류 재시도/250명/단계·직무/검색1명/console[] 확인.
 - 기능b4b81a2/main7227fd0. 상세 명령·결과·검증 한계는 docs/records/constants-layout.md 및 constants-layout-integration.md.
+
+## 실패 UI·낙관적 업데이트 점검과 빈 검색 결과 높이 안정화
+- 실제 요청: “실패하는 케이스 어떻게 재현하는지? 실패 시 어떤 UI가 노출되나? 토스트나 모달을 띄우나? 만약 mutation이라면 토스트 or 모달 필요해보여”; “낙관적 업데이트는 지금 어디서 어떻게 쓰이고 있나?”; “검색 결과가 없는 경우 height가 달라져서 사용자가 보는 위치가 달라져서 해결 필요”.
+- 점검: 단계 이동/Undo mutation은 카드별 낙관 반영, 같은 카드 잠금, 실패 카드만 rollback하고 Sonner 오류 toast를 표시한다. 최초 조회 실패는 영역 내 재시도 패널, 배경 조회 실패는 기존 데이터를 유지한 inline alert다.
+- 수정: CandidateEmptyGuard가 결과 있음/없음에 동일한 최소 높이 결과 셸을 유지한다.
+- 검증: main format/lint/typecheck/114 tests/build, 실제 결과 높이 800.5px/800px과 동일 문서 높이·절대 top, console[] 확인. 상세 docs/records/empty-result-stability.md.

@@ -22,6 +22,8 @@
 - `eslint` 대상 파일 통과.
 - `tsc --noEmit` 통과.
 - `vitest run src/components/candidate/app/candidates-app.test.tsx`: 14/14 통과. 기존 mutation 실패 acceptance test에서 낙관 이동, 같은 카드 저장 잠금, 실패 카드만 롤백, 토스트 노출을 함께 확인했다.
+- main `pnpm format:check && pnpm verify`: format, lint, strict typecheck, 13 files 114/114 tests, webpack production build 모두 통과.
+- 기능 SHA `7719238`, main 통합 SHA `f4d2e0a`.
 
 ## 남은 이슈
 
