@@ -64,3 +64,6 @@ SearchBar가 Input left 돋보기와 right CloseButton 및 지우기/focus 동�
 
 ## 사용자 정정: UI Provider 제거와 loading 명칭
 Zustand UI 상태의 Context/Provider를 제거하고 bound store를 직접 구독합니다. 저장값은 client effect에서 복원하고 검증/영속 저장 범위를 유지합니다. 앱 소유 컴포넌트의 pending은 loading, 카드 집합은 loadingIds로 통일합니다. Query/DnD 라이브러리 Provider는 유지합니다.
+
+## 후속 승인: ErrorBoundary 라이브러리 전환
+사용자 요청에 따라 직접 작성한 class 경계를 react-error-boundary로 교체하고 공식 예시의 fallback/reset 조합을 사용합니다. 영역별 렌더 오류 복구와 기존 Query 오류 처리 구분은 유지합니다.
