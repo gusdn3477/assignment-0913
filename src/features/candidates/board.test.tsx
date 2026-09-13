@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { fireEvent, render, screen, within, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, within, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { CandidateBoard } from "./board";
 import { STAGES, STAGE_LABELS, type Candidate } from "./types";
 
@@ -9,6 +9,7 @@ const candidate: Candidate = { id: "a", name: "김하늘", job: "프론트엔드
 const props = { candidates: [candidate], pendingIds: new Set<string>(), onMove: vi.fn(), onOpenDetail: vi.fn() };
 
 describe("CandidateBoard", () => {
+  afterEach(() => { vi.useRealTimers(); });
   it("keeps all five stages and their empty states visible", () => {
     render(<CandidateBoard {...props} />);
     for (const stage of STAGES) expect(screen.getByRole("heading", { name: STAGE_LABELS[stage] })).toBeInTheDocument();
@@ -51,7 +52,8 @@ describe("CandidateBoard", () => {
     expect(screen.getByRole("button", { name: "김하늘 지원자 상세 보기" })).toBeEnabled();
   });
 
-  it("restores focus to the moved card and again on rollback", async () => {
+  it("restores focus to the moved card and again on rollback", () => {
+    vi.useFakeTimers();
     function Harness() {
       const [candidates, setCandidates] = useState([candidate]);
       return <><CandidateBoard {...props} candidates={candidates} onMove={(id, stage) => setCandidates([{ ...candidate, id, stage }])} /><button onClick={() => setCandidates([candidate])}>rollback</button></>;
@@ -59,9 +61,15 @@ describe("CandidateBoard", () => {
     render(<Harness />);
     fireEvent.keyDown(screen.getByRole("button", { name: "김하늘 단계 변경" }), { key: "Enter" });
     fireEvent.keyDown(screen.getByRole("menuitem", { name: "면접" }), { key: "Enter" });
-    await waitFor(() => expect(screen.getByRole("button", { name: /상세 보기/ })).toHaveFocus());
+    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+    expect(vi.getTimerCount()).toBeGreaterThan(0);
+    // Radix schedules close autofocus on a zero-delay timer after unmount.
+    // Flush it explicitly so focus is checked after teardown, not just at commit.
+    act(() => { vi.runOnlyPendingTimers(); });
+    expect(screen.getByRole("button", { name: /상세 보기/ })).toHaveFocus();
     expect(within(screen.getByRole("region", { name: "면접 1명" })).getByRole("button", { name: /상세 보기/ })).toHaveFocus();
     fireEvent.click(screen.getByText("rollback"));
+    act(() => { vi.runOnlyPendingTimers(); });
     expect(within(screen.getByRole("region", { name: "서류검토 1명" })).getByRole("button", { name: /상세 보기/ })).toHaveFocus();
   });
 
