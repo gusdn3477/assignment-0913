@@ -170,3 +170,17 @@ DnD production 검증에서 실제 드래그·실패 롤백·재시도·키보�
 ```
 
 `CandidateQueryGuard`가 초기 로딩/오류/재시도와 배경 새로고침을 처리하므로 화면에서 상태 분기를 반복하지 않습니다. 캐시가 있으면 새로고침 중에도 보드를 유지합니다. 재시도 transition과 동기 잠금은 Query observer를 가진 훅에서 관리합니다. Guard는 조건부 렌더링이며 실제 Suspense로 Promise를 던지는 방식은 아닙니다. 렌더 예외는 별도 ErrorBoundary로 처리합니다.
+
+
+## 렌더 오류 경계 라이브러리
+`CandidateErrorBoundary`는 `react-error-boundary`를 조합합니다. 오류 감지/오류 상태/재시도 초기화는 라이브러리에 맡기고, 프로젝트의 한글 안내와 RetryButton만 지정합니다. [공식 quick start](https://github.com/bvaughn/react-error-boundary#quick-start)의 `fallbackRender`·`resetErrorBoundary`·`onReset` 구성을 참고했습니다.
+
+```tsx
+<CandidateErrorBoundary label="지원자 보드">
+  <CandidateBoard {...boardProps} />
+</CandidateErrorBoundary>
+```
+
+복구 전에 상태 정리가 필요하면 `onRecover`를 전달하며 내부적으로 라이브러리 `onReset`에 연결됩니다. 상세 경계는 기존 `key={selectedId}`로 선택 변경 시 초기화합니다. 렌더 오류와 API 조회/저장 실패의 복구 경로는 구분합니다.
+
+이번 라이브러리 전환은 경계3개·앱14개 테스트와 lint/typecheck/format/production build를 통과했습니다. 렌더 오류 격리·재시도 및 key 변경 복구를 실제 라이브러리로 검증했습니다. 상세 결과: [전환 기록](docs/records/error-boundary-library-integration.md).

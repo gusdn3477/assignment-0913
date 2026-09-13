@@ -1,6 +1,8 @@
 # 세션 인계 / 현재 상태
 
 ## 현재 결론
+ErrorBoundary 라이브러리 전환 완료: react-error-boundary6.1.5, 직접 class/state 제거,49→38행. 기능a3c4bf3/main통합daf119d, `codex/error-boundary-library` / `.worktrees/error-boundary-library`. 실제 library 경계3+app14 총17tests/lint/type/format 및 main build 통과. production 보드250명/검색/상세/닫기/focus/console[] 확인. 공식 fallbackRender/resetErrorBoundary/onReset 패턴 참고. 기록: `docs/records/error-boundary-library-integration.md`. 미해결 이슈 없음.
+
 SearchBar 기본 조합 정정 완료: native `onChange`와 선택적 `onClear`, 콜백 존재+비어 있지 않은 `value`일 때만 X 표시. Input left Search/right CloseButton과 지우기 후 focus를 내부 조합하고 toolbar 반복 설정 제거. 기능19e5d07/보정e9c2baf → main a8f2722/cc2c7f5, `codex/search-bar-defaults` / `.worktrees/search-bar-defaults`. 이전 통합 전체113tests 및 최종 조건 관련20tests/lint/type/format/build 검증, 최종 production 빈값 숨김→입력 표시→Tab/Enter 지우기/숨김/focus/250명/console[] 확인. 상세: `docs/records/search-bar-defaults-integration.md`.
 
 
