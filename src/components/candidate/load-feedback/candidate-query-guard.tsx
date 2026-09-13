@@ -14,8 +14,8 @@ type QueryState = Pick<
   | "hasData"
   | "isPending"
   | "isError"
-  | "isRetryPending"
-  | "isRefreshing"
+  | "isFetched"
+  | "isFetching"
   | "error"
   | "retry"
 >;
@@ -52,9 +52,9 @@ export function CandidateQueryGuard({
     if (query.retry(blocked)) restoreSearchFocus.current = !query.hasData;
   }
 
-  const pending = query.isRefreshing;
-  const initialError =
-    !query.hasData && (query.isError || query.isRetryPending);
+  const pending = query.isFetching;
+  // isFetched survives a retry, keeping the initial error panel mounted.
+  const initialError = !query.hasData && query.isFetched;
   if (initialError) {
     // Keep this same button mounted throughout retry, preserving keyboard focus.
     return (

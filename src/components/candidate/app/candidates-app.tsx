@@ -18,7 +18,7 @@ import {
   useCandidateUI,
 } from "@/features/candidates/stores/ui-store";
 
-// Urgent input renders can skip the board until deferred filters catch up.
+// Urgent input renders can skip the board until the deferred search catches up.
 const DeferredBoard = memo(CandidateBoard);
 
 function BoardContent() {
@@ -29,13 +29,11 @@ function BoardContent() {
   const query = useCandidates(selectedId);
   const selectCandidate = useCandidateUI((state) => state.selectCandidate);
   const candidates = query.data;
-  const filters = useMemo(() => ({ search, job }), [search, job]);
-  const deferredFilters = useDeferredValue(filters);
-  const isStale = filters !== deferredFilters;
+  const deferredSearch = useDeferredValue(search);
+  const isStale = search !== deferredSearch;
   const filtered = useMemo(
-    () =>
-      filterCandidates(candidates, deferredFilters.search, deferredFilters.job),
-    [candidates, deferredFilters],
+    () => filterCandidates(candidates, deferredSearch, job),
+    [candidates, deferredSearch, job],
   );
   const onOpenDetail = useCallback(
     (id: string) => selectCandidate(id),
@@ -112,7 +110,7 @@ function BoardContent() {
             >
               <CandidateErrorBoundary label="지원자 보드">
                 <DeferredBoard
-                  resetKey={JSON.stringify(deferredFilters)}
+                  resetKey={JSON.stringify({ search: deferredSearch, job })}
                   candidates={filtered}
                   pendingIds={pendingIds}
                   onMove={move}

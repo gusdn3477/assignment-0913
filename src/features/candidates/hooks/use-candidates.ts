@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useRef, useTransition } from "react";
+import { useMemo, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { candidatesQueryOptions } from "@/features/candidates/queries/candidate-options";
 import type { Candidate } from "@/features/candidates/types/candidate";
@@ -10,21 +10,17 @@ const EMPTY_CANDIDATES: Candidate[] = [];
 // Cancellable browser-storage reads preserve mutation isolation and inline retry.
 export function useCandidates(selectedId?: string | null) {
   const query = useQuery(candidatesQueryOptions());
-  const [isRetryPending, startRetryTransition] = useTransition();
   const retryInFlight = useRef(false);
 
   function retry(blocked = false) {
     if (retryInFlight.current || query.isFetching || blocked) return false;
     retryInFlight.current = true;
-    // Keep the Action with the Query observer so its completion reads fresh state.
-    // Transitions provide feedback; the synchronous ref excludes duplicate calls.
-    startRetryTransition(async () => {
-      try {
-        await query.refetch({ throwOnError: false, cancelRefetch: false });
-      } finally {
+    // The ref closes the gap before Query publishes its fetching state.
+    void query
+      .refetch({ throwOnError: false, cancelRefetch: false })
+      .finally(() => {
         retryInFlight.current = false;
-      }
-    });
+      });
     return true;
   }
 
@@ -46,8 +42,7 @@ export function useCandidates(selectedId?: string | null) {
   return {
     data,
     retry,
-    isRetryPending,
-    isRefreshing: isRetryPending || query.isFetching,
+    isFetched: query.isFetched,
     hasData,
     summary,
     selectedCandidate:
