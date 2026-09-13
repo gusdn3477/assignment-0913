@@ -1,45 +1,28 @@
 "use client";
 
 import * as React from "react";
-import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 
 type NativeInputProps = React.ComponentProps<"input">;
 type InputProps = NativeInputProps & {
   wrapperClassName?: string;
   left?: React.ReactNode;
   right?: React.ReactNode;
-} & (
-    | { clearButton?: undefined }
-    | {
-        value: NonNullable<NativeInputProps["value"]>;
-        clearButton: { onClear: () => void; label?: string };
-      }
-  );
+};
 
 function Input({
   className,
   type,
   ref,
-  clearButton,
   wrapperClassName,
   left,
   right,
   ...props
 }: InputProps) {
-  const inputRef = React.useRef<HTMLInputElement>(null);
-  React.useImperativeHandle(ref, () => inputRef.current!);
-  const canClear =
-    clearButton &&
-    !props.disabled &&
-    !props.readOnly &&
-    props.value !== undefined &&
-    String(props.value).length > 0;
-  const hasSlots = left != null || right != null || Boolean(clearButton);
+  const hasSlots = left != null || right != null;
   const input = (
     <input
-      ref={inputRef}
+      ref={ref}
       type={type}
       data-slot="input"
       className={cn(
@@ -48,7 +31,6 @@ function Input({
         "aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40",
         hasSlots &&
           "flex-1 rounded-none border-0 px-0 shadow-none focus-visible:ring-0 aria-invalid:ring-0 dark:bg-transparent",
-        clearButton && "[&::-webkit-search-cancel-button]:appearance-none",
         className,
       )}
       {...props}
@@ -77,27 +59,12 @@ function Input({
         </div>
       )}
       {input}
-      {(right != null || canClear) && (
+      {right != null && (
         <div
           data-slot="input-right"
           className="flex max-w-2/5 shrink-0 items-center gap-2 wrap-anywhere text-muted-foreground"
         >
           {right}
-          {canClear && (
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon-sm"
-              aria-label={clearButton.label ?? "입력 지우기"}
-              className="shrink-0 text-muted-foreground"
-              onClick={() => {
-                clearButton.onClear();
-                inputRef.current?.focus();
-              }}
-            >
-              <X className="size-4" aria-hidden="true" />
-            </Button>
-          )}
         </div>
       )}
     </div>

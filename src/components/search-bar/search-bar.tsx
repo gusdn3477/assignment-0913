@@ -6,7 +6,7 @@ import { CloseButton } from "@/components/buttons/close-button";
 import { Input, type InputProps } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-export type SearchBarProps = Omit<InputProps, "clearButton" | "type"> & {
+export type SearchBarProps = Omit<InputProps, "type"> & {
   onClear?: () => void;
 };
 
