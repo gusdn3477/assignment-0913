@@ -757,3 +757,8 @@ Codex in-app browser, 127.0.0.1:3101, 기본 viewport 1280×720.
 - 출력: 상세 래퍼 제거, 공용 CloseButton 단일 구현. SheetContent에 native closeButtonProps 지원, 상세는 aria-label만 전달.
 - 리뷰/검증: 기능304de15, 통합818e3c4. 관련23tests/lint/type/format/build 통과. 실제 상세 Enter 닫기/focus 복귀 및 검색어 지우기/focus/빈값 X 숨김/250명 복원 확인. 미해결 없음.
 - 상세 명령/결과: docs/records/close-button-consolidation.md 및 close-button-consolidation-integration.md.
+
+## Input 동일 외형과 슬롯 공간
+- 요청: if (!hasSlots) return input 분기 제거, 슬롯 유무와 무관한 UI와 슬롯 방향의 아이콘 공간 확보.
+- 결과: 동일 wrapper/input 및 공통 외곽 스타일. 좌/우 슬롯이 있을 때만 실제 너비+gap 확보.
+- 검증: lint/typecheck/26 tests 통과. 브라우저 네 조합의448×38px/외곽 스타일 동일, 16px 아이콘 시 해당 쪽 공간24px 증가 확인. 상세 docs/records/input-slot-layout.md.

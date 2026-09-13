@@ -17,3 +17,6 @@
 
 ## 인계
 codex/input-slot-layout / .worktrees/input-slot-layout. 의존성 추가 없음. 미해결 기능 이슈 없음. 통합 build 후 기록 추가.
+
+## 통합 build 완료
+기능13ab27a / main e39199c. main build는 다른 실행 중 build 잠금으로 중단. src/package/lock/Next/TS config의 main 대비 diff가 없음을 확인한 워크트리에서 production build 수행. 첫 시도는 삭제한 임시 비교 route의 .next/dev/types 잔여 참조로 typecheck 실패. 해당 생성 캐시만 제거하고 next build --webpack 재실행 성공. 최종 route는 / 및 /_not-found만 존재. 작업트리 clean 및 main 코드 동일 재확인. 실제 UI는 동일 코드의 임시 dev 비교 화면으로 검증했으며 production UI를 별도로 검증한 것으로 집계하지 않는다. 미해결 이슈 없음.

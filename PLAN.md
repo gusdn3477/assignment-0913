@@ -76,3 +76,6 @@ Input은 native props/ref와 스타일·left/right 슬롯만 제공하는 primit
 
 ## 후속 승인: 도메인별 최상위 constants
 상수는 components와 같은 src/constants 아래 도메인별 파일로 배치합니다. 현재 지원자 단계/직무/스타일/저장 키/검색 제한/오류 코드·메시지/Query 키를 candidate.ts로 모으고 기존 import를 갱신합니다.
+
+## 사용자 정정: Input의 동일 외형과 슬롯 공간
+슬롯이 없어도 동일한 wrapper/input을 렌더링합니다. 외곽 스타일은 공통이고 좌/우 슬롯이 있을 때만 해당 콘텐츠 너비와 간격을 확보합니다.
