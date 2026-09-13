@@ -8,7 +8,13 @@ import {
   useRef,
   useState,
 } from "react";
-import { Check, ChevronDown, LoaderCircle, UserRound } from "lucide-react";
+import {
+  Check,
+  ChevronDown,
+  LoaderCircle,
+  UserRound,
+  Undo2,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,10 +28,13 @@ import {
   type CandidateListHandle,
 } from "./virtual-candidate-list";
 import { cn } from "@/lib/utils";
+import type { CandidateUndo } from "./queries";
 import { STAGES, STAGE_LABELS, type Candidate, type Stage } from "./types";
 
 interface CandidateBoardProps {
   resetKey?: string;
+  undoHistory?: ReadonlyMap<string, CandidateUndo>;
+  onUndo?: (id: string) => boolean;
   candidates: Candidate[];
   pendingIds: ReadonlySet<string>;
   onMove: (id: string, stage: Stage) => void;
@@ -43,11 +52,15 @@ const stageStyles: Record<Stage, { dot: string; badge: string }> = {
 const CandidateCard = memo(function CandidateCard({
   candidate,
   pending,
+  undoStage,
+  onUndo,
   onMove,
   onOpenDetail,
 }: {
   candidate: Candidate;
   pending: boolean;
+  undoStage?: Stage;
+  onUndo: (id: string) => boolean;
   onMove: CandidateBoardProps["onMove"];
   onOpenDetail: CandidateBoardProps["onOpenDetail"];
 }) {
@@ -165,6 +178,20 @@ const CandidateCard = memo(function CandidateCard({
                 )}
               </DropdownMenuItem>
             ))}
+            {undoStage && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  disabled={pending}
+                  onSelect={() => {
+                    selectedMove.current = onUndo(candidate.id);
+                  }}
+                >
+                  <Undo2 aria-hidden="true" className="size-3.5" />
+                  {STAGE_LABELS[undoStage]}로 되돌리기
+                </DropdownMenuItem>
+              </>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -175,6 +202,8 @@ const CandidateCard = memo(function CandidateCard({
 export function CandidateBoard({
   candidates,
   resetKey,
+  undoHistory,
+  onUndo,
   pendingIds,
   onMove,
   onOpenDetail,
@@ -206,6 +235,15 @@ export function CandidateBoard({
       onMove(id, stage);
     },
     [onMove],
+  );
+
+  const undo = useCallback(
+    (id: string) => {
+      if (!onUndo?.(id)) return false;
+      requestedMove.current = id;
+      return true;
+    },
+    [onUndo],
   );
 
   useLayoutEffect(() => {
@@ -338,6 +376,13 @@ export function CandidateBoard({
                   key={candidate.id}
                   candidate={candidate}
                   pending={pendingIds.has(candidate.id)}
+                  undoStage={
+                    undoHistory?.get(candidate.id)?.savedStage ===
+                    candidate.stage
+                      ? undoHistory.get(candidate.id)?.previousStage
+                      : undefined
+                  }
+                  onUndo={undo}
                   onMove={move}
                   onOpenDetail={onOpenDetail}
                 />
