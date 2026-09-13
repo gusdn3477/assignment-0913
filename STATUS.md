@@ -1,7 +1,18 @@
 # 세션 인계 / 현재 상태
 
 ## 현재 결론
-새 사용자 요청으로 **DnD 라이브러리 전환·조회 Guard·상세 CloseButton 호출 단순화 진행 중**. 독립 dnd-kit-migration/query-guard-close 기능 세션을 통합 담당이 관리합니다. 아래는 직전 완료 기준입니다.
+**DnD 라이브러리 전환·조회 Guard·상세 CloseButton 호출 단순화 완료**. 독립 기능 브랜치를 main으로 통합했고, 포맷/lint/typecheck/109 tests/production build 및 브라우저 검증 완료. 미해결 기능 이슈 없음.
+
+## 최신 DnD·조회 Guard 검증 (2026-09-13)
+- codex/dnd-kit-migration / .worktrees/dnd-kit-migration: 기능1e3c698, 통합7524686, 테스트 보정a16b1d9 → main783c35f.
+- codex/query-guard-close / .worktrees/query-guard-close: 기능167450e, 통합9bc8066.
+- @dnd-kit/react/dom0.5.0 센서/충돌/표시/자동 스크롤, 기존 mutation/Undo/카드별 잠금/가상화 유지. 훅144→60행, 관련 production 세 파일605→565행.
+- CandidateQueryGuard/LoadingGuard로 조회 분기 캡슐화, observer 훅의 retry Action/잠금, 상세 사용처 <CloseButton />.
+- main pnpm format:check && pnpm verify: format/lint/typecheck/13 files109 tests/webpack production build 모두 통과. 가짜 타이머 예약 프레임 폐기 원인을 수정하고 Vitest worker1로 DOM CPU 경합 방지. 테스트 생략/시간 제한 완화 없음.
+- production 실제 pointer 이동/잠금/rollback/밖 드롭 취소, main 상세 Enter 닫기/focus 복귀/Guard 배경 갱신 보드 유지/390px/console[] 확인. 카드 원래 단계·검색250명 복원, 탭/서버/viewport 정리.
+- 자세한 실패·보정·검증 이력: docs/records/dnd-query-integration.md, dnd-kit-migration.md, query-guard-close.md.
+
+아래는 이전 완료 당시 기록입니다.
 
 기존 기능에 이어 **Input 좌우 슬롯·SearchBar·ReloadButton·카드 목록 높이/끝 여백 보완 구현 완료**. 기능 `ccd5a50`, main 통합 `d378dc0`. main 전체 검사와 production 브라우저 재확인까지 완료했습니다.
 

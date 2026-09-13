@@ -684,3 +684,13 @@ Codex in-app browser, 127.0.0.1:3101, 기본 viewport 1280×720.
 - 리뷰: SearchBar union 타입 손실 및 explicit null 문제 수정. browser에서 global focus outline이 input 내부에 중복되는 문제 발견/한정 CSS 수정. plain Input과 clear 버튼 focus 보존.
 - 기능 ccd5a50, main d378dc0. main pnpm format:check && pnpm verify: 108/108 tests + lint/typecheck/format/build 통과. production 390px/slot gap8px/키보드 clear-focus/Reload pending 보드 유지/console[] 확인.
 - 자세한 명령·결과는 docs/records/search-board-polish.md 및 search-board-polish-integration.md에 기록.
+
+
+## DnD 라이브러리·조회 Guard·간결한 닫기 버튼 (2026-09-13)
+- 실제 요청: “dnd의 경우 구현 코드가 너무 늘어난다고 판단되어 @dnd-kit 등을 고려하는 방향으로 구현”; “loading은 useQuery 써서 어쩔 수 없다면 차라리 Guard나 Wrapper 등을 사용해 … Suspense와 비슷한 효과”; 상세 `<CloseButton />` 호출 단순화. 커밋 type/scope 영어, 요약 한글.
+- 위임: AGENTS에 따라 codex/dnd-kit-migration은 board/card/드래그/실제 센서 회귀, codex/query-guard-close는 query/app/Guard/detail/shared close를 소유. 통합이 의존성 설치와 main/build/browser/공통 기록 담당.
+- 출력: @dnd-kit/react/dom 0.5.0, native DnD 수동 처리 제거, 도메인 유효성 유지. CandidateQueryGuard/LoadingGuard, query hook의 재시도 동기 잠금과 transition, 상세 전용 CloseButton 조합.
+- 리뷰: 가짜 빈 초기 데이터나 Promise throw 없이 loading/error를 선언적으로 처리. 재시도 observer 타이밍 문제를 훅 안에서 수정. 실제 센서·collision 테스트에서 JSDOM geometry/종료 feedback 완료 시점 보완. timeout/재실행 이력은 각 기능 기록에 유지.
+- 상세 명령·결과와 브라우저는 docs/records/dnd-kit-migration.md, query-guard-close.md, dnd-query-integration.md 참조.
+
+- 최종: main 보정783c35f, pnpm format:check && pnpm verify 전체 통과(13 files109 tests, lint/typecheck/format/production build). 예약 fake frame 폐기 원인을 수정했고 maxWorkers1로 검사 CPU 경합 제거. production pointer/취소/저장 격리, 상세 키보드 닫기/focus/Guard refresh/390px/console[] 확인, 테스트 상태/탭/서버 복원.

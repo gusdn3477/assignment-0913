@@ -81,5 +81,7 @@
 ## 후속 검토: DnD 라이브러리 전환과 조회 Guard
 - 사용자 요청의 목적은 앱 소유 DnD 복잡도 감소입니다. 최신 공식 React API인 @dnd-kit/react 0.5.0을 사용하고, 한국어 accessibility/feedback 설정에 명시 import하는 @dnd-kit/dom 0.5.0도 직접 의존성으로 선언합니다. sortable/reorder 패키지는 추가하지 않습니다.
 - 센서/충돌 판정/드래그 표시/자동 스크롤은 라이브러리에 맡기되 카드의 현재 단계·잠금·필터 변경 검증은 앱 도메인 규칙으로 유지합니다. 기존 native DataTransfer/token/drag image/수동 edge scrolling은 제거 대상입니다.
-- Query Guard는 useQuery cancellation을 유지하면서 최초 조회 상태, 재시도 잠금/transition/포커스 및 배경 갱신 표시를 소유합니다. 이는 React Suspense 자체가 아니라 선언적으로 조건부 자식을 렌더하는 Guard이며, Promise throw 또는 가짜 초기 데이터를 추가하지 않습니다.
+- Query Guard는 useQuery cancellation을 유지하면서 최초 조회 상태, 재시도 UI/포커스 및 배경 갱신 표시를 소유합니다. 재시도 잠금/transition은 Query observer와 최신 상태를 함께 읽도록 useCandidates 내부에 둡니다. 이는 React Suspense 자체가 아니라 선언적으로 조건부 자식을 렌더하는 Guard이며, Promise throw 또는 가짜 초기 데이터를 추가하지 않습니다.
 - 상세 전용 CloseButton은 SheetClose와 범용 버튼을 조합합니다. 페이지별 위치/라벨을 전역 CloseButton 기본값에 섞지 않으며 상세 사용처의 props/null children을 제거합니다.
+
+- Vitest는 DOM 부하가 큰 1,000-card 전체 탐색과 실제 센서 검증의 CPU 경합을 피하도록 maxWorkers:1로 실행합니다. 테스트 자체의 시간 제한/검증 범위를 완화하지 않습니다. 앱 요청의 병렬성과 별개의 테스트 실행 설정입니다.

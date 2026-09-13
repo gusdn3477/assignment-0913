@@ -107,11 +107,11 @@ Input의 clear는 명시적인 `onClear`를 한 번 호출합니다. 일반 입�
 기능마다 별도 세션·브랜치·워크트리를 사용했고, `type(scope): 요약` 커밋과 병합 이력을 유지합니다. 의존성이 없는 기능만 병렬 개발합니다.
 
 ## 최종 검증 결과
-`pnpm verify`와 `pnpm format:check` 통과. 자동 테스트 12개 파일·108개 사례. 공통 Input ref/clear·버튼·Header와 검색 clear 통합 검증을 포함합니다. Undo 성공·실패 재시도·카드 간 격리·키보드·가상화 포커스 회귀를 포함합니다. 기본 250명 및 합성 1,000명 production 보드에서 가상화 DOM 제한·깊은 스크롤·검색·상세·이동·저장 유지·재시도·390px 화면을 확인했습니다. 전체 카드 키보드 순회와 화면 밖 이동/롤백 포커스는 자동 테스트에도 포함됩니다. 자세한 결과는 [STATUS.md](STATUS.md), [가상화 통합 기록](docs/records/virtualization-integration.md)을 참고하세요.
+`pnpm verify`와 `pnpm format:check` 통과. 자동 테스트 13개 파일·109개 사례. 공통 Input ref/clear·버튼·Header와 검색 clear 통합 검증을 포함합니다. Undo 성공·실패 재시도·카드 간 격리·키보드·가상화 포커스 회귀를 포함합니다. 기본 250명 및 합성 1,000명 production 보드에서 가상화 DOM 제한·깊은 스크롤·검색·상세·이동·저장 유지·재시도·390px 화면을 확인했습니다. 전체 카드 키보드 순회와 화면 밖 이동/롤백 포커스는 자동 테스트에도 포함됩니다. 자세한 결과는 [STATUS.md](STATUS.md), [가상화 통합 기록](docs/records/virtualization-integration.md)을 참고하세요.
 
 Undo production 검증에서 키보드 실행·포커스 복귀·되돌린 단계의 새로고침 후 저장 유지와 390px 메뉴를 확인했습니다. [Undo 통합 기록](docs/records/undo-integration.md)을 참고하세요.
 
-DnD production 검증에서 실제 드래그·실패 롤백·재시도·키보드 Undo·새로고침 후 저장 유지와 390px 메뉴를 확인했습니다. [DnD 통합 기록](docs/records/dnd-integration.md)을 참고하세요.
+DnD production 검증에서 실제 드래그·실패 롤백·재시도·키보드 Undo·새로고침 후 저장 유지와 390px 메뉴를 확인했습니다. [기존 DnD 통합 기록](docs/records/dnd-integration.md)과 [라이브러리 전환 검증](docs/records/dnd-query-integration.md)을 참고하세요.
 
 
 ## Query와 렌더링 경계
@@ -147,3 +147,17 @@ DnD production 검증에서 실제 드래그·실패 롤백·재시도·키보�
 `SearchBar`는 돋보기와 search input을 조합하며 좌우 슬롯도 전달합니다. `left={null}`로 기본 아이콘을 생략할 수 있습니다. 초기 조회 실패는 `RetryButton`, 배경 새로고침은 `ReloadButton`, 조건 초기화는 `ResetButton`을 사용합니다.
 
 카드 목록의 최대 높이는 `max(720px, 75vh)`로 확대했습니다. 작은 화면에서는 페이지 자체를 스크롤할 수 있으며, 많은 후보는 컬럼별 가상화로 유지됩니다. 가상화 스크롤 계산에 위쪽 6px·끝 16px 여백을 포함해 마지막 카드 아래 공간을 확보합니다.
+
+
+## DnD와 조회 Guard
+드래그의 센서·충돌 판정·표시·자동 스크롤은 `@dnd-kit/react`에 맡깁니다. 앱은 현재 카드 단계·필터·저장 잠금만 검증한 뒤 기존 이동 mutation을 호출합니다. 같은 단계와 영역 밖 드롭은 저장하지 않습니다. 키보드 사용자는 기존 단계 이동 메뉴를 사용할 수 있습니다.
+
+```tsx
+<CandidateQueryGuard query={query} blocked={pendingIds.size > 0} fallback={<BoardSkeleton />}>
+  {children}
+</CandidateQueryGuard>
+<LoadingGuard loading={loading} fallback={<Skeleton />}>{children}</LoadingGuard>
+<CloseButton /> // 상세 패널 내부: 닫기 아이콘·라벨·위치·SheetClose 포함
+```
+
+`CandidateQueryGuard`가 초기 로딩/오류/재시도와 배경 새로고침을 처리하므로 화면에서 상태 분기를 반복하지 않습니다. 캐시가 있으면 새로고침 중에도 보드를 유지합니다. 재시도 transition과 동기 잠금은 Query observer를 가진 훅에서 관리합니다. Guard는 조건부 렌더링이며 실제 Suspense로 Promise를 던지는 방식은 아닙니다. 렌더 예외는 별도 ErrorBoundary로 처리합니다.
