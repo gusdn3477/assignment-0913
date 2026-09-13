@@ -60,3 +60,8 @@ button:not(:disabled),
     scroll-behavior: auto !important;
   }
 }
+
+/* Composed fields draw their focus ring around the input and adornments. */
+[data-slot="input-wrapper"] > input:focus-visible {
+  outline: none;
+}

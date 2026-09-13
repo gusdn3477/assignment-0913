@@ -66,7 +66,12 @@ export function VirtualCandidateList({
     getItemKey: (index) => candidates[index].id,
     overscan: 2,
     gap: 10,
-    initialRect: { width: 240, height: 480 },
+    // Include breathing room in the scroll geometry, even after the last card.
+    paddingStart: 6,
+    paddingEnd: 16,
+    scrollPaddingStart: 6,
+    scrollPaddingEnd: 16,
+    initialRect: { width: 240, height: 720 },
     rangeExtractor: useCallback(
       (range: Range) => {
         const indexes = defaultRangeExtractor(range);
@@ -119,7 +124,7 @@ export function VirtualCandidateList({
       data-candidate-column={stage}
       tabIndex={candidates.length ? 0 : undefined}
       aria-label={`${STAGE_LABELS[stage]} 지원자 스크롤 영역`}
-      className="max-h-[min(60vh,720px)] overflow-y-auto overscroll-contain rounded-lg p-0.5"
+      className="max-h-[max(720px,75vh)] overflow-y-auto overscroll-contain rounded-lg px-1.5"
     >
       <ul
         aria-label={`${STAGE_LABELS[stage]} 지원자 목록`}

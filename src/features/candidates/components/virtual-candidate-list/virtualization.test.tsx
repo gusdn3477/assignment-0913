@@ -47,6 +47,15 @@ describe("virtualized candidate navigation", () => {
     fireEvent.scroll(column(), { target: { scrollTop: 184 * 999 - 300 } });
     expect(detail(998)).toBeInTheDocument();
     expect(detail(999).closest("li")).toHaveAttribute("aria-posinset", "1000");
+    const lastRow = detail(999).closest("li")!;
+    const lastStart = Number(
+      lastRow.style.transform.match(/translateY\((.+)px\)/)?.[1],
+    );
+    const totalHeight = Number.parseFloat(lastRow.parentElement!.style.height);
+    expect(
+      totalHeight - lastStart - lastRow.offsetHeight,
+    ).toBeGreaterThanOrEqual(16);
+    expect(screen.getAllByRole("listitem").length).toBeLessThan(15);
     rerender(
       <CandidateBoard
         {...props}

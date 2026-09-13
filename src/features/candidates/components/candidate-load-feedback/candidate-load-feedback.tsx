@@ -1,6 +1,7 @@
 "use client";
 
 import { Wifi } from "lucide-react";
+import { ReloadButton } from "@/components/buttons/reload-button";
 import { RetryButton } from "@/components/buttons/retry-button";
 import { MockApiError } from "@/features/candidates/api/mock-api-error";
 
@@ -67,15 +68,9 @@ export function CandidateRefresh({
         </p>
         {blocked && <p>단계 저장이 끝나면 새로고침할 수 있어요.</p>}
       </div>
-      <RetryButton
-        variant="ghost"
-        size="sm"
-        onClick={onRetry}
-        pending={pending}
-        disabled={blocked}
-      >
+      <ReloadButton onClick={onRetry} pending={pending} disabled={blocked}>
         {failed ? "다시 불러오기" : "새로고침"}
-      </RetryButton>
+      </ReloadButton>
     </div>
   );
 }
