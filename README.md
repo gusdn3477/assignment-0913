@@ -84,8 +84,9 @@ src/components/
   search-bar/         # Input을 조합한 검색 입력
   loading-guard/      # 선언적 loading/fallback
   header/             # left/center/right 슬롯 Header
+src/constants/
+  candidate.ts        # 지원자 단계/직무·스타일·저장 키·오류·Query 키
 src/features/candidates/
-  constants/          # 단계/직무, 스타일, 저장 키, 오류 코드/안내
   types/              # 지원자/이동/Undo 및 API 타입
   utils/              # 필터, 런타임 검증, 취소 가능한 지연
   queries/            # query key 및 queryOptions factory
@@ -93,7 +94,7 @@ src/features/candidates/
   stores/             # UI persist 및 QueryClient별 이동 잠금·이력
 ```
 
-테스트는 해당 컴포넌트·모듈 가까이 둡니다. API는 `@/api/candidate/...`, 지원자 UI는 `@/components/candidate/...`, 도메인 훅·상태·타입은 `@/features/candidates/...`를 참조합니다. `CandidateCardSkeleton`과 `BoardSkeleton`은 기본 Skeleton을 실제 카드와 보드 배치로 조합합니다. 요약은 `CandidateMetric` 안에서 값이 없는 부분에만 skeleton을 표시합니다.
+테스트는 해당 컴포넌트·모듈 가까이 둡니다. API는 `@/api/candidate/...`, 지원자 UI는 `@/components/candidate/...`, 도메인 상수는 `@/constants/candidate`, 도메인 훅·상태·타입은 `@/features/candidates/...`를 참조합니다. 새로운 도메인의 상수는 `src/constants` 아래 도메인 이름의 파일로 추가합니다. `CandidateCardSkeleton`과 `BoardSkeleton`은 기본 Skeleton을 실제 카드와 보드 배치로 조합합니다. 요약은 `CandidateMetric` 안에서 값이 없는 부분에만 skeleton을 표시합니다.
 
 ```tsx
 const { value, onChange, clear } = useCandidateSearch();

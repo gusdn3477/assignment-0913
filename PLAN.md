@@ -73,3 +73,6 @@ Input은 native props/ref와 스타일·left/right 슬롯만 제공하는 primit
 
 ## 후속 승인: CloseButton 중복 정리
 상세 전용 CloseButton 래퍼를 제거하고 SheetContent의 기본 닫기 버튼을 공용 CloseButton으로 통합합니다. 상세 화면의 최소 설정, 검색 지우기, 키보드 닫기와 포커스 복귀를 유지합니다.
+
+## 후속 승인: 도메인별 최상위 constants
+상수는 components와 같은 src/constants 아래 도메인별 파일로 배치합니다. 현재 지원자 단계/직무/스타일/저장 키/검색 제한/오류 코드·메시지/Query 키를 candidate.ts로 모으고 기존 import를 갱신합니다.

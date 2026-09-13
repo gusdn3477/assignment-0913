@@ -119,3 +119,6 @@ Input의 clearButton과 내장 버튼/focus 처리를 제거합니다. native in
 
 ## CloseButton 단일 구현
 공용 buttons/close-button만 유지합니다. Sheet는 Radix 닫기 동작과 위치를 담당하고 공용 버튼을 조합합니다. SheetContent의 선택적 closeButtonProps로 접근성 이름과 native props를 전달하므로 상세 전용 래퍼가 필요하지 않습니다. 검색 지우기의 onClear와 value 조건은 유지합니다.
+
+## 도메인별 상수 파일
+사용자 요청을 우선해 src/constants/candidate.ts에 지원자 도메인 상수를 모읍니다. 별도 constants 하위 폴더나 이전 경로의 re-export는 두지 않습니다. 기존 이름·값·타입을 유지하고 호출자는 @/constants/candidate를 참조합니다. queryOptions/상태 생성 함수와 seed 전용 이름 데이터는 원래 구현에 둡니다.
