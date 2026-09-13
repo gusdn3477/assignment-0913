@@ -1,42 +1,75 @@
 # 프롬프트와 검증 기록
 
-기능별 실제 지시, 출력 요지, 검증 결과와 판단을 기록합니다. 사용자 검증과 에이전트 검증을 구분하며 수행하지 않은 검증은 기록하지 않습니다.
+기능별 실제 지시, 출력 요지, 검증 결과와 판단을 기록합니다. 사용자의 실제 리뷰와 에이전트가 수행한 검증을 구분하며 수행하지 않은 검증은 기록하지 않습니다.
 
-## 사용자 주도 리뷰·검증 — 핵심 평가 근거 (2026-09-13)
+## 사용자 실제 리뷰와 사용자 요청에 따른 검증 (2026-09-13)
 
-이 프로젝트의 검증 범위는 에이전트가 임의로 정한 것이 아니라, 사용자가 구현 결과를 계속 리뷰하고 실패·경쟁 상태·접근성·실제 브라우저 동작을 확인하도록 반복해서 지시한 결과입니다. 사용자는 특히 다음을 직접 질문하거나 보완 요청했습니다.
+아래에서 **사용자 리뷰**는 대화에 실제로 남아 있는 코드 인용, 질문, 문제 제기, 수정·기각 요청만 뜻합니다. **검증**은 그 요청을 받은 에이전트가 실행한 테스트, build, 브라우저 재현 결과입니다. 사용자가 직접 테스트 명령이나 브라우저 검증을 수행했다는 기록은 없으므로 그렇게 표현하지 않습니다. 각 사례는 `문제 → 발견 → 판단 → 수정` 순서로 정리했습니다.
 
-- “실패하는 케이스 어떻게 재현하는지? 실패 시 어떤 UI가 노출되나? 토스트나 모달을 띄우나?”라고 물어 조회 실패와 mutation 실패를 구분하고, 오류 알림·카드별 롤백·재시도 경로를 검증하도록 했습니다.
-- “낙관적 업데이트는 지금 어디서 어떻게 쓰이고 있나?”라고 구현 위치와 동작 근거를 검토하고, 완료 전 화면 반영·같은 카드 중복 차단·다른 카드 병렬 처리·실패 카드만 복구·성공 응답만 저장하는 계약을 테스트와 브라우저에서 확인하도록 했습니다.
-- “또한 성공 시에도 토스트 띄워줘.”라고 보완 요청해, 낙관 반영 시점이 아니라 서버 저장 성공이 확정된 뒤 이동과 Undo 성공 알림이 표시되는지 검증하도록 했습니다.
-- “더 진행할 거 없나? 마지막으로 초기 요구사항에 어긋난 거 있는지 확실히 확인해”라고 최종 재감사를 요청해, 최초 계획과 구현·테스트·문서·브라우저 기록을 다시 대조하도록 했습니다.
-- 이번 마감 지시에서도 “Prompts.md 에 내가 리뷰/검증하도록 한 걸 강조해줘. 이게 가장 중요한 채점 포인트야”라고 사용자 주도 검토 과정을 제출 기록의 최우선 근거로 명시하도록 했습니다.
+### 1. 실패 UI, 낙관적 업데이트와 성공 피드백
 
-에이전트는 위 지시에 따라 자동 테스트와 production build를 실행하고, 실제 브라우저에서 조회 실패→재시도, mutation 실패→해당 카드만 롤백, 재시도 성공, Undo 성공, 저장 후 reload, 키보드 포커스 복귀, 390px 화면과 console error/warn 여부를 확인했습니다. 이 문서에서 “사용자 리뷰·검증”은 사용자가 검증 항목과 보완 기준을 제시하고 결과를 재검토하게 한 사실을 뜻하며, 실제 명령 실행이나 브라우저 조작을 사용자가 직접 수행한 것으로 과장하지 않습니다.
+- **무엇이 문제였나:** 조회 실패와 mutation 실패가 어떤 UI로 구분되는지 설명이 부족했고, 실패 toast는 있었지만 저장 성공 피드백은 누락되어 있었습니다. 검색 결과가 0명이 되면 결과 영역 높이도 달라졌습니다.
+- **어떻게 알아챘나:** 사용자가 실패 재현 방법과 노출 UI, 낙관적 업데이트 위치를 질문하고 “검색 결과가 없는 경우 height가 달라진다”고 문제를 제기했습니다. 에이전트는 실패를 주입해 조회 재시도, 카드별 rollback, 결과 셸 높이를 브라우저와 테스트로 확인했습니다.
+- **채택/수정/기각 판단:** 카드별 Query 캐시 낙관 갱신·잠금·rollback 구조는 요구에 맞아 **채택**했습니다. 성공 피드백 누락과 빈 결과 레이아웃 이동은 사용자가 결과를 확신하기 어렵게 하므로 **수정**했습니다. modal은 작업 흐름을 막을 필요가 없어 **기각**하고 toast와 영역 내 오류 UI를 유지했습니다.
+- **어떻게 고쳤나:** 조회 실패는 재시도 패널, 배경 조회 실패는 기존 데이터를 유지하는 alert, mutation 실패는 해당 카드 rollback과 오류 toast로 구분했습니다. API 성공 확정 뒤 이동·Undo 성공 toast를 추가하고, `CandidateEmptyGuard`가 결과 유무와 무관하게 같은 최소 높이 셸을 렌더링하게 했습니다.
 
-### 전체 세션에서 확인된 사용자 리뷰
+### 2. 동시 렌더링 범위
 
-사용자는 최초 구현 지시 이후 각 세션에서 결과를 그대로 수용하지 않고 코드·구조·동작을 직접 읽으며 다음 항목을 질문하거나 정정했습니다.
+- **무엇이 문제였나:** 초기 개선안은 검색 외 새로고침·재시도에도 `useTransition`을 사용해 Query 자체의 요청 상태와 역할이 겹쳤습니다.
+- **어떻게 알아챘나:** 사용자가 대화에서 “Input 입력 시 CardList 부분에만 있으면 될 것 같고 이외 useTransition 등은 과해 보인다”고 지적했습니다. 에이전트는 hook 사용처와 로딩 테스트를 정독해 중복 상태를 확인했습니다.
+- **채택/수정/기각 판단:** 입력값은 즉시 반영하면서 큰 카드 목록 계산만 늦추는 `useDeferredValue`는 **채택**했습니다. 네트워크 요청 잠금처럼 쓰인 `useTransition`은 Query의 `isFetching`·`isFetched`가 이미 같은 사실을 표현하므로 **기각**했습니다.
+- **어떻게 고쳤나:** 검색 문자열의 deferred 값만 보드 필터링에 사용하고, 재시도·새로고침 피드백은 TanStack Query 상태로 통일했습니다. 결과 수와 빈 상태도 실제 표시 중인 deferred 결과를 기준으로 맞췄습니다.
 
-- 기반과 진행 방식: TypeScript strict, Next App Router, Tailwind/cn, shadcn, TanStack Query, Zustand를 지정하고 기능별 브랜치·워크트리·새 세션, 병렬 진행, 중간 문서 갱신과 기능별 커밋을 요구했습니다. 기능 경계는 예시에 고정하지 말고 의존성에 따라 유동적으로 조정하도록 했습니다.
-- 상태와 동시성: native element props 확장, `useDeferredValue`·`useTransition`의 올바른 사용, loading/error 구분을 요구했습니다. 이후 실제 코드를 검토해 동시 렌더링은 즉시 입력값과 카드 목록 갱신에만 필요하다고 정정하고, 조회 재시도 등에 쓰인 과도한 `useTransition`은 제거하도록 했습니다.
-- Query 선택: `useCandidates`를 `useSuspenseQuery`로 바꿀 수 없는 이유, 입력마다 검색하는 계약의 필요성, debounce·명시적 검색 버튼과의 비교를 질문했습니다. React 19 `useOptimistic`으로 TanStack Query를 대체할 수 있는지도 검토하고, 최종적으로 Query를 설치한 이유와 `useOptimistic`을 중복 사용하지 않은 이유를 문서에 명시하도록 했습니다.
-- 실패와 낙관적 갱신: 실패를 어떻게 재현하는지, 조회 실패와 mutation 실패에 각각 어떤 UI가 나타나는지, toast 또는 modal이 필요한지 질문했습니다. 낙관적 업데이트의 실제 위치와 카드별 잠금·병렬 처리·rollback을 확인하게 했고, 저장 성공 뒤에도 이동과 Undo 성공 toast를 추가하도록 보완했습니다.
-- 빈 상태와 화면 안정성: `filtered.length === 0` 분기를 children을 반환하는 Guard로 감싸도록 제안했습니다. 검색 결과가 0명이 될 때 결과 영역 높이와 사용자의 화면 위치가 달라지는 문제를 지적해 결과 유무와 무관한 레이아웃 높이를 검증하도록 했습니다.
-- 보드와 상호작용: 카드 영역이 좁고 마지막 카드가 잘려 보이는 문제를 지적하고 목록 높이와 끝 여백을 늘리도록 했습니다. 가상화, 저장된 이동의 Undo, DnD를 차례로 후속 선택 기능으로 승인했으며, DnD 직접 구현 규모를 검토해 `@dnd-kit` 같은 라이브러리를 고려하도록 했습니다.
-- DnD와 React lifecycle: DnD 라이브러리를 써도 도메인 drag hook이 필요한지 질문하고, 훅 이름을 `useCandidateStageDrag`처럼 구체화하도록 정정했습니다. 실제 `flushSync was called from inside a lifecycle method` 경고를 제시하고 원인 수정 또는 필요시 라이브러리 교체까지 허용했습니다.
-- 재사용 UI: Input의 native props·ref와 left/right 슬롯, 의미별 Button, left/center/right Header, 용도별 skeleton을 검토하도록 했습니다. 이후 Input은 스타일과 슬롯만 제공하는 primitive로 축소하고, 슬롯 유무와 무관하게 같은 wrapper와 외형을 렌더링하도록 구체화했습니다.
-- SearchBar: 사용하는 쪽이 아이콘을 조립하는 초기 결과가 의도와 다르다고 정정했습니다. SearchBar가 돋보기와 CloseButton을 직접 배치하고 native `onChange`, 선택적 `onClear`, `onClear` 존재와 비어 있지 않은 `value`를 함께 만족할 때만 X를 표시하도록 단계적으로 리뷰했습니다. 마지막에는 공개 left/right props도 제거해 최소 호출 계약을 확정했습니다.
-- 컴포넌트 계약: 앱 소유 `pending`을 익숙한 `loading`으로 바꾸고 일반 element 이벤트 이름과 비교하도록 했습니다. 다만 Radix Select의 원래 API가 `onValueChange`임을 재확인한 뒤에는 불필요한 `onChange` 변환을 취소하도록 정정했습니다.
-- 상태 경계: Zustand가 이미 UI 상태를 소유하므로 앱 전용 Context/Provider는 역할이 겹친다고 지적해 제거하도록 했습니다. 저장값 검증과 client effect 복원은 유지하도록 했습니다.
-- 오류와 상수: 직접 만든 ErrorBoundary를 `react-error-boundary`의 검증된 패턴으로 바꿔 코드량을 줄이도록 했습니다. 조회 오류 코드·표시 메시지와 지원자 단계·직무·스타일·저장 키·Query 키는 `src/constants` 아래 도메인별 파일로 모으도록 요청했습니다.
-- 폴더 구조: API는 `src/api`로, 지원자 UI는 `src/components/candidate` 아래 board/card/detail 역할별 폴더로 옮기도록 했습니다. hooks를 무조건 최상위로 이동하기보다 재사용 범위를 기준으로 두는 것이 맞는지 질문했고, 가상 목록 전용 스크롤·포커스 복원 훅은 해당 컴포넌트 옆에 두는 결론을 검토했습니다.
-- 중복과 가독성: 상세 전용 CloseButton과 공용 CloseButton 중복을 발견해 하나로 정리하도록 했습니다. 가상 목록의 두 `useLayoutEffect`가 꼭 필요한지 검토하고 `useCandidateScrollRestoration`으로 분리하도록 했으며, 보드 JSX의 긴 capture 이벤트 세 개도 우선 이름 있는 함수로 올려 JSX가 연결 관계만 표현하게 했습니다.
-- React 19 단순화: `DeferredBoard = memo(CandidateBoard)`와 단순 `useMemo`·`useCallback`의 필요성을 질문하고, React Compiler를 production과 Vitest에 함께 적용한 뒤 불필요한 수동 메모이제이션을 제거하도록 했습니다. mutable virtualizer의 `"use no memo"` 지시문과 주석도 별도 세션에서 다시 검토했습니다.
-- AI 초안 수정 흔적: UI store 복원 코드의 선두 `void`와 구현을 반복하는 영어 주석이 불필요하다고 지적했습니다. `rehydrate()`의 `Promise<void> | void` 반환 때문에 필요한 `Promise.resolve`는 유지하되 나머지는 제거하고, AI 초안에서 무엇을 고쳤는지 커밋 본문에 남기도록 요구했습니다.
-- 최종 감사: “더 진행할 거 없나? 마지막으로 초기 요구사항에 어긋난 거 있는지 확실히 확인해”라고 최초 요구사항과 최종 구현을 재대조하게 했습니다. 이어 “빌드 및 테스트 해줘 문제없나 보게”라고 별도 검증 세션을 요청했습니다.
+### 3. TanStack Query, Suspense와 React `useOptimistic`
 
-### 사용자 요청에 따른 최종 검증 결과
+- **무엇이 문제였나:** `useCandidates`가 `useSuspenseQuery`가 아닌 이유와 TanStack Query를 설치한 근거가 문서에서 충분히 드러나지 않았습니다. React 19 `useOptimistic`으로 대체 가능한지도 설명이 필요했습니다.
+- **어떻게 알아챘나:** 사용자가 세 API의 필요성과 검색 요청 방식까지 직접 질문했습니다. 에이전트는 Query hook, AbortSignal 취소, 오류 재시도, mutation lifecycle과 공식 문서를 대조했습니다.
+- **채택/수정/기각 판단:** Query key와 설정 재사용을 위한 `queryOptions`는 **채택**했습니다. 브라우저 저장소 기반 초기 조회의 명시적 loading/error/retry와 취소 계약을 숨기는 `useSuspenseQuery` 전환은 **기각**했습니다. 별도 `useOptimistic` 상태도 공유 Query 캐시와 rollback 상태를 이중화하므로 **기각**했습니다.
+- **어떻게 고쳤나:** `useQuery` 경계는 Guard/Wrapper로 캡슐화하고, README·DECISIONS·PROMPTS에 TanStack Query가 조회 캐시·취소·재시도·배경 갱신·mutation rollback을 함께 소유한다는 선택 이유를 추가했습니다.
+
+### 4. Input, SearchBar와 이벤트 계약
+
+- **무엇이 문제였나:** 초기 SearchBar는 사용하는 쪽이 left/right 아이콘과 clear 기능을 조립해야 했고, Input은 슬롯 유무에 따라 DOM 구조가 달랐습니다. 일부 prop을 native 이벤트 이름에 맞춘다는 이유로 라이브러리 고유 계약까지 바꾸려 했습니다.
+- **어떻게 알아챘나:** 사용자가 대화에 실제 JSX와 Input 분기 코드를 인용해 의도와 다르다고 정정했습니다. `onClear`와 `value.length` 조건, `pending` 명칭, Select 이벤트도 후속 메시지로 재검토했습니다. 에이전트는 컴포넌트 테스트와 Radix 원래 API를 확인했습니다.
+- **채택/수정/기각 판단:** Input을 native props/ref와 스타일·슬롯만 제공하는 primitive로 두는 방향은 **채택**했습니다. SearchBar의 공개 left/right 조합은 기본 검색 경험을 호출부마다 반복하므로 **기각**했습니다. 일반 앱 prop의 `loading`·native `onChange`는 **채택**하되 Radix Select의 원래 `onValueChange`는 예외로 **유지**했습니다.
+- **어떻게 고쳤나:** Input은 슬롯 유무와 무관하게 같은 wrapper를 렌더링하고 실제 슬롯이 있을 때만 공간을 확보합니다. SearchBar 내부에 돋보기와 CloseButton을 고정하고 `onClear`가 있으며 값이 비어 있지 않을 때만 X를 표시하며, 지운 뒤 input focus를 복원합니다.
+
+### 5. Zustand Provider와 저장 상태 복원
+
+- **무엇이 문제였나:** 앱 전용 Context/Provider가 Zustand UI store와 같은 책임을 감싸고 있었고, 복원 코드의 선두 `void`와 구현을 반복하는 영어 주석이 코드를 더 복잡하게 보이게 했습니다.
+- **어떻게 알아챘나:** 사용자가 Provider의 역할 중복과 `void Promise.resolve(...).finally(...)` 코드를 직접 지적했습니다. 에이전트는 Zustand 타입 선언과 저장 복원 테스트를 읽어 `rehydrate()`가 `Promise<void> | void`를 반환하는 것을 확인했습니다.
+- **채택/수정/기각 판단:** 앱 전용 Provider와 선두 `void`, 중복 주석은 실질적 역할이 없어 **기각**했습니다. 동기·비동기 저장소 모두에서 복원 완료 뒤 `hydrated`를 설정해야 하므로 `Promise.resolve`와 `finally`는 **채택**했습니다.
+- **어떻게 고쳤나:** 컴포넌트가 bound store를 직접 구독하게 하고 client effect에서 검증된 저장값을 복원했습니다. 불필요한 `void`와 영어 주석 네 개를 제거하고, AI 초안에서 무엇을 수정했는지 기능 커밋 본문에 기록했습니다.
+
+### 6. DnD 구현 규모와 lifecycle 경고
+
+- **무엇이 문제였나:** native DnD 직접 구현으로 코드가 커졌고, 단계 이동 중 가상 행 재측정이 React lifecycle 내부에서 동기 `flushSync`를 호출하는 경고가 발생했습니다. `useCandidateDrag`도 실제 책임보다 이름이 넓었습니다.
+- **어떻게 알아챘나:** 사용자가 DnD 코드 규모와 hook 필요성을 질문하고 실제 console 경고를 제시했습니다. 에이전트는 pointer DnD를 직접 재현하고 가상화 테스트와 TanStack Virtual 호출 경로를 추적했습니다.
+- **채택/수정/기각 판단:** 센서·충돌·취소·자동 스크롤을 라이브러리에 맡기는 `@dnd-kit` 전환은 **채택**했습니다. 단계 이동의 도메인 규칙과 Query mutation 연결은 라이브러리가 대신하지 않으므로 전용 hook은 **유지**하되 더 구체적인 이름으로 **수정**했습니다. 라이브러리 전체 교체는 `useFlushSync: false`로 원인이 해결돼 **기각**했습니다.
+- **어떻게 고쳤나:** native drag 수동 처리를 제거하고 `useCandidateStageDrag`로 이름과 파일명을 맞췄습니다. 가상 목록에 `useFlushSync: false`를 적용하고 pointer 이동·취소·rollback·console 무경고를 테스트와 production에서 다시 확인했습니다.
+
+### 7. 오류 경계, 상수와 폴더 구조
+
+- **무엇이 문제였나:** 직접 구현한 ErrorBoundary가 검증된 라이브러리와 같은 동작을 더 많은 코드로 반복했고, 오류 메시지·지원자 상수·API·컴포넌트가 여러 위치에 흩어져 있었습니다. CloseButton도 상세 전용과 공용 구현이 중복됐습니다.
+- **어떻게 알아챘나:** 사용자가 대화에서 `react-error-boundary`, 오류 상수화, 최상위 `api`·`constants`, 역할별 candidate 폴더를 요청하고 “close-button 이 지금 2개 존재”한다고 구체적으로 지적했습니다. 에이전트는 실제 파일과 import graph, 공개 상수 값, 오류 복구 테스트를 대조했습니다.
+- **채택/수정/기각 판단:** 검증된 오류 경계 라이브러리, 도메인별 최상위 상수와 역할별 폴더는 책임을 명확히 하므로 **채택**했습니다. 모든 hook을 전역 폴더로 옮기는 방안은 컴포넌트 전용 동작의 결합 위치를 숨기므로 **기각**했습니다.
+- **어떻게 고쳤나:** `react-error-boundary`의 fallback/reset 패턴으로 교체하고, 지원자 상수를 `src/constants/candidate.ts`, API를 `src/api/candidate`, UI를 `src/components/candidate/{board,card,detail,...}`로 정리했습니다. 상세 닫기는 공용 CloseButton으로 통합했습니다.
+
+### 8. React 19 메모이제이션과 가독성
+
+- **무엇이 문제였나:** `DeferredBoard = memo(CandidateBoard)`와 여러 `useMemo`·`useCallback`이 단순 렌더 최적화를 위해 산재했고, 가상 목록의 복원 effect와 보드 capture handler가 JSX 및 컴포넌트 본문을 길게 만들었습니다.
+- **어떻게 알아챘나:** 사용자가 `memo`, `"use no memo"`, 두 `useLayoutEffect`, 세 capture handler 코드를 직접 인용해 필요성과 위치를 질문했습니다. 에이전트는 Next React Compiler 문서, Vitest 성능, 가상화 Tab·포커스 테스트를 확인했습니다.
+- **채택/수정/기각 판단:** production과 테스트의 React Compiler 적용 및 단순 수동 메모 제거는 **채택**했습니다. mutable virtualizer 옵션 참조 안정성에 필요한 `rangeExtractor`의 `useCallback`은 이유가 있어 **유지**했습니다. 전용 스크롤·포커스 훅을 전역 hooks에 두는 방안은 재사용 범위가 좁아 **기각**했습니다.
+- **어떻게 고쳤나:** `CandidateBoard`를 직접 렌더링하고 단순 메모이제이션을 제거했습니다. 복원 로직은 인접한 `useCandidateScrollRestoration`으로 분리하고 capture handler는 이름 있는 `handleBoard...` 함수로 올려 JSX에는 연결만 남겼습니다. mutable virtualizer의 지시문과 주석은 별도 리뷰 대상으로 남겨 실제 코드와 근거를 계속 대조했습니다.
+
+### 9. 최종 요구사항 및 빌드 재검증
+
+- **무엇이 문제였나:** 기능이 여러 후속 세션에서 확장되어 최초 필수 요구사항의 누락이나 과거 검증 수치가 최신 상태와 섞일 위험이 있었습니다.
+- **어떻게 알아챘나:** 사용자가 “마지막으로 초기 요구사항에 어긋난 거 있는지 확실히 확인해”, “빌드 및 테스트 해줘 문제없나 보게”라고 별도 재감사를 요청했습니다. 에이전트는 초기 PLAN, 현재 코드, 기능 기록, 최신 테스트 목록을 다시 대조했습니다.
+- **채택/수정/기각 판단:** 기능 추가보다 요구사항 대조와 전체 검증을 우선하는 판단을 **채택**했습니다. 이전 시점의 테스트 수를 최신 결과처럼 쓰는 방식은 **기각**했습니다.
+- **어떻게 고쳤나:** 초기 요구사항별 구현·검증 링크를 다시 확인하고 별도 세션에서 `pnpm verify`를 재실행했습니다. 최신 결과와 과거 중간 실패를 구분해 아래에 기록했습니다.
+
+### 사용자가 요청하고 에이전트가 수행한 최종 검증 결과
 
 - 별도 최종 검증 세션에서 `pnpm verify`를 다시 실행했습니다.
 - ESLint와 TypeScript strict 검사가 통과했습니다.
