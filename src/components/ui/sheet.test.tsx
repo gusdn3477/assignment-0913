@@ -1,38 +1,28 @@
-import { createRef } from "react";
+import { createRef, type ComponentProps } from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
-import {
-  Sheet,
-  SheetContent,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { CloseButton } from "./close-button";
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "./sheet";
 
-function DetailSheet({ children }: { children: React.ReactNode }) {
+function ExampleSheet(props: ComponentProps<typeof SheetContent>) {
   return (
     <Sheet>
       <SheetTrigger>상세 열기</SheetTrigger>
-      <SheetContent showCloseButton={false} aria-describedby={undefined}>
+      <SheetContent aria-describedby={undefined} {...props}>
         <SheetTitle>지원자 상세</SheetTitle>
-        {children}
+        <button>다른 동작</button>
       </SheetContent>
     </Sheet>
   );
 }
 
-describe("detail CloseButton", () => {
-  it("closes the real sheet by keyboard with defaults and restores trigger focus", async () => {
+describe("SheetContent close button", () => {
+  it("closes by keyboard with defaults and restores trigger focus", async () => {
     const user = userEvent.setup();
-    render(
-      <DetailSheet>
-        <CloseButton />
-      </DetailSheet>,
-    );
+    render(<ExampleSheet />);
     const trigger = screen.getByRole("button", { name: "상세 열기" });
     await user.click(trigger);
-    const close = screen.getByRole("button", { name: "상세 닫기" });
+    const close = screen.getByRole("button", { name: "닫기" });
     expect(close).toHaveFocus();
     expect(close).toHaveTextContent("");
     expect(close.querySelector("svg")).toBeInTheDocument();
@@ -45,9 +35,13 @@ describe("detail CloseButton", () => {
   it("forwards native refs and allows accessible name and style overrides", async () => {
     const ref = createRef<HTMLButtonElement>();
     render(
-      <DetailSheet>
-        <CloseButton ref={ref} aria-label="프로필 닫기" className="top-8" />
-      </DetailSheet>,
+      <ExampleSheet
+        closeButtonProps={{
+          ref,
+          "aria-label": "프로필 닫기",
+          className: "top-8",
+        }}
+      />,
     );
     await userEvent.click(screen.getByRole("button", { name: "상세 열기" }));
     const close = screen.getByRole("button", { name: "프로필 닫기" });
@@ -56,5 +50,19 @@ describe("detail CloseButton", () => {
     expect(close).not.toHaveClass("top-5");
     await userEvent.click(close);
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("can hide the default close button while preserving Escape dismissal", async () => {
+    const user = userEvent.setup();
+    render(<ExampleSheet showCloseButton={false} />);
+    const trigger = screen.getByRole("button", { name: "상세 열기" });
+    await user.click(trigger);
+    expect(
+      screen.queryByRole("button", { name: "닫기" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "다른 동작" })).toHaveFocus();
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(trigger).toHaveFocus();
   });
 });
