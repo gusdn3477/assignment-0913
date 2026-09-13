@@ -20,7 +20,6 @@ export interface CandidateUIState {
   resetFilters: () => void;
 }
 
-// Privacy modes and full storage must not prevent in-memory interaction.
 const safeStorage: StateStorage = {
   getItem: (key) => {
     try {
@@ -32,16 +31,12 @@ const safeStorage: StateStorage = {
   setItem: (key, value) => {
     try {
       localStorage.setItem(key, value);
-    } catch {
-      /* Keep UI usable. */
-    }
+    } catch {}
   },
   removeItem: (key) => {
     try {
       localStorage.removeItem(key);
-    } catch {
-      /* Keep UI usable. */
-    }
+    } catch {}
   },
 };
 
@@ -85,11 +80,10 @@ export const useCandidateUI = create<CandidateUIState>()(
   ),
 );
 
-// Restore browser settings after hydration; server renders use default state.
 export function useHydrateCandidateUI() {
   useEffect(() => {
     if (useCandidateUI.getState().hydrated) return;
-    void Promise.resolve(useCandidateUI.persist.rehydrate()).finally(() => {
+    Promise.resolve(useCandidateUI.persist.rehydrate()).finally(() => {
       useCandidateUI.setState({ hydrated: true });
     });
   }, []);
