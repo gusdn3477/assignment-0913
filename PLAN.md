@@ -40,3 +40,6 @@ Undo, 가상화, DnD, 로그인, 지원자 생성/삭제, 실제 백엔드, 다�
 
 ## 후속 승인: Query와 렌더링 경계 (2026-09-13)
 사용자의 추가 요청을 독립 `codex/candidate-boundaries` 워크트리에서 적용합니다. Tailwind 4 canonical class ESLint와 자동 수정, useQuery의 데이터/조회 상태 정규화, 기존 @ alias 활용, route loading 및 영역별 render 예외 복구, 정적 서버 page와 interactive client 후보 영역 분리를 포함합니다. 기존 cancellation/카드 잠금/롤백/Undo/DnD/가상화 계약을 유지하며 통합 검증합니다.
+
+## 후속 승인: 검색 조합과 보드 공간 (2026-09-13)
+사용자 요청에 따라 Input 좌우 슬롯과 실제 SearchBar 조합, ReloadButton 역할 분리, 보드 높이 확대 및 목록 끝 카드 가시성을 독립 search-board-polish 세션에서 구현합니다. 기존 native input/포커스/가상화/저장 계약을 유지합니다.
