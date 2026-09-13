@@ -1,10 +1,12 @@
 # candidate-structure
 
 ## 요청 / 소유권
+
 선택사항 2~4 및 기능별 skeleton: 컴포넌트별 폴더, constants/types/utils/hooks/api/query keys/options 분리와 합리적인 입력 훅 추상화.
 새 `.worktrees/candidate-structure`, `codex/candidate-structure`에서 `src/features/candidates/**`, `src/app/page.tsx`의 import, 이 task와 `docs/records/candidate-structure.md`만 소유합니다. 공통 src/components 및 package/상위 문서는 수정하지 않습니다.
 
 ## 계약 / 완료 기준
+
 - candidates 안에 components/<component>, api, constants, types, utils, hooks, queries, stores 등 관련 책임별 분리. 관련 테스트는 해당 모듈 근처. imports는 @/features/candidates/...로 긴 상대 경로 회피. 의미 없이 한 줄 파일이나 호환 re-export를 대량 생성하지 않음.
 - board에서 card를 분리하고 app의 header/metric/board skeleton도 적절한 component 단위로 추출. 공통 primitive Skeleton 위에 CardSkeleton/BoardSkeleton/MetricSkeleton처럼 실제 레이아웃에 대응하는 조합. 기능 컴포넌트는 이름이 있는 명시적 파일로 제공.
 - query key, queryOptions factory, list hook, mutation hook, QueryClient별 move store, 도메인 타입/상수/API/validation 등을 책임별 분리. 기존 캐시 키와 localStorage 키 유지.
@@ -13,3 +15,11 @@
 - 기존 87 tests를 보존하고 변경된 경로/mock 경로를 정확히 갱신. 실패 재시도·cancelQueries·동일 카드 잠금·parallel rollback·Undo·DnD·가상화/포커스 유지.
 - 공통 UI 담당이 전달할 Input clear API 및 Header/버튼 API는 통합 단계에서 연결할 수 있도록 구조 준비. 별도 UI 컴포넌트 파일을 가정하여 import하지 말 것.
 - lint/typecheck/tests/format 및 task/실제 records 갱신 후 커밋. main 통합과 browser/build는 통합 담당.
+
+## 완료 인계 (2026-09-13)
+
+- 구현 완료: components별 폴더/테스트 이동, card/header/metric/구조 skeleton, constants/types/utils/api/queries/hooks/stores 분리, queryOptions 실사용, 검색 훅 추상화.
+- useSuspenseQuery는 공식 cancellation 미지원 및 browser-only 조회/현재 오류 복구 계약 때문에 미도입. 근거: docs/records/candidate-structure.md.
+- 검증: 7 files 87 tests, lint, typecheck 통과. 최종 format:check/lint 재확인 통과.
+- 통합: `components/workspace-header/workspace-header.tsx`, toolbar, detail, load-feedback, app에 공통 UI 연결. `hooks/use-candidate-search.ts`가 value/setValue/onChange/clear 제공. toolbar에서 clear를 추가로 받아 clearButton onClear에 연결하면 됨. 직무 유지/clear focus는 통합 UI 테스트 대상.
+- 현재 위치 `.worktrees/candidate-structure`, branch `codex/candidate-structure`. 알려진 결함 없음. build/browser는 통합 담당.
