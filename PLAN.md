@@ -58,3 +58,6 @@ SearchBar가 Input left 돋보기와 right CloseButton 및 지우기/focus 동�
 
 ## 후속 승인: 빈 결과 Guard
 사용자 요청에 따라 빈 지원자 목록/검색 결과 없음 분기와 초기화를 CandidateEmptyGuard 내부로 이동하고 정상 결과에는 children을 반환합니다.
+
+## 사용자 정정: 동시 렌더링 범위 축소
+동시 렌더링은 이름 Input에 따른 카드 목록 갱신에만 적용합니다. 새로고침/재시도의 useTransition은 제거하고 Query 조회 상태로 피드백을 유지합니다. 이전 적극 활용 기준보다 이번 사용자 정정을 우선합니다.

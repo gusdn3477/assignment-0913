@@ -112,3 +112,6 @@ API·지원자 컴포넌트 배치 정리 완료: 기능 `6986331`, main 통합 
 개발 미리보기는 `pnpm dev --port 3100`으로 실행합니다. 기본 실행은 `pnpm install` → `pnpm dev`입니다. 이번 production 검증 서버는 종료했습니다.
 
 이번 승인 범위의 필수 미완료와 알려진 결함은 없습니다. 로그인·실제 백엔드·다중 탭 동기화·공개 저장소 생성/푸시/배포는 승인 범위 밖입니다.
+
+## 최신 동시 렌더링 단순화 완료
+기능 e735dd0 / main 통합927a3df, codex/concurrency-simplification / .worktrees/concurrency-simplification. useTransition 제거, 검색 문자열 useDeferredValue만 유지. Query 기반 조회 피드백과 재시도 focus/잠금 보존. lint/typecheck/app14 tests/production build 및 브라우저 검색/초기화/refresh pending 보드 유지와 완료 확인. console error/warn 없음, 미해결 이슈 없음. 상세 docs/records/concurrency-simplification.md.

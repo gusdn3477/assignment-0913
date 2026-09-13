@@ -714,3 +714,9 @@ Codex in-app browser, 127.0.0.1:3101, 기본 viewport 1280×720.
 - 결과: CandidateEmptyGuard로 빈 목록/검색 결과 안내와 초기화를 캡슐화.
 - 검증: lint/typecheck/app14 tests/build 및 브라우저 검색 0명→초기화250명 복원 통과.
 - 상세: docs/records/candidate-empty-guard.md.
+
+## 동시 렌더링 범위 축소
+- 실제 요청: Input 입력 시 CardList에만 동시성 함수가 있으면 될 것 같고 이외 useTransition 등은 과해 보임.
+- 결과: useTransition 제거, Query isFetching/isFetched 활용, useDeferredValue(search)만 유지.
+- 검증: lint/typecheck/app14 tests/build 통과. production 검색0명/초기화250명, refresh pending 보드 유지/완료, console[] 확인.
+- 기록: docs/records/concurrency-simplification.md.

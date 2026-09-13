@@ -93,3 +93,7 @@
 ## API와 지원자 컴포넌트 위치 정리
 - 사용자 요청에 따라 API를 src/api/candidate로 분리하고 UI를 src/components/candidate 아래 board/card/detail 등으로 묶습니다. 반복되는 candidate- 폴더 접두사를 줄이고 가상 목록은 board/virtual-list에 배치합니다.
 - API 오류/시드/테스트를 함께 옮깁니다. 기존 도메인 훅·스토어·상수·타입·쿼리·유틸은 유지하고 모든 실제 import/mock 참조를 갱신합니다. 이전 경로의 호환 re-export나 실행 동작 변경은 추가하지 않습니다.
+
+## 동시 렌더링 범위 축소
+- 사용자 정정에 따라 useTransition은 제거하고 useDeferredValue(search)만 카드 목록 검색에 유지합니다. 직무/캐시/카드 잠금은 즉시 반영하며 결과 개수/빈 상태는 표시 목록과 일치시킵니다.
+- Query isFetching으로 요청 pending을 표시하고 isFetched와 hasData로 최초 오류 재시도 패널을 유지합니다. 별도 pending 상태는 추가하지 않으며 동일 렌더 내 중복 방지를 위한 ref 잠금은 보존합니다.
