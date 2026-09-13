@@ -4,7 +4,7 @@ export function CandidateCardSkeleton() {
   return (
     <div
       aria-hidden="true"
-      className="h-[174px] rounded-xl border border-slate-200/80 bg-white p-4"
+      className="h-43.5 rounded-xl border border-slate-200/80 bg-white p-4"
     >
       <div className="flex items-center gap-3">
         <Skeleton className="size-10 rounded-full" />

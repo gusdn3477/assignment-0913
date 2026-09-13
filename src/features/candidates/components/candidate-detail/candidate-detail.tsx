@@ -124,7 +124,7 @@ export function CandidateDetail({
               <h3 className="mb-3 text-sm font-semibold text-slate-900">
                 지원자 소개
               </h3>
-              <p className="whitespace-pre-wrap text-sm leading-7 text-slate-600">
+              <p className="whitespace-pre-wrap text-sm/7  text-slate-600">
                 {candidate.summary}
               </p>
             </div>

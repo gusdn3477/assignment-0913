@@ -13,3 +13,13 @@
 - 공식 canonical rule 문서: https://github.com/schoero/eslint-plugin-better-tailwindcss/blob/main/docs/rules/enforce-canonical-classes.md
 - rootFontSize 16 + 앱 CSS entryPoint로 rule error 및 lint:fix 설정. 기존 소스에 eslint --fix 실행하여 min-w-[1240px] → min-w-310 변환 확인. 해당 시험 수정은 기존 구조 통합 후 재실행하기 위해 원복.
 - 독립 영역 render boundary와 복구/오류 원문 숨김/형제 영역 보존 테스트 작성. 통합 이후 실제 화면에 연결하고 전체 검증 예정.
+
+## 구현 및 2차 검증
+- main 84181ea 구조 통합 반영. 정적 header/intro/footer/main은 server page로 이동, client CandidatesApp은 UI provider/조회/상호작용만 담당.
+- useCandidates는 안정적인 기본 배열, 실제 데이터 존재 여부 hasData, summary 및 선택 후보를 반환합니다. Query cache에는 초기 빈 배열을 넣지 않으므로 initial failure/empty success/refresh failure를 구분합니다.
+- route loading.tsx와 browser query skeleton 역할을 구분. 보드/상세 render boundary와 전체 client 영역 예외 경계를 적용. API 실패/카드 mutation은 기존 inline/toast 경로 유지.
+- TS/Vitest의 기존 @ alias가 src로 일치하며 새 import와 기존 폴더 이동에 사용됨. 불필요한 Vite 설정/플러그인 중복 추가 없음.
+- canonical rule 실제 lintText 오류 검출 및 min-w-310 자동 수정 검증 PASS. 기존 canonical 클래스 전체 수정.
+- 최초 typecheck/test에서 isSuccess 반환 누락 발견(101/102 통과). 기존 성공 상태 계약을 명시적으로 복원하여 수정.
+- pnpm format:check && pnpm verify: format/lint/typecheck/102 tests 통과, build 진행 중.
+- 새 공통 UI 소비처 연결 4f36d6f를 추가 반영 후 최종 검사 예정.

@@ -28,7 +28,7 @@ export function CandidateLoadError({
       <Wifi className="mb-4 size-8 text-muted-foreground" aria-hidden />
       <div role="alert">
         <h3 className="font-semibold">지원자를 불러오지 못했어요</h3>
-        <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
+        <p className="mt-2 max-w-md text-sm/6  text-muted-foreground">
           {loadErrorMessage(error)}
         </p>
       </div>

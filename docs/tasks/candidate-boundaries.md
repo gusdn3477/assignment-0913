@@ -13,3 +13,6 @@
 
 ## 인계 (1차)
 플러그인 설치와 canonical autofix 시험 완료. 렌더 boundary 초안 준비. 기존 구조 통합을 받은 뒤 연결과 회귀 검증 필요. 아직 기능 완료 아님.
+
+## 인계 (2차)
+서버 page 분리/정규화 query/route loading/지역 render boundary/canonical 수정 완료. 102 tests 및 lint/typecheck/format 통과. 최신 main 공통 UI 연결을 merge하고 build/browser 최종 확인 필요.

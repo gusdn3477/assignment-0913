@@ -9,15 +9,9 @@ import {
   useRef,
   useTransition,
 } from "react";
-import {
-  ArrowUpRight,
-  BriefcaseBusiness,
-  CircleHelp,
-  Layers3,
-  Users,
-} from "lucide-react";
+import { ArrowUpRight, CircleHelp, Layers3, Users } from "lucide-react";
+import { CandidateErrorBoundary } from "@/features/candidates/components/candidate-error-boundary/candidate-error-boundary";
 import { Button } from "@/components/ui/button";
-import { WorkspaceHeader } from "@/features/candidates/components/workspace-header/workspace-header";
 import { CandidateMetric } from "@/features/candidates/components/candidate-metric/candidate-metric";
 import { BoardSkeleton } from "@/features/candidates/components/candidate-board/board-skeleton";
 import { CandidateBoard } from "@/features/candidates/components/candidate-board/candidate-board";
@@ -39,11 +33,11 @@ import {
 const DeferredBoard = memo(CandidateBoard);
 
 function BoardContent() {
-  const query = useCandidates();
   const { move, pendingIds, undo, undoHistory } = useMoveCandidate();
   const search = useCandidateUI((state) => state.search);
   const job = useCandidateUI((state) => state.job);
   const selectedId = useCandidateUI((state) => state.selectedId);
+  const query = useCandidates(selectedId);
   const hydrated = useCandidateUI((state) => state.hydrated);
   const selectCandidate = useCandidateUI((state) => state.selectCandidate);
   const resetFilters = useCandidateUI((state) => state.resetFilters);
@@ -56,7 +50,7 @@ function BoardContent() {
   const restoreSearchFocus = useRef(false);
   const pipelineRef = useRef<HTMLElement>(null);
   useEffect(() => {
-    if (candidates !== undefined && restoreSearchFocus.current) {
+    if (query.hasData && restoreSearchFocus.current) {
       restoreSearchFocus.current = false;
       if (document.activeElement === document.body) {
         pipelineRef.current
@@ -64,16 +58,15 @@ function BoardContent() {
           ?.focus();
       }
     }
-  }, [candidates]);
+  }, [query.hasData]);
   const isRefreshing = isRetryPending || query.isFetching;
   const hasPendingMoves = pendingIds.size > 0;
-  const showInitialError =
-    candidates === undefined && (query.isError || isRetryPending);
+  const showInitialError = !query.hasData && (query.isError || isRetryPending);
   const showInitialLoading = query.isPending || !hydrated;
   function retry() {
     if (retryInFlight.current || query.isFetching || hasPendingMoves) return;
     retryInFlight.current = true;
-    restoreSearchFocus.current = candidates === undefined;
+    restoreSearchFocus.current = !query.hasData;
     // The Action tracks the async retry; Query remains an external, urgent store.
     // A separate lock excludes repeated requests; transitions do not order them.
     startRetryTransition(async () => {
@@ -86,76 +79,35 @@ function BoardContent() {
   }
   const filtered = useMemo(
     () =>
-      filterCandidates(
-        candidates ?? [],
-        deferredFilters.search,
-        deferredFilters.job,
-      ),
+      filterCandidates(candidates, deferredFilters.search, deferredFilters.job),
     [candidates, deferredFilters],
-  );
-  const jobs = useMemo(
-    () =>
-      [...new Set((candidates ?? []).map((candidate) => candidate.job))].sort(),
-    [candidates],
   );
   const onOpenDetail = useCallback(
     (id: string) => selectCandidate(id),
     [selectCandidate],
   );
-  const selected =
-    candidates?.find((candidate) => candidate.id === selectedId) ?? null;
-  const activeCount =
-    candidates?.filter(
-      (candidate) =>
-        candidate.stage !== "hired" && candidate.stage !== "rejected",
-    ).length ?? 0;
-  const hiredCount =
-    candidates?.filter((candidate) => candidate.stage === "hired").length ?? 0;
 
   return (
     <>
-      <section
-        className="mb-8 flex flex-wrap items-end justify-between gap-6"
-        aria-labelledby="page-title"
-      >
-        <div>
-          <div className="mb-3 flex items-center gap-2 text-xs font-medium tracking-wide text-muted-foreground">
-            <BriefcaseBusiness className="size-3.5" aria-hidden />
-            WORKSPACE<span className="mx-1 text-border">/</span>
-            <span>채용 관리</span>
-          </div>
-          <h1
-            id="page-title"
-            className="text-[28px] font-bold tracking-tight sm:text-[32px]"
-          >
-            좋은 동료를 만나는 여정
-          </h1>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            지원부터 합류까지, 채용의 모든 단계를 한눈에 관리하세요.
-          </p>
-        </div>
-        <div className="flex items-center gap-2 rounded-full border bg-white px-3 py-1.5 text-xs text-muted-foreground">
-          <span className="size-1.5 rounded-full bg-emerald-500" />
-          <span>내 브라우저에 자동 저장</span>
-        </div>
-      </section>
-
       <div className="mb-8 grid grid-cols-3 gap-3 sm:gap-4">
         <CandidateMetric
           label="전체 지원자"
-          value={candidates?.length}
+          value={query.summary.total}
+          loading={!query.hasData}
           icon={<Users className="size-4" />}
           detail="함께할 가능성"
         />
         <CandidateMetric
           label="진행 중"
-          value={candidates ? activeCount : undefined}
+          value={query.summary.active}
+          loading={!query.hasData}
           icon={<Layers3 className="size-4" />}
           detail="다음 단계를 향해"
         />
         <CandidateMetric
           label="최종합격"
-          value={candidates ? hiredCount : undefined}
+          value={query.summary.hired}
+          loading={!query.hasData}
           icon={<ArrowUpRight className="size-4" />}
           detail="새로운 시작"
         />
@@ -203,8 +155,8 @@ function BoardContent() {
               onRetry={retry}
             />
             <CandidateToolbar
-              jobs={jobs}
-              total={candidates?.length ?? 0}
+              jobs={query.summary.jobs}
+              total={query.summary.total}
               filtered={filtered.length}
               stale={isStale}
             />
@@ -215,16 +167,16 @@ function BoardContent() {
               {filtered.length === 0 && (
                 <div className="my-5 rounded-xl border border-dashed bg-white p-6 text-center">
                   <p className="font-medium">
-                    {candidates?.length
+                    {candidates.length
                       ? "검색 조건에 맞는 지원자가 없어요"
                       : "아직 등록된 지원자가 없어요"}
                   </p>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    {candidates?.length
+                    {candidates.length
                       ? "다른 이름이나 직무로 검색해 보세요."
                       : "지원자가 등록되면 이곳에서 채용 단계를 관리할 수 있어요."}
                   </p>
-                  {!!candidates?.length && (
+                  {!!candidates.length && (
                     <Button
                       variant="outline"
                       size="sm"
@@ -236,26 +188,28 @@ function BoardContent() {
                   )}
                 </div>
               )}
-              <DeferredBoard
-                resetKey={JSON.stringify(deferredFilters)}
-                candidates={filtered}
-                pendingIds={pendingIds}
-                onMove={move}
-                onUndo={undo}
-                undoHistory={undoHistory}
-                onOpenDetail={onOpenDetail}
-              />
+              <CandidateErrorBoundary label="지원자 보드">
+                <DeferredBoard
+                  resetKey={JSON.stringify(deferredFilters)}
+                  candidates={filtered}
+                  pendingIds={pendingIds}
+                  onMove={move}
+                  onUndo={undo}
+                  undoHistory={undoHistory}
+                  onOpenDetail={onOpenDetail}
+                />
+              </CandidateErrorBoundary>
             </div>
           </>
         )}
       </section>
-      <CandidateDetail candidate={selected} />
-      <footer className="mt-8 flex flex-wrap items-center justify-between gap-2 border-t pt-4 text-[11px] leading-5 text-muted-foreground">
-        <span>ORBIT · 작은 연결에서 시작되는 큰 가능성</span>
-        <span>
-          데모 데이터 · 요청 지연 200–800ms · 약 15% 확률로 실패를 재현합니다.
-        </span>
-      </footer>
+      <CandidateErrorBoundary
+        key={selectedId}
+        label="지원자 상세"
+        onRecover={() => selectCandidate(null)}
+      >
+        <CandidateDetail candidate={query.selectedCandidate} />
+      </CandidateErrorBoundary>
     </>
   );
 }
@@ -263,19 +217,9 @@ function BoardContent() {
 export function CandidatesApp() {
   return (
     <CandidateUIProvider>
-      <a
-        href="#main-content"
-        className="sr-only z-50 rounded bg-white p-3 focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
-      >
-        본문으로 바로가기
-      </a>
-      <WorkspaceHeader />
-      <main
-        id="main-content"
-        className="mx-auto max-w-[1680px] px-5 py-8 sm:px-8 lg:px-10"
-      >
+      <CandidateErrorBoundary label="채용 파이프라인">
         <BoardContent />
-      </main>
+      </CandidateErrorBoundary>
     </CandidateUIProvider>
   );
 }

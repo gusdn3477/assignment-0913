@@ -4,7 +4,7 @@ import { Orbit } from "lucide-react";
 export function WorkspaceHeader() {
   return (
     <header className="border-b bg-white">
-      <div className="mx-auto flex h-[72px] max-w-[1680px] items-center justify-between px-5 sm:px-8 lg:px-10">
+      <div className="mx-auto flex h-18 max-w-[1680px] items-center justify-between px-5 sm:px-8 lg:px-10">
         <Link
           href="/"
           aria-label="Orbit 채용 보드 홈"
@@ -21,7 +21,7 @@ export function WorkspaceHeader() {
           </span>
         </Link>
         <div className="flex items-center gap-3">
-          <span className="hidden text-right text-xs leading-5 sm:block">
+          <span className="hidden text-right text-xs/5  sm:block">
             <span className="block font-medium">채용 담당자</span>
             <span className="text-muted-foreground">Orbit 팀</span>
           </span>
