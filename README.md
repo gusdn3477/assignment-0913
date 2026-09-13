@@ -165,8 +165,10 @@ DnD production 검증에서 실제 드래그·실패 롤백·재시도·키보�
   {children}
 </CandidateQueryGuard>
 <LoadingGuard loading={loading} fallback={<Skeleton />}>{children}</LoadingGuard>
-<CloseButton /> // 상세 패널 내부: 닫기 아이콘·라벨·위치·SheetClose 포함
+<SheetContent closeButtonProps={{ "aria-label": "상세 닫기" }}>{children}</SheetContent>
 ```
+
+닫기 버튼은 `components/buttons/close-button.tsx` 하나만 사용합니다. `SheetContent`가 공용 버튼에 Radix 닫기 동작과 위치를 조합하며, `closeButtonProps`로 native props를 전달합니다. 상세 전용 CloseButton 래퍼는 없습니다.
 
 `CandidateQueryGuard`가 초기 로딩/오류/재시도와 배경 새로고침을 처리하므로 화면에서 상태 분기를 반복하지 않습니다. 캐시가 있으면 새로고침 중에도 보드를 유지합니다. 재시도 transition과 동기 잠금은 Query observer를 가진 훅에서 관리합니다. Guard는 조건부 렌더링이며 실제 Suspense로 Promise를 던지는 방식은 아닙니다. 렌더 예외는 별도 ErrorBoundary로 처리합니다.
 

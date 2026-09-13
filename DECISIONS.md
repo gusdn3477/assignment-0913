@@ -116,3 +116,6 @@
 
 ## Input primitive 책임 정리
 Input의 clearButton과 내장 버튼/focus 처리를 제거합니다. native input 스타일·props/ref·left/right 슬롯만 제공하며 검색 지우기는 SearchBar가 담당합니다. Input 테스트는 ui/input.test.tsx로 이동하고 지우기 검증은 SearchBar 테스트에 둡니다.
+
+## CloseButton 단일 구현
+공용 buttons/close-button만 유지합니다. Sheet는 Radix 닫기 동작과 위치를 담당하고 공용 버튼을 조합합니다. SheetContent의 선택적 closeButtonProps로 접근성 이름과 native props를 전달하므로 상세 전용 래퍼가 필요하지 않습니다. 검색 지우기의 onClear와 value 조건은 유지합니다.

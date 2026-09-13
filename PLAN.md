@@ -70,3 +70,6 @@ Zustand UI 상태의 Context/Provider를 제거하고 bound store를 직접 구�
 
 ## 사용자 정정: Input primitive
 Input은 native props/ref와 스타일·left/right 슬롯만 제공하는 primitive로 둡니다. clearButton 중복 기능은 제거하고 SearchBar의 onClear 동작을 사용합니다. 테스트는 구현과 함께 ui/input.test.tsx에 배치합니다.
+
+## 후속 승인: CloseButton 중복 정리
+상세 전용 CloseButton 래퍼를 제거하고 SheetContent의 기본 닫기 버튼을 공용 CloseButton으로 통합합니다. 상세 화면의 최소 설정, 검색 지우기, 키보드 닫기와 포커스 복귀를 유지합니다.
