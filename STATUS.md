@@ -1,7 +1,7 @@
 # 세션 인계 / 현재 상태
 
 ## 현재 결론
-필수 기능, concurrent-feedback, virtualization, Undo 및 **DnD 구현·통합·검증 완료**. main이 기준이며 기능 브랜치·워크트리·커밋을 보존했습니다. 진행 중인 기능과 알려진 미해결 기능 결함은 없습니다.
+필수 기능, concurrent-feedback, virtualization, Undo 및 DnD 완료. 사용자 후속 승인으로 **재사용 UI와 지원자 폴더·Query·훅 구조 정리 진행 중**. 기존 기준은 `81e7a91`이며 새 독립 세션 `reusable-ui`, `candidate-structure`를 통합 담당이 관리합니다.
 
 ## 최종 요구사항 재감사 (2026-09-13)
 - 초기 커밋 `12ed483`의 PLAN과 현재 승인 범위, 구현·테스트·기능별 기록을 대조했습니다. 필수 기능의 누락이나 승인 범위 위반을 발견하지 못했습니다.
