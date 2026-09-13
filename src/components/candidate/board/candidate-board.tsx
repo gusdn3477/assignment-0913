@@ -7,7 +7,12 @@ import {
   type DragEndEvent,
 } from "@dnd-kit/react";
 import { Accessibility, Feedback } from "@dnd-kit/dom";
-import type { ComponentProps } from "react";
+import type {
+  ComponentProps,
+  FocusEvent,
+  KeyboardEvent,
+  PointerEvent,
+} from "react";
 import { useLayoutEffect, useRef, useState } from "react";
 import {
   VirtualCandidateList,
@@ -79,6 +84,68 @@ export function CandidateBoard({
     return true;
   }
 
+  function handleBoardKeyDownCapture(event: KeyboardEvent<HTMLDivElement>) {
+    if (event.key !== "Tab" || event.altKey || event.ctrlKey || event.metaKey)
+      return;
+
+    const target = event.target as HTMLElement;
+    // Portalled menus own their keyboard behavior.
+    if (!boardRef.current?.contains(target)) return;
+
+    const controls: {
+      stage: Stage;
+      id?: string;
+      control?: "detail" | "move";
+    }[] = [];
+    for (const stage of STAGES) {
+      if (!columns[stage].length) continue;
+      controls.push({ stage });
+      for (const candidate of columns[stage]) {
+        controls.push({ stage, id: candidate.id, control: "detail" });
+        if (!loadingIds.has(candidate.id))
+          controls.push({ stage, id: candidate.id, control: "move" });
+      }
+    }
+
+    const index = controls.findIndex((item) =>
+      item.id
+        ? target.getAttribute(`data-candidate-${item.control}`) === item.id
+        : target.dataset.candidateColumn === item.stage,
+    );
+    const next = controls[index + (event.shiftKey ? -1 : 1)];
+    if (index < 0 || !next) return;
+
+    event.preventDefault();
+    if (next.id)
+      lists.current[next.stage]?.focusCandidate(next.id, next.control);
+    else
+      boardRef.current
+        ?.querySelector<HTMLElement>(`[data-candidate-column="${next.stage}"]`)
+        ?.focus();
+  }
+
+  function handleBoardPointerDownCapture(event: PointerEvent<HTMLDivElement>) {
+    if (!boardRef.current?.contains(event.target as Node)) return;
+
+    const card = (event.target as HTMLElement).closest<HTMLElement>(
+      "[data-candidate-card]",
+    );
+    if (card) {
+      focusedCard.current = card.dataset.candidateCard ?? null;
+      setFocusId(focusedCard.current);
+    }
+  }
+
+  function handleBoardFocusCapture(event: FocusEvent<HTMLDivElement>) {
+    if (!boardRef.current?.contains(event.target as Node)) return;
+
+    const card = (event.target as HTMLElement).closest<HTMLElement>(
+      "[data-candidate-card]",
+    );
+    focusedCard.current = card?.dataset.candidateCard ?? null;
+    setFocusId(focusedCard.current);
+  }
+
   useLayoutEffect(() => {
     const id = requestedMove.current ?? focusedCard.current;
     const candidate = candidates.find((item) => item.id === id);
@@ -113,67 +180,9 @@ export function CandidateBoard({
         aria-label="지원자 채용 단계 보드"
         tabIndex={0}
         className="overflow-x-auto rounded-xl pb-4"
-        onKeyDownCapture={(event) => {
-          if (
-            event.key !== "Tab" ||
-            event.altKey ||
-            event.ctrlKey ||
-            event.metaKey
-          )
-            return;
-          const target = event.target as HTMLElement;
-          // Portalled menus own their keyboard behavior.
-          if (!boardRef.current?.contains(target)) return;
-          const controls: {
-            stage: Stage;
-            id?: string;
-            control?: "detail" | "move";
-          }[] = [];
-          for (const stage of STAGES) {
-            if (!columns[stage].length) continue;
-            controls.push({ stage });
-            for (const candidate of columns[stage]) {
-              controls.push({ stage, id: candidate.id, control: "detail" });
-              if (!loadingIds.has(candidate.id))
-                controls.push({ stage, id: candidate.id, control: "move" });
-            }
-          }
-          const index = controls.findIndex((item) =>
-            item.id
-              ? target.getAttribute(`data-candidate-${item.control}`) ===
-                item.id
-              : target.dataset.candidateColumn === item.stage,
-          );
-          const next = controls[index + (event.shiftKey ? -1 : 1)];
-          if (index < 0 || !next) return;
-          event.preventDefault();
-          if (next.id)
-            lists.current[next.stage]?.focusCandidate(next.id, next.control);
-          else
-            boardRef.current
-              ?.querySelector<HTMLElement>(
-                `[data-candidate-column="${next.stage}"]`,
-              )
-              ?.focus();
-        }}
-        onPointerDownCapture={(event) => {
-          if (!boardRef.current?.contains(event.target as Node)) return;
-          const card = (event.target as HTMLElement).closest<HTMLElement>(
-            "[data-candidate-card]",
-          );
-          if (card) {
-            focusedCard.current = card.dataset.candidateCard ?? null;
-            setFocusId(focusedCard.current);
-          }
-        }}
-        onFocusCapture={(event) => {
-          if (!boardRef.current?.contains(event.target as Node)) return;
-          const card = (event.target as HTMLElement).closest<HTMLElement>(
-            "[data-candidate-card]",
-          );
-          focusedCard.current = card?.dataset.candidateCard ?? null;
-          setFocusId(focusedCard.current);
-        }}
+        onKeyDownCapture={handleBoardKeyDownCapture}
+        onPointerDownCapture={handleBoardPointerDownCapture}
+        onFocusCapture={handleBoardFocusCapture}
       >
         <div className="grid min-w-310 grid-cols-5 items-start gap-4">
           {STAGES.map((stage, index) => (
