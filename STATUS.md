@@ -1,6 +1,8 @@
 # 세션 인계 / 현재 상태
 
 ## 현재 결론
+후보자 가상 목록 스크롤 복원 훅 분리 완료: 필터 변경 시 상단 복원과 화면 밖 카드의 포커스 복원 effect를 인접한 `useCandidateScrollRestoration`으로 이동했다. 이미 처리한 요청 차단과 키보드·단계 이동·롤백 포커스 계약을 유지했다. 기능/통합 `96cf146`/`72f5258`, `codex/candidate-scroll-restoration` / `.worktrees/candidate-scroll-restoration`. 대상 format/lint/strict typecheck와 가상화 7 tests 통과. 기록: `docs/records/candidate-scroll-restoration.md`. 미해결 이슈 없음.
+
 UI 저장 상태 복원 호출 정리 완료: 불필요한 선두 `void`와 UI store에서 구현을 반복하던 영어 주석 4개를 제거했다. `rehydrate()`의 `Promise<void> | void` 반환형을 정규화하는 `Promise.resolve`와 완료 후 `hydrated` 설정은 유지했다. `codex/ui-hydration-cleanup` / `.worktrees/ui-hydration-cleanup`, 관련 9 tests 및 format/lint/typecheck/diff 검사 통과. 커밋 본문에 AI 초안의 수정 판단을 기록했다. 미해결 이슈 없음.
 
 Mutation 성공 토스트 완료: 단계 이동/Undo가 API 성공으로 확정된 뒤 각각 `단계 이동을 저장했습니다.` / `단계 되돌리기를 저장했습니다.`를 표시하고 description에 `지원자 이름 · 확정 단계`를 제공한다. 기능/통합 `66ba489`/`a59904c`, `codex/mutation-success-toast` / `.worktrees/mutation-success-toast`. 관련36 tests 및 main format/lint/typecheck/13 files 114 tests/production build 통과. 실제 실패 롤백→재시도 성공 토스트→Undo 성공 토스트/원상 복구와 console error/warn 없음 확인. 기록: `docs/records/mutation-success-toast.md`. 미해결 이슈 없음.

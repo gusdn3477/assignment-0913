@@ -784,3 +784,8 @@ Codex in-app browser, 127.0.0.1:3101, 기본 viewport 1280×720.
 - 실제 요청: “또한 성공 시에도 토스트 띄워줘.”
 - 출력: API 성공 확정 뒤 일반 이동과 Undo에 구분된 성공 토스트를 표시하고 `지원자 이름 · 확정 단계` 설명을 제공한다. 낙관적 반영 시점에는 표시하지 않는다.
 - 검증: 관련 hook/app 36 tests, main format/lint/typecheck/114 tests/build 통과. 실제 실패 롤백 후 재시도 성공과 Undo 성공 토스트, 원래 단계 복구, console[] 확인. 기능66ba489/main a59904c. 상세 docs/records/mutation-success-toast.md.
+
+## 후보자 가상 목록 스크롤 복원 훅
+- 실제 요청: “ㅇㅇ useScrollRestoration? 뭐 이런식으로 ㄱㄱ”
+- 출력: 가상 목록의 필터 변경 상단 복원과 화면 밖 카드 포커스 복원을 인접한 `useCandidateScrollRestoration` 훅으로 분리했다. 반복 요청 차단과 기존 가상화 동작은 유지했다.
+- 검증: 대상 format/lint/strict typecheck 및 가상화 7 tests 통과. 기능96cf146/main72f5258. 상세 docs/records/candidate-scroll-restoration.md.
