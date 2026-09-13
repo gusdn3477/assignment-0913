@@ -16,3 +16,13 @@ Orbit 채용 서비스. 밝은 중성 배경, 흰 카드, 은은한 보라 포�
 키보드로 상세/이동, 현재 단계·저장중 이동 비활성, 카드 이동 후 DOM 재배치에 따른 포커스 복원, 빈 컬럼, 250명 렌더 대응.
 단계 변경시 전체 카드 렌더 최소화(memo, 안정적인 props). 본문과 메뉴 중첩 버튼 금지.
 UI 테스트 및 기록 후 feat(board-ui) 커밋. app/page, globals, package 변경 금지.
+
+## 인계
+
+구현 완료: `src/features/candidates/board.tsx`, 테스트 8개 `board.test.tsx`.
+상세/이동 버튼에 각각 `data-candidate-detail`, `data-candidate-move` 제공.
+컬럼 목록 독립 스크롤 및 단계 h3 적용. 타입 검사·scoped lint 통과.
+Radix 메뉴 async 테스트 지연이 남아 통합에서 브라우저 및 전체 suite 재검증 필요. 상세 내용은 docs/records/board-ui.md.
+
+## 통합 후 최종 상태
+JSDOM 선택자 엔진의 지연 원인을 CPU profile로 확인하고 하위 의존성 override로 해결했습니다. 기존 테스트를 모두 유지한 채 통합 50 tests가 통과했습니다. 상세: [test-environment-fix](../records/test-environment-fix.md).
