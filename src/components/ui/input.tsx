@@ -1,9 +1,40 @@
-import * as React from "react";
-import { cn } from "@/lib/utils";
+"use client";
 
-function Input({ className, type, ...props }: React.ComponentProps<"input">) {
-  return (
+import * as React from "react";
+import { X } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+
+type NativeInputProps = React.ComponentProps<"input">;
+type InputProps = NativeInputProps & {
+  wrapperClassName?: string;
+} & (
+    | { clearButton?: undefined }
+    | {
+        value: NonNullable<NativeInputProps["value"]>;
+        clearButton: { onClear: () => void; label?: string };
+      }
+  );
+
+function Input({
+  className,
+  type,
+  ref,
+  clearButton,
+  wrapperClassName,
+  ...props
+}: InputProps) {
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  React.useImperativeHandle(ref, () => inputRef.current!);
+  const canClear =
+    clearButton &&
+    !props.disabled &&
+    !props.readOnly &&
+    props.value !== undefined &&
+    String(props.value).length > 0;
+  const input = (
     <input
+      ref={inputRef}
       type={type}
       data-slot="input"
       className={cn(
@@ -11,10 +42,38 @@ function Input({ className, type, ...props }: React.ComponentProps<"input">) {
         "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
         "aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40",
         className,
+        clearButton &&
+          "pr-10 [&::-webkit-search-cancel-button]:appearance-none",
       )}
       {...props}
     />
   );
+
+  if (!clearButton) return input;
+
+  return (
+    <div
+      data-slot="input-wrapper"
+      className={cn("relative min-w-0", wrapperClassName)}
+    >
+      {input}
+      {canClear && (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-sm"
+          aria-label={clearButton.label ?? "입력 지우기"}
+          className="absolute top-1/2 right-1 -translate-y-1/2 text-muted-foreground"
+          onClick={() => {
+            clearButton.onClear();
+            inputRef.current?.focus();
+          }}
+        >
+          <X className="size-4" aria-hidden="true" />
+        </Button>
+      )}
+    </div>
+  );
 }
 
-export { Input };
+export { Input, type InputProps };
