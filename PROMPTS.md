@@ -323,4 +323,3 @@ Integration explicitly requested retaining the movement regression rather than h
 ## 정리 / 한계
 검색 조건을 초기화하고 viewport override를 해제했습니다. 최서연의 면접 이동은 해당 브라우저 origin의 데모 저장소에 남아 있습니다. 다른 브라우저/포트의 초기 데이터에는 영향을 주지 않습니다.
 전체 빈 데이터·손상 데이터는 자동 테스트와 README 재현 절차로 검증합니다. 이 기록은 수동 UI 관찰이며 성능 수치 벤치마크를 의미하지 않습니다.
-
