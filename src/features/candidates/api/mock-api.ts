@@ -1,3 +1,4 @@
+import { MOCK_API_ERROR_CODES } from "@/features/candidates/constants/candidate-errors";
 import type {
   MockApiOptions,
   StoragePort,
@@ -24,7 +25,7 @@ export function createMockApi(options: MockApiOptions = {}) {
       return getStorage();
     } catch {
       throw new MockApiError(
-        "storage",
+        MOCK_API_ERROR_CODES.STORAGE,
         "브라우저 저장소에 접근할 수 없습니다.",
       );
     }
@@ -34,7 +35,10 @@ export function createMockApi(options: MockApiOptions = {}) {
     try {
       raw = port.getItem(STORAGE_KEY);
     } catch {
-      throw new MockApiError("storage", "지원자 데이터를 읽을 수 없습니다.");
+      throw new MockApiError(
+        MOCK_API_ERROR_CODES.STORAGE,
+        "지원자 데이터를 읽을 수 없습니다.",
+      );
     }
     return raw === null ? createSeedCandidates() : parseCandidates(raw);
   }
@@ -44,7 +48,7 @@ export function createMockApi(options: MockApiOptions = {}) {
     checkAbort(signal);
     if (random() < 0.15)
       throw new MockApiError(
-        "network",
+        MOCK_API_ERROR_CODES.NETWORK,
         "요청에 실패했습니다. 잠시 후 다시 시도해 주세요.",
       );
   }
@@ -61,13 +65,13 @@ export function createMockApi(options: MockApiOptions = {}) {
     }: MoveCandidateInput): Promise<Candidate> {
       if (typeof id !== "string" || !STAGES.includes(stage)) {
         throw new MockApiError(
-          "invalid-input",
+          MOCK_API_ERROR_CODES.INVALID_INPUT,
           "올바르지 않은 단계 이동 요청입니다.",
         );
       }
       if (pendingIds.has(id))
         throw new MockApiError(
-          "busy",
+          MOCK_API_ERROR_CODES.BUSY,
           "이 지원자의 단계 이동이 진행 중입니다.",
         );
       pendingIds.add(id);
@@ -78,14 +82,17 @@ export function createMockApi(options: MockApiOptions = {}) {
         const candidates = read(port);
         const index = candidates.findIndex((candidate) => candidate.id === id);
         if (index < 0)
-          throw new MockApiError("not-found", "지원자를 찾을 수 없습니다.");
+          throw new MockApiError(
+            MOCK_API_ERROR_CODES.NOT_FOUND,
+            "지원자를 찾을 수 없습니다.",
+          );
         const updated = { ...candidates[index], stage };
         candidates[index] = updated;
         try {
           port.setItem(STORAGE_KEY, JSON.stringify({ version: 1, candidates }));
         } catch {
           throw new MockApiError(
-            "storage",
+            MOCK_API_ERROR_CODES.STORAGE,
             "단계 이동을 저장하지 못했습니다. 브라우저 저장소를 확인해 주세요.",
           );
         }

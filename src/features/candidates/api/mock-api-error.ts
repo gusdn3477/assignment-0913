@@ -1,12 +1,8 @@
+import type { MockApiErrorCode } from "@/features/candidates/constants/candidate-errors";
+
 export class MockApiError extends Error {
   constructor(
-    public readonly code:
-      | "storage"
-      | "corrupt-storage"
-      | "network"
-      | "not-found"
-      | "invalid-input"
-      | "busy",
+    public readonly code: MockApiErrorCode,
     message: string,
   ) {
     super(message);
