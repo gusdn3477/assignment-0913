@@ -9,10 +9,17 @@
 ## 현재 상태
 - 초기 저장소: main, 기존 코드·커밋 없음.
 - 공통 기반과 shadcn 8개 컴포넌트 설치 완료. TypeScript 검사 통과, lint 경고 1개 수정.
-- 아직 기능 세션을 시작하지 않았습니다.
+- 공통 기반 커밋: `12ed483`.
+- 통합 브랜치: `codex/integration`.
+
+| 기능 | 브랜치 / 워크트리 | 상태 |
+|---|---|---|
+| mock-api | codex/mock-api / .worktrees/mock-api | 독립 세션 구현·테스트 중 |
+| board-ui | codex/board-ui / .worktrees/board-ui | 독립 세션 구현·테스트 중 |
+| explorer | codex/explorer / .worktrees/explorer | 독립 세션 구현·테스트 중 |
 
 ## 다음 작업
-공통 기반을 커밋한 뒤 mock-api, board-ui, explorer 세션을 각각 독립 워크트리에서 시작합니다.
+mock-api 병합 후 새 optimistic-update 세션을 시작합니다. 통합 담당자는 화면 연결과 문서 갱신을 준비합니다.
 
 ## 운영 규칙
 - 통합 담당자가 기능 시작·병합·검증 완료 때마다 이 문서를 갱신합니다.
