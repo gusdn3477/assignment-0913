@@ -13,3 +13,11 @@ SearchBar는 Input left의 돋보기와 right의 CloseButton을 직접 래핑하
 - 기존 공통 Input clearButton은 다른 일반 Input 사용 계약이므로 이 변경에서 무리하게 제거하지 않음.
 - 실제 제어 입력/ref/native form/기본 icon+close/disabled/readOnly/빈값/slot override를 의미 있는 tests로 검증. 기존 후보 clear+job 유지+persistence 회귀 유지.
 - Next 설치 docs 읽기, lint/typecheck/format 및 전체 tests. 한글 커밋 후 인계. 통합 build/browser.
+
+## 최신 사용자 정정 (이전 충돌 계약보다 우선)
+사용자: “props 이름은 일반 element 요소와 최대한 비슷하게 해 SearchBar의 경우도 onChange로 하고 onClear 넘겨주면 x버튼 보이는 방식으로 구현”.
+- onValueChange 제거. native input onChange/event/value/defaultValue/ref를 그대로 지원하고 onClear?:()=>void만 추가.
+- X 표시 여부는 onClear 전달 여부. 값이 비어 있어도 제공되면 표시하며 disabled/readOnly이면 버튼 비활성화. onClear 미제공 시 돋보기만. 이를 위해 controlled value를 강제하거나 내부 검색 상태를 추가하지 않음.
+- clear 클릭은 onClear 한 번 후 focus 복원. native onChange를 만들어 호출하지 않음.
+- toolbar는 onChange/onClear 직접 전달하고 clearButton 설정 객체/기본 스타일 반복 제거. hook은 실제 소비 value/onChange/clear 반환.
+- 앞선 value/onValueChange API와 빈값 hide 테스트는 최종 구현으로 유지하지 않음. native controlled/uncontrolled, optional clear, disabled/readOnly, 키보드/form/ref, slot 조합으로 검증.
