@@ -2,7 +2,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
-  CandidateUIProvider,
+  useHydrateCandidateUI,
   useCandidateUI,
 } from "@/features/candidates/stores/ui-store";
 import { UI_STORAGE_KEY } from "@/features/candidates/constants/storage";
@@ -22,6 +22,7 @@ const candidate: Candidate = {
   summary: "사용자 경험을 개선하는 개발자입니다.",
 };
 function Harness() {
+  useHydrateCandidateUI();
   const selectedId = useCandidateUI((state) => state.selectedId);
   const selectCandidate = useCandidateUI((state) => state.selectCandidate);
   const hydrated = useCandidateUI((state) => state.hydrated);
@@ -39,12 +40,7 @@ function Harness() {
     </>
   );
 }
-const mount = () =>
-  render(
-    <CandidateUIProvider>
-      <Harness />
-    </CandidateUIProvider>,
-  );
+const mount = () => render(<Harness />);
 beforeEach(() => localStorage.clear());
 if (!HTMLElement.prototype.scrollIntoView)
   HTMLElement.prototype.scrollIntoView = () => {};
@@ -106,6 +102,10 @@ describe("UI persistence and toolbar", () => {
     const first = mount();
     await user.type(screen.getByRole("searchbox"), "Alice");
     first.unmount();
+    // Simulate a fresh page: discard memory while retaining persisted settings.
+    const saved = localStorage.getItem(UI_STORAGE_KEY)!;
+    useCandidateUI.setState(useCandidateUI.getInitialState(), true);
+    localStorage.setItem(UI_STORAGE_KEY, saved);
     mount();
     await waitFor(() =>
       expect(screen.getByRole("searchbox")).toHaveValue("Alice"),

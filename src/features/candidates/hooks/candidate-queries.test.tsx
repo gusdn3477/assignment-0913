@@ -48,21 +48,21 @@ beforeEach(() => {
 });
 
 describe("candidate query", () => {
-  it("normalizes pending data without populating cache and distinguishes a successful empty list", async () => {
+  it("normalizes loading data without populating cache and distinguishes a successful empty list", async () => {
     const context = setup(false);
     const list = deferred<Candidate[]>();
     vi.mocked(candidateApi.listCandidates).mockReturnValue(list.promise);
     const hook = renderHook(useCandidates, { wrapper: context.wrapper });
-    const pendingData = hook.result.current.data;
-    expect(pendingData).toEqual([]);
+    const loadingData = hook.result.current.data;
+    expect(loadingData).toEqual([]);
     expect(hook.result.current.hasData).toBe(false);
     expect(context.client.getQueryData(CANDIDATES_QUERY_KEY)).toBeUndefined();
     hook.rerender();
-    expect(hook.result.current.data).toBe(pendingData);
+    expect(hook.result.current.data).toBe(loadingData);
     await act(async () => list.resolve([]));
     await waitFor(() => expect(hook.result.current.hasData).toBe(true));
     expect(hook.result.current.summary.total).toBe(0);
-    expect(hook.result.current.isPending).toBe(false);
+    expect(hook.result.current.isLoading).toBe(false);
     expect(context.client.getQueryData(CANDIDATES_QUERY_KEY)).toEqual([]);
   });
 
@@ -125,20 +125,20 @@ describe("candidate query", () => {
 });
 
 describe("card-scoped optimistic mutations", () => {
-  it("applies before completion, uses the server response, and publishes immutable pending snapshots", async () => {
+  it("applies before completion, uses the server response, and publishes immutable loading snapshots", async () => {
     const context = setup();
     const request = deferred<Candidate>();
     vi.mocked(candidateApi.updateCandidateStage).mockReturnValue(
       request.promise,
     );
     const hook = renderHook(useMoveCandidate, { wrapper: context.wrapper });
-    const initialPending = hook.result.current.pendingIds;
+    const initialLoading = hook.result.current.loadingIds;
     act(() => {
       hook.result.current.move(context.candidates[0].id, "hired");
     });
-    const activePending = hook.result.current.pendingIds;
-    expect(activePending.has(context.candidates[0].id)).toBe(true);
-    expect(initialPending.size).toBe(0);
+    const activeLoading = hook.result.current.loadingIds;
+    expect(activeLoading.has(context.candidates[0].id)).toBe(true);
+    expect(initialLoading.size).toBe(0);
     await waitFor(() => expect(context.data()[0].stage).toBe("hired"));
     expect(context.data()[1]).toBe(context.candidates[1]);
     const saved = {
@@ -149,8 +149,8 @@ describe("card-scoped optimistic mutations", () => {
     await act(async () => {
       request.resolve(saved);
     });
-    await waitFor(() => expect(hook.result.current.pendingIds.size).toBe(0));
-    expect(activePending.has(context.candidates[0].id)).toBe(true);
+    await waitFor(() => expect(hook.result.current.loadingIds.size).toBe(0));
+    expect(activeLoading.has(context.candidates[0].id)).toBe(true);
     expect(context.data()[0]).toEqual(saved);
   });
 
@@ -168,7 +168,7 @@ describe("card-scoped optimistic mutations", () => {
     await act(async () => {
       request.reject(Error("failed"));
     });
-    await waitFor(() => expect(hook.result.current.pendingIds.size).toBe(0));
+    await waitFor(() => expect(hook.result.current.loadingIds.size).toBe(0));
     expect(context.data()).toEqual(context.candidates);
     expect(toast.error).toHaveBeenCalledWith(
       "단계 이동을 저장하지 못했습니다. 다시 시도해 주세요.",
@@ -179,7 +179,7 @@ describe("card-scoped optimistic mutations", () => {
     await waitFor(() =>
       expect(candidateApi.updateCandidateStage).toHaveBeenCalledTimes(2),
     );
-    await waitFor(() => expect(hook.result.current.pendingIds.size).toBe(0));
+    await waitFor(() => expect(hook.result.current.loadingIds.size).toBe(0));
     expect(context.data()[0].stage).toBe("offer");
   });
 
@@ -219,13 +219,13 @@ describe("card-scoped optimistic mutations", () => {
         });
         expect(context.data()[1].stage).toBe("offer");
         expect(
-          hook.result.current.pendingIds.has(context.candidates[1].id),
+          hook.result.current.loadingIds.has(context.candidates[1].id),
         ).toBe(true);
         await act(async () => {
           b.resolve({ ...context.candidates[1], stage: "offer" });
         });
       }
-      await waitFor(() => expect(hook.result.current.pendingIds.size).toBe(0));
+      await waitFor(() => expect(hook.result.current.loadingIds.size).toBe(0));
       expect(context.data()[0]).toEqual(context.candidates[0]);
       expect(context.data()[1].stage).toBe("offer");
     },
@@ -257,8 +257,8 @@ describe("card-scoped optimistic mutations", () => {
       { id: context.candidates[0].id, stage: "hired" },
       { id: context.candidates[1].id, stage: "offer" },
     ]);
-    expect(first.result.current.pendingIds).toEqual(
-      second.result.current.pendingIds,
+    expect(first.result.current.loadingIds).toEqual(
+      second.result.current.loadingIds,
     );
     await act(async () => {
       a.resolve({ ...context.candidates[0], stage: "hired" });
@@ -290,7 +290,7 @@ describe("card-scoped optimistic mutations", () => {
       b.resolve(savedB);
     });
     expect(context.data()[0].stage).toBe("hired");
-    expect(hook.result.current.pendingIds.has(context.candidates[0].id)).toBe(
+    expect(hook.result.current.loadingIds.has(context.candidates[0].id)).toBe(
       true,
     );
     const savedA = {
@@ -319,7 +319,7 @@ describe("card-scoped optimistic mutations", () => {
       first.unmount();
       const second = renderHook(useMoveCandidate, { wrapper: context.wrapper });
       expect(
-        second.result.current.pendingIds.has(context.candidates[0].id),
+        second.result.current.loadingIds.has(context.candidates[0].id),
       ).toBe(true);
       act(() => {
         second.result.current.move(context.candidates[0].id, "offer");
@@ -334,7 +334,7 @@ describe("card-scoped optimistic mutations", () => {
         else request.reject(Error("failure"));
       });
       await waitFor(() =>
-        expect(second.result.current.pendingIds.size).toBe(0),
+        expect(second.result.current.loadingIds.size).toBe(0),
       );
       expect(context.data()[0].stage).toBe(
         outcome === "success" ? "hired" : context.candidates[0].stage,
@@ -354,7 +354,7 @@ describe("card-scoped optimistic mutations", () => {
       context.client.removeQueries({ queryKey: CANDIDATES_QUERY_KEY });
       hook.result.current.move(context.candidates[0].id, "hired");
     });
-    expect(hook.result.current.pendingIds.size).toBe(0);
+    expect(hook.result.current.loadingIds.size).toBe(0);
     expect(candidateApi.updateCandidateStage).not.toHaveBeenCalled();
   });
 });
@@ -377,21 +377,21 @@ describe("last saved move undo", () => {
     expect(hook.result.current.undoHistory.size).toBe(0);
     act(() => hook.result.current.move(id, "interview"));
     expect(hook.result.current.undoHistory.size).toBe(0);
-    await waitFor(() => expect(hook.result.current.pendingIds.size).toBe(0));
+    await waitFor(() => expect(hook.result.current.loadingIds.size).toBe(0));
     expect(hook.result.current.undoHistory.get(id)).toEqual({
       previousStage: "review",
       savedStage: "interview",
     });
     const firstHistory = hook.result.current.undoHistory;
     act(() => hook.result.current.move(id, "offer"));
-    await waitFor(() => expect(hook.result.current.pendingIds.size).toBe(0));
+    await waitFor(() => expect(hook.result.current.loadingIds.size).toBe(0));
     expect(hook.result.current.undoHistory.get(id)).toEqual({
       previousStage: "interview",
       savedStage: "offer",
     });
     expect(firstHistory.get(id)?.previousStage).toBe("review");
     act(() => expect(hook.result.current.undo(id)).toBe(true));
-    await waitFor(() => expect(hook.result.current.pendingIds.size).toBe(0));
+    await waitFor(() => expect(hook.result.current.loadingIds.size).toBe(0));
     expect(context.data()[0].stage).toBe("interview");
     expect(hook.result.current.undoHistory.has(id)).toBe(false);
     act(() => expect(hook.result.current.undo(id)).toBe(false));
@@ -408,13 +408,13 @@ describe("last saved move undo", () => {
     const hook = renderHook(useMoveCandidate, { wrapper: context.wrapper });
     const id = context.candidates[0].id;
     act(() => hook.result.current.move(id, "interview"));
-    await waitFor(() => expect(hook.result.current.pendingIds.size).toBe(0));
+    await waitFor(() => expect(hook.result.current.loadingIds.size).toBe(0));
     const history = hook.result.current.undoHistory;
     vi.mocked(candidateApi.updateCandidateStage).mockRejectedValueOnce(
       Error("failed move"),
     );
     act(() => hook.result.current.move(id, "hired"));
-    await waitFor(() => expect(hook.result.current.pendingIds.size).toBe(0));
+    await waitFor(() => expect(hook.result.current.loadingIds.size).toBe(0));
     expect(context.data()[0].stage).toBe("interview");
     expect(hook.result.current.undoHistory).toBe(history);
     const undoRequest = deferred<Candidate>();
@@ -425,14 +425,14 @@ describe("last saved move undo", () => {
     await waitFor(() => expect(context.data()[0].stage).toBe("review"));
     expect(hook.result.current.undoHistory).toBe(history);
     await act(async () => undoRequest.reject(Error("failed undo")));
-    await waitFor(() => expect(hook.result.current.pendingIds.size).toBe(0));
+    await waitFor(() => expect(hook.result.current.loadingIds.size).toBe(0));
     expect(context.data()[0].stage).toBe("interview");
     expect(hook.result.current.undoHistory).toBe(history);
     expect(toast.error).toHaveBeenLastCalledWith(
       "되돌리기를 저장하지 못했습니다. 다시 시도해 주세요.",
     );
     act(() => hook.result.current.undo(id));
-    await waitFor(() => expect(hook.result.current.pendingIds.size).toBe(0));
+    await waitFor(() => expect(hook.result.current.loadingIds.size).toBe(0));
     expect(context.data()[0].stage).toBe("review");
     expect(hook.result.current.undoHistory.size).toBe(0);
   });
@@ -446,7 +446,7 @@ describe("last saved move undo", () => {
       const second = renderHook(useMoveCandidate, { wrapper: context.wrapper });
       const id = context.candidates[0].id;
       act(() => first.result.current.move(id, "interview"));
-      await waitFor(() => expect(first.result.current.pendingIds.size).toBe(0));
+      await waitFor(() => expect(first.result.current.loadingIds.size).toBe(0));
       const request = deferred<Candidate>();
       vi.mocked(candidateApi.updateCandidateStage).mockReturnValue(
         request.promise,
@@ -471,7 +471,7 @@ describe("last saved move undo", () => {
         }),
       );
       await waitFor(() =>
-        expect(second.result.current.pendingIds.size).toBe(0),
+        expect(second.result.current.loadingIds.size).toBe(0),
       );
       expect(second.result.current.undoHistory.get(id)?.previousStage).toBe(
         order === "undo-first" ? undefined : "interview",
@@ -490,7 +490,7 @@ describe("last saved move undo", () => {
         hook.result.current.move(a.id, "hired");
         hook.result.current.move(b.id, "hired");
       });
-      await waitFor(() => expect(hook.result.current.pendingIds.size).toBe(0));
+      await waitFor(() => expect(hook.result.current.loadingIds.size).toBe(0));
       const requestA = deferred<Candidate>();
       const requestB = deferred<Candidate>();
       vi.mocked(candidateApi.updateCandidateStage).mockImplementation(
@@ -508,10 +508,10 @@ describe("last saved move undo", () => {
         await act(async () => requestA.reject(Error("A undo failed")));
       } else {
         await act(async () => requestA.reject(Error("A undo failed")));
-        expect(hook.result.current.pendingIds.has(b.id)).toBe(true);
+        expect(hook.result.current.loadingIds.has(b.id)).toBe(true);
         await act(async () => requestB.resolve(b));
       }
-      await waitFor(() => expect(hook.result.current.pendingIds.size).toBe(0));
+      await waitFor(() => expect(hook.result.current.loadingIds.size).toBe(0));
       expect(context.data()[0].stage).toBe("hired");
       expect(context.data()[1]).toEqual(b);
       expect(hook.result.current.undoHistory.has(a.id)).toBe(true);
@@ -527,7 +527,7 @@ describe("last saved move undo", () => {
       const hook = renderHook(useMoveCandidate, { wrapper: context.wrapper });
       const id = context.candidates[0].id;
       act(() => hook.result.current.move(id, "interview"));
-      await waitFor(() => expect(hook.result.current.pendingIds.size).toBe(0));
+      await waitFor(() => expect(hook.result.current.loadingIds.size).toBe(0));
       act(() => {
         context.client.setQueryData(
           CANDIDATES_QUERY_KEY,
@@ -550,7 +550,7 @@ describe("last saved move undo", () => {
     act(() => first.result.current.move(id, "interview"));
     first.unmount();
     const second = renderHook(useMoveCandidate, { wrapper: context.wrapper });
-    await waitFor(() => expect(second.result.current.pendingIds.size).toBe(0));
+    await waitFor(() => expect(second.result.current.loadingIds.size).toBe(0));
     expect(second.result.current.undoHistory.has(id)).toBe(true);
     const fresh = setup();
     const third = renderHook(useMoveCandidate, { wrapper: fresh.wrapper });

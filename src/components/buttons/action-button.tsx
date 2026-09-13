@@ -6,11 +6,11 @@ export type ActionButtonProps = Omit<
   ComponentProps<typeof Button>,
   "asChild"
 > & {
-  pending?: boolean;
+  loading?: boolean;
 };
 
 export function ActionButton({
-  pending = false,
+  loading = false,
   disabled,
   type = "button",
   icon,
@@ -21,10 +21,10 @@ export function ActionButton({
     <Button
       {...props}
       type={type}
-      disabled={disabled || pending}
-      aria-busy={pending || props["aria-busy"]}
+      disabled={disabled || loading}
+      aria-busy={loading || props["aria-busy"]}
     >
-      {pending ? (
+      {loading ? (
         <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
       ) : (
         icon

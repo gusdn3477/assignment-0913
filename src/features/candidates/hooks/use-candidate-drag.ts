@@ -9,12 +9,12 @@ type Session = { id: string; stage: Stage; resetKey?: string };
 
 export function useCandidateDrag({
   candidates,
-  pendingIds,
+  loadingIds,
   resetKey,
   onMove,
 }: {
   candidates: Candidate[];
-  pendingIds: ReadonlySet<string>;
+  loadingIds: ReadonlySet<string>;
   resetKey?: string;
   onMove: (id: string, stage: Stage) => void;
 }) {
@@ -23,12 +23,12 @@ export function useCandidateDrag({
   const isCurrent = useCallback(
     (drag: Session) =>
       drag.resetKey === resetKey &&
-      !pendingIds.has(drag.id) &&
+      !loadingIds.has(drag.id) &&
       candidates.some(
         (candidate) =>
           candidate.id === drag.id && candidate.stage === drag.stage,
       ),
-    [candidates, pendingIds, resetKey],
+    [candidates, loadingIds, resetKey],
   );
   const clear = useCallback(() => {
     session.current = null;
@@ -42,7 +42,7 @@ export function useCandidateDrag({
     const candidate = candidates.find(
       (item) => item.id === operation.source?.id,
     );
-    if (!candidate || pendingIds.has(candidate.id)) return;
+    if (!candidate || loadingIds.has(candidate.id)) return;
     session.current = { id: candidate.id, stage: candidate.stage, resetKey };
     setDragId(candidate.id);
   };

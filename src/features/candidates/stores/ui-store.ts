@@ -1,14 +1,7 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from "react";
-import { useStore } from "zustand";
-import { createStore } from "zustand/vanilla";
+import { useEffect } from "react";
+import { create } from "zustand";
 import {
   createJSONStorage,
   persist,
@@ -71,47 +64,37 @@ function validatedSettings(value: unknown): { search: string; job: string } {
   };
 }
 
-function createUIStore() {
-  return createStore<CandidateUIState>()(
-    persist(
-      (set) => ({
-        search: "",
-        job: "all",
-        selectedId: null,
-        hydrated: false,
-        setSearch: (search) => set({ search }),
-        setJob: (job) => set({ job }),
-        selectCandidate: (selectedId) => set({ selectedId }),
-        resetFilters: () => set({ search: "", job: "all" }),
+export const useCandidateUI = create<CandidateUIState>()(
+  persist(
+    (set) => ({
+      search: "",
+      job: "all",
+      selectedId: null,
+      hydrated: false,
+      setSearch: (search) => set({ search }),
+      setJob: (job) => set({ job }),
+      selectCandidate: (selectedId) => set({ selectedId }),
+      resetFilters: () => set({ search: "", job: "all" }),
+    }),
+    {
+      name: UI_STORAGE_KEY,
+      storage: createJSONStorage(() => safeStorage),
+      skipHydration: true,
+      partialize: ({ search, job }) => ({ search, job }),
+      merge: (saved, current) => ({
+        ...current,
+        ...validatedSettings(saved),
       }),
-      {
-        name: UI_STORAGE_KEY,
-        storage: createJSONStorage(() => safeStorage),
-        skipHydration: true,
-        partialize: ({ search, job }) => ({ search, job }),
-        merge: (saved, current) => ({
-          ...current,
-          ...validatedSettings(saved),
-        }),
-      },
-    ),
-  );
-}
+    },
+  ),
+);
 
-const UIContext = createContext<ReturnType<typeof createUIStore> | null>(null);
-
-export function CandidateUIProvider({ children }: { children: ReactNode }) {
-  const [store] = useState(createUIStore);
+// Restore browser settings after hydration; server renders use default state.
+export function useHydrateCandidateUI() {
   useEffect(() => {
-    void Promise.resolve(store.persist.rehydrate()).finally(() => {
-      store.setState({ hydrated: true });
+    if (useCandidateUI.getState().hydrated) return;
+    void Promise.resolve(useCandidateUI.persist.rehydrate()).finally(() => {
+      useCandidateUI.setState({ hydrated: true });
     });
-  }, [store]);
-  return <UIContext.Provider value={store}>{children}</UIContext.Provider>;
-}
-
-export function useCandidateUI<T>(selector: (state: CandidateUIState) => T): T {
-  const store = useContext(UIContext);
-  if (!store) throw new Error("useCandidateUI requires CandidateUIProvider");
-  return useStore(store, selector);
+  }, []);
 }

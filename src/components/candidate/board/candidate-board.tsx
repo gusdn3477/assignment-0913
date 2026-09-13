@@ -33,7 +33,7 @@ interface CandidateBoardProps {
   undoHistory?: ReadonlyMap<string, CandidateUndo>;
   onUndo?: (id: string) => boolean;
   candidates: Candidate[];
-  pendingIds: ReadonlySet<string>;
+  loadingIds: ReadonlySet<string>;
   onMove: (id: string, stage: Stage) => void;
   onOpenDetail: (id: string) => void;
 }
@@ -43,7 +43,7 @@ export function CandidateBoard({
   resetKey,
   undoHistory,
   onUndo,
-  pendingIds,
+  loadingIds,
   onMove,
   onOpenDetail,
 }: CandidateBoardProps) {
@@ -78,7 +78,7 @@ export function CandidateBoard({
 
   const drag = useCandidateDrag({
     candidates,
-    pendingIds,
+    loadingIds,
     resetKey,
     onMove: move,
   });
@@ -147,7 +147,7 @@ export function CandidateBoard({
             controls.push({ stage });
             for (const candidate of columns[stage]) {
               controls.push({ stage, id: candidate.id, control: "detail" });
-              if (!pendingIds.has(candidate.id))
+              if (!loadingIds.has(candidate.id))
                 controls.push({ stage, id: candidate.id, control: "move" });
             }
           }
@@ -230,7 +230,7 @@ export function CandidateBoard({
                   <CandidateCard
                     key={candidate.id}
                     candidate={candidate}
-                    pending={pendingIds.has(candidate.id)}
+                    loading={loadingIds.has(candidate.id)}
                     undoStage={
                       undoHistory?.get(candidate.id)?.savedStage ===
                       candidate.stage
