@@ -125,3 +125,6 @@ Input의 clearButton과 내장 버튼/focus 처리를 제거합니다. native in
 
 ## Input 슬롯 유무와 무관한 구조
 hasSlots와 조기 반환을 제거하고 wrapper에서 border/background/focus/invalid/disabled를 공통 처리합니다. input은 동일 위치에 유지하므로 동적 슬롯 전환에도 값·선택·포커스가 보존됩니다. 슬롯 DOM은 필요할 때만 추가해 flex gap과 콘텐츠 너비만큼 공간을 확보합니다.
+
+## SearchBar 고정 조합
+범용 Input은 left/right 슬롯을 제공하지만 검색 전용 SearchBar는 슬롯을 공개하지 않습니다. 내부 left=Search, right=조건부 CloseButton으로 고정합니다. native onChange/ref와 기존 onClear·disabled/readOnly·focus 계약은 유지합니다.

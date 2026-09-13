@@ -79,3 +79,6 @@ Input은 native props/ref와 스타일·left/right 슬롯만 제공하는 primit
 
 ## 사용자 정정: Input의 동일 외형과 슬롯 공간
 슬롯이 없어도 동일한 wrapper/input을 렌더링합니다. 외곽 스타일은 공통이고 좌/우 슬롯이 있을 때만 해당 콘텐츠 너비와 간격을 확보합니다.
+
+## 사용자 정정: SearchBar 고정 아이콘
+SearchBar의 공개 left/right props를 제거하고 내부 Input에 돋보기/CloseButton을 고정 배치합니다. onClear와 비어 있지 않은 value에 따른 지우기 표시 조건은 유지합니다.

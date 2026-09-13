@@ -13,3 +13,6 @@ SearchBarProps에서 left/right를 Omit하고 구조분해/외부 슬롯 합성�
 
 ## 인계
 codex/search-bar-fixed-icons / .worktrees/search-bar-fixed-icons. 신규 의존성/미해결 기능 이슈 없음. 통합 build/browser 후 기록 추가.
+
+## 통합 검증 완료
+기능4ad67ae / main103a8ca. main build가 다른 작업의 빌드 잠금으로 중단되어 기능 워크트리를 main103a8ca로 ff 동기화 후 next build --webpack 통과. localhost:3026 production250명→최서연 검색1명, 내부 left돋보기/rightCloseButton DOM 확인. Enter지우기→입력빈값/250명/focus/X숨김 확인. console error/warn []. 탭/서버 정리. 미해결 이슈 없음.

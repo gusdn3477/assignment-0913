@@ -762,3 +762,8 @@ Codex in-app browser, 127.0.0.1:3101, 기본 viewport 1280×720.
 - 요청: if (!hasSlots) return input 분기 제거, 슬롯 유무와 무관한 UI와 슬롯 방향의 아이콘 공간 확보.
 - 결과: 동일 wrapper/input 및 공통 외곽 스타일. 좌/우 슬롯이 있을 때만 실제 너비+gap 확보.
 - 검증: lint/typecheck/26 tests 통과. 브라우저 네 조합의448×38px/외곽 스타일 동일, 16px 아이콘 시 해당 쪽 공간24px 증가 확인. 상세 docs/records/input-slot-layout.md.
+
+## SearchBar 슬롯 제거
+- 요청: “SearchBar도 left right 없애고 돋보기, closebutton 배치해줘.”
+- 결과: 공개 타입/구조분해/슬롯 합성을 제거하고 내부 고정 아이콘 조합. 지우기 표시 조건과 키보드/focus 유지.
+- 검증: lint/typecheck/관련20 tests 통과. 상세 docs/records/search-bar-fixed-icons.md.

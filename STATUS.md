@@ -135,3 +135,6 @@ Input/SearchBar native onChange, Button onClick/loading 정상 확인. Select는
 
 ## 최신 Input 동일 구조 통합 완료
 기능13ab27a / main e39199c, codex/input-slot-layout / .worktrees/input-slot-layout. 슬롯 유무와 무관한 wrapper/input 및 외곽 스타일, 슬롯 방향만 너비+gap 추가. lint/typecheck/관련26 tests/동일 소스 production build 통과. 브라우저4종 동일448×38px, 슬롯16px+gap8px 공간만 추가 확인, console[]. 슬롯 전환 시 DOM/값/선택/focus 유지 검증. 미해결 이슈 없음. docs/records/input-slot-layout.md.
+
+## 최신 SearchBar 고정 아이콘 완료
+기능4ad67ae / main103a8ca, codex/search-bar-fixed-icons / .worktrees/search-bar-fixed-icons. 공개 left/right 제거, 내부 돋보기/CloseButton 고정 조합. lint/typecheck/관련20 tests/통합소스 production build 통과. 브라우저 검색1명, 좌돋보기/우버튼, Enter지우기→250명/focus/X숨김 확인. console[]. 미해결 이슈 없음. docs/records/search-bar-fixed-icons.md.
