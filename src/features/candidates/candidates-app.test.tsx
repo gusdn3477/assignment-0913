@@ -3,10 +3,11 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Providers } from "@/app/providers";
 import { CandidatesApp } from "./candidates-app";
-import { candidateApi } from "./mock-api";
+import { candidateApi, MockApiError } from "./mock-api";
 import { JOBS, STAGES, STAGE_LABELS, type Candidate } from "./types";
 
-vi.mock("./mock-api", () => ({
+vi.mock("./mock-api", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("./mock-api")>()),
   candidateApi: { listCandidates: vi.fn(), updateCandidateStage: vi.fn() },
 }));
 
@@ -99,17 +100,25 @@ describe("CandidatesApp acceptance", () => {
       .mockReturnValueOnce(retry.promise);
     mount();
     expect(await screen.findByRole("alert")).toHaveTextContent(
-      "목록 요청 실패",
+      "지원자를 불러오지 못했어요",
     );
     expect(candidateApi.listCandidates).toHaveBeenCalledTimes(1);
-    await userEvent.click(
-      screen.getByRole("button", { name: "다시 불러오기" }),
+    expect(screen.queryByText("목록 요청 실패")).not.toBeInTheDocument();
+    const retryButton = screen.getByRole("button", { name: "다시 불러오기" });
+    await userEvent.click(retryButton);
+    expect(retryButton).toBeDisabled();
+    expect(retryButton).toHaveFocus();
+    expect(screen.getByText("다시 불러오는 중…")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "다시 불러오기" })).toBe(
+      retryButton,
     );
     expect(
-      await screen.findByRole("status", { name: "지원자를 불러오는 중" }),
-    ).toBeInTheDocument();
+      screen.queryByRole("status", { name: "지원자를 불러오는 중" }),
+    ).not.toBeInTheDocument();
+    fireEvent.click(retryButton);
+    expect(candidateApi.listCandidates).toHaveBeenCalledTimes(2);
     await act(async () => retry.resolve(candidates));
-    await screen.findByRole("searchbox");
+    expect(await screen.findByRole("searchbox")).toHaveFocus();
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     expect(candidateApi.listCandidates).toHaveBeenCalledTimes(2);
   });
@@ -145,7 +154,9 @@ describe("CandidatesApp acceptance", () => {
     act(() => vi.runOnlyPendingTimers());
     expect(detail("김하늘")).toBeInTheDocument();
     expect(detail("김여름")).not.toBeInTheDocument();
-    expect(screen.getByRole("status")).toHaveTextContent("전체 3명 중 1명");
+    expect(screen.getByLabelText("지원자 검색 결과")).toHaveTextContent(
+      "전체 3명 중 1명",
+    );
     fireEvent.change(search, { target: { value: "없는 이름" } });
     expect(
       screen.getByText("검색 조건에 맞는 지원자가 없어요"),
@@ -210,5 +221,160 @@ describe("CandidatesApp acceptance", () => {
     expect(
       screen.getByText("단계 이동을 저장하지 못했습니다. 다시 시도해 주세요."),
     ).toBeInTheDocument();
+  });
+
+  it("keeps a failed retry recoverable without exposing internal errors", async () => {
+    const retry = deferred<Candidate[]>();
+    vi.mocked(candidateApi.listCandidates)
+      .mockRejectedValueOnce(new Error("internal first failure"))
+      .mockReturnValueOnce(retry.promise)
+      .mockResolvedValueOnce(candidates);
+    mount();
+    const button = await screen.findByRole("button", { name: "다시 불러오기" });
+    await userEvent.click(button);
+    expect(button).toBeDisabled();
+    await act(async () => retry.reject(new Error("internal retry failure")));
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "지원자를 불러오지 못했어요",
+    );
+    expect(screen.queryByText(/internal/)).not.toBeInTheDocument();
+    expect(button).toBeEnabled();
+    expect(button).toHaveFocus();
+    await userEvent.click(button);
+    expect(await screen.findByRole("searchbox")).toHaveFocus();
+  });
+
+  it.each([
+    ["storage", "사이트의 저장소 사용 설정을 확인"],
+    ["corrupt-storage", "브라우저 저장 데이터를 확인"],
+  ] as const)(
+    "offers relevant recovery for %s errors",
+    async (code, message) => {
+      vi.mocked(candidateApi.listCandidates).mockRejectedValue(
+        new MockApiError(code, "internal details"),
+      );
+      mount();
+      expect(await screen.findByRole("alert")).toHaveTextContent(message);
+      expect(screen.queryByText("internal details")).not.toBeInTheDocument();
+    },
+  );
+
+  it("retains searchable data through refresh failure and retry, then updates it", async () => {
+    const refresh = deferred<Candidate[]>();
+    const retry = deferred<Candidate[]>();
+    vi.mocked(candidateApi.listCandidates)
+      .mockResolvedValueOnce(candidates)
+      .mockReturnValueOnce(refresh.promise)
+      .mockReturnValueOnce(retry.promise);
+    mount();
+    const search = await screen.findByRole("searchbox");
+    const board = screen.getByRole("region", { name: "지원자 채용 단계 보드" });
+    const refreshButton = screen.getByRole("button", { name: "새로고침" });
+    await userEvent.click(refreshButton);
+    expect(refreshButton).toBeDisabled();
+    expect(
+      screen.getByText("최신 지원자 정보를 불러오는 중…"),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "지원자 채용 단계 보드" })).toBe(
+      board,
+    );
+    await userEvent.type(search, "김");
+    expect(search).toHaveValue("김");
+    expect(detail("김하늘")).toBeInTheDocument();
+    expect(detail("이봄")).not.toBeInTheDocument();
+    await act(async () => refresh.reject(new Error("secret refresh failure")));
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "현재 표시된 지원자 정보는 유지됩니다",
+    );
+    expect(
+      screen.queryByText("secret refresh failure"),
+    ).not.toBeInTheDocument();
+    expect(search).toHaveFocus();
+    expect(detail("김여름")).toBeInTheDocument();
+    await userEvent.click(
+      screen.getByRole("button", { name: "다시 불러오기" }),
+    );
+    expect(screen.getByRole("region", { name: "지원자 채용 단계 보드" })).toBe(
+      board,
+    );
+    expect(detail("김여름")).toBeInTheDocument();
+    await act(async () => retry.resolve([candidates[0]]));
+    expect(await screen.findByLabelText("지원자 검색 결과")).toHaveTextContent(
+      "전체 1명 중 1명",
+    );
+    expect(detail("김여름")).not.toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+
+  it("settles rapid search edits on matching cards, counts, and empty states without refetching", async () => {
+    mount();
+    const search = await screen.findByRole("searchbox");
+    await userEvent.type(search, "없는 이름");
+    expect(search).toHaveValue("없는 이름");
+    expect(
+      screen.getByText("검색 조건에 맞는 지원자가 없어요"),
+    ).toBeInTheDocument();
+    await userEvent.clear(search);
+    await userEvent.type(search, "김하늘");
+    expect(search).toHaveValue("김하늘");
+    expect(search).toHaveFocus();
+    expect(screen.getByLabelText("지원자 검색 결과")).toHaveTextContent(
+      "전체 3명 중 1명",
+    );
+    expect(screen.getByLabelText("지원자 검색 결과")).toHaveAttribute(
+      "aria-live",
+      "off",
+    );
+    expect(
+      screen.queryByText("검색 조건에 맞는 지원자가 없어요"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getAllByRole("button", { name: /지원자 상세 보기/ }),
+    ).toHaveLength(1);
+    expect(detail("김하늘")).toBeInTheDocument();
+    expect(candidateApi.listCandidates).toHaveBeenCalledTimes(1);
+  });
+
+  it("cancels an older refresh for a move and blocks new refreshes until that card settles", async () => {
+    const refresh = deferred<Candidate[]>();
+    const save = deferred<Candidate>();
+    vi.mocked(candidateApi.listCandidates)
+      .mockResolvedValueOnce(candidates)
+      .mockReturnValueOnce(refresh.promise);
+    vi.mocked(candidateApi.updateCandidateStage).mockReturnValue(save.promise);
+    mount();
+    await screen.findByRole("searchbox");
+    await userEvent.click(screen.getByRole("button", { name: "새로고침" }));
+    const signal = vi.mocked(candidateApi.listCandidates).mock.calls[1][0]
+      ?.signal;
+    await userEvent.click(
+      screen.getByRole("button", { name: "김하늘 단계 변경" }),
+    );
+    await userEvent.click(screen.getByRole("menuitem", { name: "면접" }));
+    expect(
+      await screen.findByRole("button", { name: "김하늘 단계 변경 (저장 중)" }),
+    ).toBeDisabled();
+    expect(signal?.aborted).toBe(true);
+    const refreshButton = screen.getByRole("button", { name: "새로고침" });
+    expect(refreshButton).toBeDisabled();
+    fireEvent.click(refreshButton);
+    expect(candidateApi.listCandidates).toHaveBeenCalledTimes(2);
+    await act(async () => refresh.resolve(candidates));
+    expect(
+      within(screen.getByRole("region", { name: "면접 2명" })).getByRole(
+        "button",
+        { name: "김하늘 지원자 상세 보기" },
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "김여름 단계 변경" }),
+    ).toBeEnabled();
+    await act(async () =>
+      save.resolve({ ...candidates[0], stage: "interview" }),
+    );
+    expect(
+      await screen.findByRole("button", { name: "김하늘 단계 변경" }),
+    ).toBeEnabled();
+    expect(refreshButton).toBeEnabled();
   });
 });
