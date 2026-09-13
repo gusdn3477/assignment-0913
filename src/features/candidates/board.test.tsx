@@ -171,16 +171,16 @@ describe("CandidateBoard", () => {
     expect(screen.getByRole("textbox")).toHaveFocus();
   });
 
-  it("renders 250 candidates with distinct controls", () => {
+  it("virtualizes 250 candidates while preserving complete stage counts", () => {
     const candidates = Array.from({ length: 250 }, (_, index) => ({
       ...candidate,
       id: String(index),
       stage: STAGES[index % STAGES.length],
     }));
     render(<CandidateBoard {...props} candidates={candidates} />);
-    expect(screen.getAllByRole("button", { name: /상세 보기/ })).toHaveLength(
-      250,
-    );
+    expect(
+      screen.getAllByRole("button", { name: /상세 보기/ }).length,
+    ).toBeLessThan(50);
     for (const stage of STAGES)
       expect(
         screen.getByRole("region", { name: `${STAGE_LABELS[stage]} 50명` }),

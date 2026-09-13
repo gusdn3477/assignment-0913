@@ -232,6 +232,7 @@ function BoardContent() {
                 </div>
               )}
               <DeferredBoard
+                resetKey={JSON.stringify(deferredFilters)}
                 candidates={filtered}
                 pendingIds={pendingIds}
                 onMove={move}
