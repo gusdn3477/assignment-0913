@@ -1,7 +1,44 @@
 import { JOBS, STAGES, type Candidate } from "./types";
 
-const FAMILY_NAMES = ["김", "이", "박", "최", "정", "강", "조", "윤", "장", "임"];
-const GIVEN_NAMES = ["서준", "하윤", "도윤", "지우", "서연", "민준", "수아", "지호", "예린", "현우", "유진", "시우", "채원", "준서", "다은", "하준", "소율", "은우", "나윤", "건우", "지민", "수현", "예준", "지안", "태윤"];
+const FAMILY_NAMES = [
+  "김",
+  "이",
+  "박",
+  "최",
+  "정",
+  "강",
+  "조",
+  "윤",
+  "장",
+  "임",
+];
+const GIVEN_NAMES = [
+  "서준",
+  "하윤",
+  "도윤",
+  "지우",
+  "서연",
+  "민준",
+  "수아",
+  "지호",
+  "예린",
+  "현우",
+  "유진",
+  "시우",
+  "채원",
+  "준서",
+  "다은",
+  "하준",
+  "소율",
+  "은우",
+  "나윤",
+  "건우",
+  "지민",
+  "수현",
+  "예준",
+  "지안",
+  "태윤",
+];
 
 /** Returns fresh deterministic data so callers cannot mutate the next request's seed. */
 export function createSeedCandidates(): Candidate[] {

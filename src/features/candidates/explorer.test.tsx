@@ -1,22 +1,52 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { CandidateUIProvider, UI_STORAGE_KEY, useCandidateUI } from "./ui-store";
+import {
+  CandidateUIProvider,
+  UI_STORAGE_KEY,
+  useCandidateUI,
+} from "./ui-store";
 import { CandidateToolbar } from "./candidate-toolbar";
 import { CandidateDetail } from "./candidate-detail";
 import { filterCandidates } from "./selectors";
 import { JOBS, type Candidate } from "./types";
 
-const candidate: Candidate = { id: "c1", name: "Alice 김", job: JOBS[0], appliedAt: "2026-09-12", stage: "interview", email: "alice@example.com", summary: "사용자 경험을 개선하는 개발자입니다." };
+const candidate: Candidate = {
+  id: "c1",
+  name: "Alice 김",
+  job: JOBS[0],
+  appliedAt: "2026-09-12",
+  stage: "interview",
+  email: "alice@example.com",
+  summary: "사용자 경험을 개선하는 개발자입니다.",
+};
 function Harness() {
   const selectedId = useCandidateUI((state) => state.selectedId);
   const selectCandidate = useCandidateUI((state) => state.selectCandidate);
   const hydrated = useCandidateUI((state) => state.hydrated);
-  return <><span>{hydrated ? "복원 완료" : "복원 중"}</span><CandidateToolbar jobs={[...JOBS]} total={250} filtered={3} /><button data-candidate-detail={candidate.id} onClick={() => selectCandidate(candidate.id)}>상세 보기</button><CandidateDetail candidate={selectedId ? candidate : null} /></>;
+  return (
+    <>
+      <span>{hydrated ? "복원 완료" : "복원 중"}</span>
+      <CandidateToolbar jobs={[...JOBS]} total={250} filtered={3} />
+      <button
+        data-candidate-detail={candidate.id}
+        onClick={() => selectCandidate(candidate.id)}
+      >
+        상세 보기
+      </button>
+      <CandidateDetail candidate={selectedId ? candidate : null} />
+    </>
+  );
 }
-const mount = () => render(<CandidateUIProvider><Harness /></CandidateUIProvider>);
+const mount = () =>
+  render(
+    <CandidateUIProvider>
+      <Harness />
+    </CandidateUIProvider>,
+  );
 beforeEach(() => localStorage.clear());
-if (!HTMLElement.prototype.scrollIntoView) HTMLElement.prototype.scrollIntoView = () => {};
+if (!HTMLElement.prototype.scrollIntoView)
+  HTMLElement.prototype.scrollIntoView = () => {};
 
 describe("candidate filtering", () => {
   it("combines trimmed case-insensitive name and exact job without mutating source", () => {
@@ -32,15 +62,36 @@ describe("candidate filtering", () => {
 
 describe("UI persistence and toolbar", () => {
   it("restores valid filters at mount, excluding selected ID and hydrated flag", async () => {
-    localStorage.setItem(UI_STORAGE_KEY, JSON.stringify({ state: { search: "Alice", job: JOBS[0], selectedId: "c1", hydrated: true }, version: 0 }));
+    localStorage.setItem(
+      UI_STORAGE_KEY,
+      JSON.stringify({
+        state: {
+          search: "Alice",
+          job: JOBS[0],
+          selectedId: "c1",
+          hydrated: true,
+        },
+        version: 0,
+      }),
+    );
     mount();
     await screen.findByText("복원 완료");
     expect(screen.getByRole("searchbox")).toHaveValue("Alice");
     expect(screen.getByRole("combobox")).toHaveTextContent(JOBS[0]);
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    expect(JSON.parse(localStorage.getItem(UI_STORAGE_KEY)!).state).toEqual({ search: "Alice", job: JOBS[0] });
+    expect(JSON.parse(localStorage.getItem(UI_STORAGE_KEY)!).state).toEqual({
+      search: "Alice",
+      job: JOBS[0],
+    });
   });
-  it.each(["{invalid", JSON.stringify({ state: { search: 3, job: "bogus", setSearch: "broken" }, version: 0 }), JSON.stringify({ state: null, version: 0 })])("recovers invalid stored data: %s", async (stored) => {
+  it.each([
+    "{invalid",
+    JSON.stringify({
+      state: { search: 3, job: "bogus", setSearch: "broken" },
+      version: 0,
+    }),
+    JSON.stringify({ state: null, version: 0 }),
+  ])("recovers invalid stored data: %s", async (stored) => {
     localStorage.setItem(UI_STORAGE_KEY, stored);
     mount();
     await screen.findByText("복원 완료");
@@ -55,14 +106,18 @@ describe("UI persistence and toolbar", () => {
     await user.type(screen.getByRole("searchbox"), "Alice");
     first.unmount();
     mount();
-    await waitFor(() => expect(screen.getByRole("searchbox")).toHaveValue("Alice"));
+    await waitFor(() =>
+      expect(screen.getByRole("searchbox")).toHaveValue("Alice"),
+    );
     await user.click(screen.getByRole("button", { name: "초기화" }));
     expect(screen.getByRole("searchbox")).toHaveValue("");
     expect(screen.getByRole("button", { name: "초기화" })).toBeDisabled();
     expect(screen.getByRole("status")).toHaveTextContent("전체 250명 중 3명");
   });
   it("supports keyboard job selection and reset", async () => {
-    const scroll = vi.spyOn(HTMLElement.prototype, "scrollIntoView").mockImplementation(() => {});
+    const scroll = vi
+      .spyOn(HTMLElement.prototype, "scrollIntoView")
+      .mockImplementation(() => {});
     try {
       mount();
       const user = userEvent.setup();
@@ -70,20 +125,35 @@ describe("UI persistence and toolbar", () => {
       await user.keyboard("{Enter}");
       await user.keyboard("{ArrowDown}{Enter}");
       expect(screen.getByRole("combobox")).toHaveTextContent(JOBS[0]);
-      expect(JSON.parse(localStorage.getItem(UI_STORAGE_KEY)!).state.job).toBe(JOBS[0]);
+      expect(JSON.parse(localStorage.getItem(UI_STORAGE_KEY)!).state.job).toBe(
+        JOBS[0],
+      );
       await user.click(screen.getByRole("button", { name: "초기화" }));
       expect(screen.getByRole("combobox")).toHaveTextContent("전체 직무");
-    } finally { scroll.mockRestore(); }
+    } finally {
+      scroll.mockRestore();
+    }
   });
   it("continues when localStorage reads and writes throw", async () => {
-    const get = vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => { throw new Error("blocked"); });
-    const set = vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => { throw new Error("full"); });
+    const get = vi
+      .spyOn(Storage.prototype, "getItem")
+      .mockImplementation(() => {
+        throw new Error("blocked");
+      });
+    const set = vi
+      .spyOn(Storage.prototype, "setItem")
+      .mockImplementation(() => {
+        throw new Error("full");
+      });
     try {
       mount();
       await screen.findByText("복원 완료");
       await userEvent.type(screen.getByRole("searchbox"), "김");
       expect(screen.getByRole("searchbox")).toHaveValue("김");
-    } finally { get.mockRestore(); set.mockRestore(); }
+    } finally {
+      get.mockRestore();
+      set.mockRestore();
+    }
   });
 });
 
@@ -100,8 +170,12 @@ it("shows full candidate detail, traps keyboard focus and returns it on Escape",
   expect(dialog).toHaveTextContent("면접");
   await user.tab();
   expect(dialog).toContainElement(document.activeElement as HTMLElement);
-  expect(JSON.parse(localStorage.getItem(UI_STORAGE_KEY)!).state).not.toHaveProperty("selectedId");
+  expect(
+    JSON.parse(localStorage.getItem(UI_STORAGE_KEY)!).state,
+  ).not.toHaveProperty("selectedId");
   await user.keyboard("{Escape}");
-  await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  await waitFor(() =>
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+  );
   expect(trigger).toHaveFocus();
 });

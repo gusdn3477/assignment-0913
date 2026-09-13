@@ -2,7 +2,16 @@
 
 import { useCallback, useMemo } from "react";
 import Link from "next/link";
-import { ArrowUpRight, BriefcaseBusiness, CircleHelp, Layers3, Orbit, Users, Wifi, RotateCcw } from "lucide-react";
+import {
+  ArrowUpRight,
+  BriefcaseBusiness,
+  CircleHelp,
+  Layers3,
+  Orbit,
+  Users,
+  Wifi,
+  RotateCcw,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CandidateBoard } from "./board";
@@ -22,70 +31,279 @@ function BoardContent() {
   const selectCandidate = useCandidateUI((state) => state.selectCandidate);
   const resetFilters = useCandidateUI((state) => state.resetFilters);
   const candidates = query.data;
-  const filtered = useMemo(() => filterCandidates(candidates ?? [], search, job), [candidates, search, job]);
-  const jobs = useMemo(() => [...new Set((candidates ?? []).map((candidate) => candidate.job))].sort(), [candidates]);
-  const onOpenDetail = useCallback((id: string) => selectCandidate(id), [selectCandidate]);
-  const selected = candidates?.find((candidate) => candidate.id === selectedId) ?? null;
-  const activeCount = candidates?.filter((candidate) => candidate.stage !== "hired" && candidate.stage !== "rejected").length ?? 0;
-  const hiredCount = candidates?.filter((candidate) => candidate.stage === "hired").length ?? 0;
+  const filtered = useMemo(
+    () => filterCandidates(candidates ?? [], search, job),
+    [candidates, search, job],
+  );
+  const jobs = useMemo(
+    () =>
+      [...new Set((candidates ?? []).map((candidate) => candidate.job))].sort(),
+    [candidates],
+  );
+  const onOpenDetail = useCallback(
+    (id: string) => selectCandidate(id),
+    [selectCandidate],
+  );
+  const selected =
+    candidates?.find((candidate) => candidate.id === selectedId) ?? null;
+  const activeCount =
+    candidates?.filter(
+      (candidate) =>
+        candidate.stage !== "hired" && candidate.stage !== "rejected",
+    ).length ?? 0;
+  const hiredCount =
+    candidates?.filter((candidate) => candidate.stage === "hired").length ?? 0;
 
   return (
     <>
-      <section className="mb-8 flex flex-wrap items-end justify-between gap-6" aria-labelledby="page-title">
+      <section
+        className="mb-8 flex flex-wrap items-end justify-between gap-6"
+        aria-labelledby="page-title"
+      >
         <div>
-          <div className="mb-3 flex items-center gap-2 text-xs font-medium tracking-wide text-muted-foreground"><BriefcaseBusiness className="size-3.5" aria-hidden />WORKSPACE<span className="mx-1 text-border">/</span><span>채용 관리</span></div>
-          <h1 id="page-title" className="text-[28px] font-bold tracking-tight sm:text-[32px]">좋은 동료를 만나는 여정</h1>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">지원부터 합류까지, 채용의 모든 단계를 한눈에 관리하세요.</p>
+          <div className="mb-3 flex items-center gap-2 text-xs font-medium tracking-wide text-muted-foreground">
+            <BriefcaseBusiness className="size-3.5" aria-hidden />
+            WORKSPACE<span className="mx-1 text-border">/</span>
+            <span>채용 관리</span>
+          </div>
+          <h1
+            id="page-title"
+            className="text-[28px] font-bold tracking-tight sm:text-[32px]"
+          >
+            좋은 동료를 만나는 여정
+          </h1>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
+            지원부터 합류까지, 채용의 모든 단계를 한눈에 관리하세요.
+          </p>
         </div>
-        <div className="flex items-center gap-2 rounded-full border bg-white px-3 py-1.5 text-xs text-muted-foreground"><span className="size-1.5 rounded-full bg-emerald-500" /><span>내 브라우저에 자동 저장</span></div>
+        <div className="flex items-center gap-2 rounded-full border bg-white px-3 py-1.5 text-xs text-muted-foreground">
+          <span className="size-1.5 rounded-full bg-emerald-500" />
+          <span>내 브라우저에 자동 저장</span>
+        </div>
       </section>
 
       <div className="mb-8 grid grid-cols-3 gap-3 sm:gap-4">
-        <Metric label="전체 지원자" value={candidates?.length} icon={<Users className="size-4" />} detail="함께할 가능성" />
-        <Metric label="진행 중" value={candidates ? activeCount : undefined} icon={<Layers3 className="size-4" />} detail="다음 단계를 향해" />
-        <Metric label="최종합격" value={candidates ? hiredCount : undefined} icon={<ArrowUpRight className="size-4" />} detail="새로운 시작" />
+        <Metric
+          label="전체 지원자"
+          value={candidates?.length}
+          icon={<Users className="size-4" />}
+          detail="함께할 가능성"
+        />
+        <Metric
+          label="진행 중"
+          value={candidates ? activeCount : undefined}
+          icon={<Layers3 className="size-4" />}
+          detail="다음 단계를 향해"
+        />
+        <Metric
+          label="최종합격"
+          value={candidates ? hiredCount : undefined}
+          icon={<ArrowUpRight className="size-4" />}
+          detail="새로운 시작"
+        />
       </div>
 
-      <section id="pipeline" aria-labelledby="pipeline-title" className="min-w-0 scroll-mt-6">
+      <section
+        id="pipeline"
+        aria-labelledby="pipeline-title"
+        className="min-w-0 scroll-mt-6"
+      >
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b pb-4">
-          <div className="flex items-center gap-2.5"><span className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary"><Layers3 className="size-4" aria-hidden /></span><h2 id="pipeline-title" className="font-semibold">채용 파이프라인</h2><span className="rounded-md bg-white px-2 py-0.5 text-xs text-muted-foreground">5단계</span></div>
-          <span className="flex items-center gap-1.5 text-xs text-muted-foreground"><CircleHelp className="size-3.5" aria-hidden />카드 메뉴에서 단계를 이동할 수 있어요</span>
+          <div className="flex items-center gap-2.5">
+            <span className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <Layers3 className="size-4" aria-hidden />
+            </span>
+            <h2 id="pipeline-title" className="font-semibold">
+              채용 파이프라인
+            </h2>
+            <span className="rounded-md bg-white px-2 py-0.5 text-xs text-muted-foreground">
+              5단계
+            </span>
+          </div>
+          <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <CircleHelp className="size-3.5" aria-hidden />
+            카드 메뉴에서 단계를 이동할 수 있어요
+          </span>
         </div>
         {query.isError ? (
-          <div role="alert" className="flex min-h-72 flex-col items-center justify-center rounded-xl border border-dashed bg-white p-8 text-center">
+          <div
+            role="alert"
+            className="flex min-h-72 flex-col items-center justify-center rounded-xl border border-dashed bg-white p-8 text-center"
+          >
             <Wifi className="mb-4 size-8 text-muted-foreground" aria-hidden />
             <h3 className="font-semibold">지원자를 불러오지 못했어요</h3>
-            <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">{query.error.message}</p>
-            <Button variant="outline" className="mt-5" onClick={() => void query.refetch()} disabled={query.isFetching}><RotateCcw className="size-4" />{query.isFetching ? "다시 불러오는 중…" : "다시 불러오기"}</Button>
+            <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
+              {query.error.message}
+            </p>
+            <Button
+              variant="outline"
+              className="mt-5"
+              onClick={() => void query.refetch()}
+              disabled={query.isFetching}
+            >
+              <RotateCcw className="size-4" />
+              {query.isFetching ? "다시 불러오는 중…" : "다시 불러오기"}
+            </Button>
           </div>
-        ) : query.isPending || !hydrated ? <BoardSkeleton /> : (
+        ) : query.isPending || !hydrated ? (
+          <BoardSkeleton />
+        ) : (
           <>
-            <CandidateToolbar jobs={jobs} total={candidates?.length ?? 0} filtered={filtered.length} />
+            <CandidateToolbar
+              jobs={jobs}
+              total={candidates?.length ?? 0}
+              filtered={filtered.length}
+            />
             {filtered.length === 0 && (
-              <div role="status" className="my-5 rounded-xl border border-dashed bg-white p-6 text-center">
-                <p className="font-medium">{candidates?.length ? "검색 조건에 맞는 지원자가 없어요" : "아직 등록된 지원자가 없어요"}</p>
-                <p className="mt-1 text-sm text-muted-foreground">{candidates?.length ? "다른 이름이나 직무로 검색해 보세요." : "지원자가 등록되면 이곳에서 채용 단계를 관리할 수 있어요."}</p>
-                {!!candidates?.length && <Button variant="outline" size="sm" className="mt-3" onClick={resetFilters}>검색 조건 초기화</Button>}
+              <div
+                role="status"
+                className="my-5 rounded-xl border border-dashed bg-white p-6 text-center"
+              >
+                <p className="font-medium">
+                  {candidates?.length
+                    ? "검색 조건에 맞는 지원자가 없어요"
+                    : "아직 등록된 지원자가 없어요"}
+                </p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {candidates?.length
+                    ? "다른 이름이나 직무로 검색해 보세요."
+                    : "지원자가 등록되면 이곳에서 채용 단계를 관리할 수 있어요."}
+                </p>
+                {!!candidates?.length && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-3"
+                    onClick={resetFilters}
+                  >
+                    검색 조건 초기화
+                  </Button>
+                )}
               </div>
             )}
-            <CandidateBoard candidates={filtered} pendingIds={pendingIds} onMove={move} onOpenDetail={onOpenDetail} />
+            <CandidateBoard
+              candidates={filtered}
+              pendingIds={pendingIds}
+              onMove={move}
+              onOpenDetail={onOpenDetail}
+            />
           </>
         )}
       </section>
       <CandidateDetail candidate={selected} />
-      <footer className="mt-8 flex flex-wrap items-center justify-between gap-2 border-t pt-4 text-[11px] leading-5 text-muted-foreground"><span>ORBIT · 작은 연결에서 시작되는 큰 가능성</span><span>데모 데이터 · 요청 지연 200–800ms · 약 15% 확률로 실패를 재현합니다.</span></footer>
+      <footer className="mt-8 flex flex-wrap items-center justify-between gap-2 border-t pt-4 text-[11px] leading-5 text-muted-foreground">
+        <span>ORBIT · 작은 연결에서 시작되는 큰 가능성</span>
+        <span>
+          데모 데이터 · 요청 지연 200–800ms · 약 15% 확률로 실패를 재현합니다.
+        </span>
+      </footer>
     </>
   );
 }
 
-function Metric({ label, value, icon, detail }: { label: string; value?: number; icon: React.ReactNode; detail: string }) {
-  return <div className="rounded-xl border bg-white px-4 py-4 sm:px-5"><div className="flex items-center justify-between gap-2 text-xs text-muted-foreground"><span>{label}</span><span className="hidden text-primary/70 sm:block" aria-hidden>{icon}</span></div><div className="mt-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">{value === undefined ? <Skeleton className="h-8 w-12" /> : <span className="text-2xl font-semibold tabular-nums tracking-tight">{value}<span className="ml-1 text-xs font-normal text-muted-foreground">명</span></span>}<span className="hidden text-[11px] text-muted-foreground sm:inline">{detail}</span></div></div>;
+function Metric({
+  label,
+  value,
+  icon,
+  detail,
+}: {
+  label: string;
+  value?: number;
+  icon: React.ReactNode;
+  detail: string;
+}) {
+  return (
+    <div className="rounded-xl border bg-white px-4 py-4 sm:px-5">
+      <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
+        <span>{label}</span>
+        <span className="hidden text-primary/70 sm:block" aria-hidden>
+          {icon}
+        </span>
+      </div>
+      <div className="mt-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        {value === undefined ? (
+          <Skeleton className="h-8 w-12" />
+        ) : (
+          <span className="text-2xl font-semibold tabular-nums tracking-tight">
+            {value}
+            <span className="ml-1 text-xs font-normal text-muted-foreground">
+              명
+            </span>
+          </span>
+        )}
+        <span className="hidden text-[11px] text-muted-foreground sm:inline">
+          {detail}
+        </span>
+      </div>
+    </div>
+  );
 }
 
 function BoardSkeleton() {
-  return <div role="status" aria-label="지원자를 불러오는 중" className="space-y-5"><span className="sr-only">지원자를 불러오는 중입니다.</span><Skeleton className="h-10 max-w-lg" /><div className="grid grid-cols-2 gap-4 md:grid-cols-5">{Array.from({ length: 5 }, (_, i) => <div key={i} className="space-y-3 rounded-xl border p-3"><Skeleton className="mb-5 h-6 w-24" />{Array.from({ length: 3 }, (_, j) => <Skeleton key={j} className="h-36 w-full bg-slate-200/50" />)}</div>)}</div></div>;
+  return (
+    <div role="status" aria-label="지원자를 불러오는 중" className="space-y-5">
+      <span className="sr-only">지원자를 불러오는 중입니다.</span>
+      <Skeleton className="h-10 max-w-lg" />
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
+        {Array.from({ length: 5 }, (_, i) => (
+          <div key={i} className="space-y-3 rounded-xl border p-3">
+            <Skeleton className="mb-5 h-6 w-24" />
+            {Array.from({ length: 3 }, (_, j) => (
+              <Skeleton key={j} className="h-36 w-full bg-slate-200/50" />
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 export function CandidatesApp() {
-  return <CandidateUIProvider><a href="#main-content" className="sr-only z-50 rounded bg-white p-3 focus:not-sr-only focus:fixed focus:left-4 focus:top-4">본문으로 바로가기</a><header className="border-b bg-white"><div className="mx-auto flex h-[72px] max-w-[1680px] items-center justify-between px-5 sm:px-8 lg:px-10"><Link href="/" aria-label="Orbit 채용 보드 홈" className="flex items-center gap-2.5"><span className="flex size-9 items-center justify-center rounded-xl bg-primary text-white"><Orbit className="size-6" aria-hidden /></span><span className="text-[23px] font-bold tracking-tight">orbit<span className="text-primary">.</span></span><span className="ml-4 hidden border-l pl-5 text-sm text-muted-foreground sm:inline">채용 워크스페이스</span></Link><div className="flex items-center gap-3"><span className="hidden text-right text-xs leading-5 sm:block"><span className="block font-medium">채용 담당자</span><span className="text-muted-foreground">Orbit 팀</span></span><span aria-hidden className="flex size-9 items-center justify-center rounded-full border border-purple-100 bg-purple-50 text-xs font-semibold text-primary">OR</span></div></div></header><main id="main-content" className="mx-auto max-w-[1680px] px-5 py-8 sm:px-8 lg:px-10"><BoardContent /></main></CandidateUIProvider>;
+  return (
+    <CandidateUIProvider>
+      <a
+        href="#main-content"
+        className="sr-only z-50 rounded bg-white p-3 focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
+      >
+        본문으로 바로가기
+      </a>
+      <header className="border-b bg-white">
+        <div className="mx-auto flex h-[72px] max-w-[1680px] items-center justify-between px-5 sm:px-8 lg:px-10">
+          <Link
+            href="/"
+            aria-label="Orbit 채용 보드 홈"
+            className="flex items-center gap-2.5"
+          >
+            <span className="flex size-9 items-center justify-center rounded-xl bg-primary text-white">
+              <Orbit className="size-6" aria-hidden />
+            </span>
+            <span className="text-[23px] font-bold tracking-tight">
+              orbit<span className="text-primary">.</span>
+            </span>
+            <span className="ml-4 hidden border-l pl-5 text-sm text-muted-foreground sm:inline">
+              채용 워크스페이스
+            </span>
+          </Link>
+          <div className="flex items-center gap-3">
+            <span className="hidden text-right text-xs leading-5 sm:block">
+              <span className="block font-medium">채용 담당자</span>
+              <span className="text-muted-foreground">Orbit 팀</span>
+            </span>
+            <span
+              aria-hidden
+              className="flex size-9 items-center justify-center rounded-full border border-purple-100 bg-purple-50 text-xs font-semibold text-primary"
+            >
+              OR
+            </span>
+          </div>
+        </div>
+      </header>
+      <main
+        id="main-content"
+        className="mx-auto max-w-[1680px] px-5 py-8 sm:px-8 lg:px-10"
+      >
+        <BoardContent />
+      </main>
+    </CandidateUIProvider>
+  );
 }

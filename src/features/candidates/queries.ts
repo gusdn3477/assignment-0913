@@ -1,7 +1,12 @@
 "use client";
 
 import { useCallback, useSyncExternalStore } from "react";
-import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  QueryClient,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { toast } from "sonner";
 import { candidateApi } from "./mock-api";
 import type { Candidate, MoveCandidateInput, Stage } from "./types";
@@ -16,7 +21,9 @@ function createPendingStore() {
     getSnapshot: () => snapshot,
     subscribe: (listener: () => void) => {
       listeners.add(listener);
-      return () => { listeners.delete(listener); };
+      return () => {
+        listeners.delete(listener);
+      };
     },
     set(id: string, pending: boolean) {
       const next = new Set(snapshot);
@@ -27,7 +34,10 @@ function createPendingStore() {
     },
   };
 }
-const pendingStores = new WeakMap<QueryClient, ReturnType<typeof createPendingStore>>();
+const pendingStores = new WeakMap<
+  QueryClient,
+  ReturnType<typeof createPendingStore>
+>();
 function getPendingStore(client: QueryClient) {
   let store = pendingStores.get(client);
   if (!store) {
@@ -38,7 +48,7 @@ function getPendingStore(client: QueryClient) {
 }
 function patchCandidate(client: QueryClient, candidate: Candidate) {
   client.setQueryData<Candidate[]>(CANDIDATES_QUERY_KEY, (current) =>
-    current?.map((item) => item.id === candidate.id ? candidate : item),
+    current?.map((item) => (item.id === candidate.id ? candidate : item)),
   );
 }
 
@@ -55,29 +65,48 @@ export function useMoveCandidate(): {
 } {
   const client = useQueryClient();
   const store = getPendingStore(client);
-  const pendingIds = useSyncExternalStore(store.subscribe, store.getSnapshot, store.getSnapshot);
+  const pendingIds = useSyncExternalStore(
+    store.subscribe,
+    store.getSnapshot,
+    store.getSnapshot,
+  );
   const { mutate } = useMutation({
-    mutationFn: (input: MoveCandidateInput) => candidateApi.updateCandidateStage(input),
+    mutationFn: (input: MoveCandidateInput) =>
+      candidateApi.updateCandidateStage(input),
     onMutate: async ({ id, stage }) => {
-      await client.cancelQueries({ queryKey: CANDIDATES_QUERY_KEY, exact: true });
-      const previous = client.getQueryData<Candidate[]>(CANDIDATES_QUERY_KEY)?.find((item) => item.id === id);
+      await client.cancelQueries({
+        queryKey: CANDIDATES_QUERY_KEY,
+        exact: true,
+      });
+      const previous = client
+        .getQueryData<Candidate[]>(CANDIDATES_QUERY_KEY)
+        ?.find((item) => item.id === id);
       if (previous) patchCandidate(client, { ...previous, stage });
       return previous;
     },
     // Hook-level lifecycle callbacks also run after the initiating component unmounts.
-    onSuccess: (candidate) => { patchCandidate(client, candidate); },
+    onSuccess: (candidate) => {
+      patchCandidate(client, candidate);
+    },
     onError: (_error, _input, previous) => {
       if (previous) patchCandidate(client, previous);
       toast.error("단계 이동을 저장하지 못했습니다. 다시 시도해 주세요.");
     },
-    onSettled: (_candidate, _error, { id }) => { store.set(id, false); },
+    onSettled: (_candidate, _error, { id }) => {
+      store.set(id, false);
+    },
   });
-  const move = useCallback((id: string, stage: Stage) => {
-    if (store.getSnapshot().has(id)) return;
-    const candidate = client.getQueryData<Candidate[]>(CANDIDATES_QUERY_KEY)?.find((item) => item.id === id);
-    if (!candidate || candidate.stage === stage) return;
-    store.set(id, true);
-    mutate({ id, stage });
-  }, [client, mutate, store]);
+  const move = useCallback(
+    (id: string, stage: Stage) => {
+      if (store.getSnapshot().has(id)) return;
+      const candidate = client
+        .getQueryData<Candidate[]>(CANDIDATES_QUERY_KEY)
+        ?.find((item) => item.id === id);
+      if (!candidate || candidate.stage === stage) return;
+      store.set(id, true);
+      mutate({ id, stage });
+    },
+    [client, mutate, store],
+  );
   return { move, pendingIds };
 }
