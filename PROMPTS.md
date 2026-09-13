@@ -708,3 +708,9 @@ Codex in-app browser, 127.0.0.1:3101, 기본 viewport 1280×720.
 - 통합 담당은 README 구조 갱신, 경로/동작 변경 리뷰, production build/browser 확인. 상세 기록: docs/records/candidate-layout.md, candidate-layout-integration.md.
 
 - 결과: 기능6986331/main통합b69e741, 전체109 tests/lint/typecheck/format/build 통과. production 초기 로딩→250명/검색1명/상세/Enter 닫기/focus 복귀/검색 초기화/console[] 확인. 소스72개 기대 경로 대조에서 이동26개 외 로직 변경 없음.
+
+## 빈 결과 Guard
+- 요청: === 0 관련 엣지 케이스를 내부에서 처리하고 return children 하는 컴포넌트로 래핑.
+- 결과: CandidateEmptyGuard로 빈 목록/검색 결과 안내와 초기화를 캡슐화.
+- 검증: lint/typecheck/app14 tests/build 및 브라우저 검색 0명→초기화250명 복원 통과.
+- 상세: docs/records/candidate-empty-guard.md.

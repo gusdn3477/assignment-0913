@@ -1,6 +1,8 @@
 # 세션 인계 / 현재 상태
 
 ## 현재 결론
+
+빈 결과 Guard 완료: `codex/candidate-empty-guard` 기능 `3f068eb` main 통합. CandidateEmptyGuard가 빈 데이터/검색 결과 없음/초기화를 처리하고 정상 결과에 children 반환. lint/typecheck/app14 tests 및 통합 production build 통과. 브라우저 250명→0명 안내(보드 미렌더)→초기화 250명 복원, console error/warn 없음. 미해결 이슈 없음. 기록: docs/records/candidate-empty-guard.md.
 API·지원자 컴포넌트 배치 정리 완료: 기능 `6986331`, main 통합 `b69e741`, `codex/candidate-layout` / `.worktrees/candidate-layout`. API는 `src/api/candidate`, UI는 `src/components/candidate/{app,board,card,detail,...}`, 가상 목록은 `board/virtual-list`. 전체109 tests/lint/typecheck/format 및 main production build 통과. 브라우저 로딩→250명/검색/상세/닫기/focus/console[] 확인. README 구조 갱신, 미해결 이슈 없음. 상세: `docs/records/candidate-layout-integration.md`.
 
 에러 코드·조회 안내 상수화 완료: 기능 `cce063b`, main 통합 `c47a148`, 브랜치 `codex/candidate-error-constants`, 워크트리 `.worktrees/candidate-error-constants`. 기존 API17/app14 총31 tests, lint/typecheck/format 및 main production build 통과. 브라우저 기본 오류 안내→재시도→250명 복구/포커스/console[] 확인. 코드·메시지·fallback 동작 유지, 미해결 이슈 없음. 상세: `docs/records/candidate-error-constants-integration.md`.

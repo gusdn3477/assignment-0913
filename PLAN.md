@@ -55,3 +55,6 @@ Undo, 가상화, DnD, 로그인, 지원자 생성/삭제, 실제 백엔드, 다�
 
 ## 사용자 정정: SearchBar 기본 조합
 SearchBar가 Input left 돋보기와 right CloseButton 및 지우기/focus 동작을 소유하고 사용처는 value/onValueChange와 도메인 설정만 전달하도록 수정합니다.
+
+## 후속 승인: 빈 결과 Guard
+사용자 요청에 따라 빈 지원자 목록/검색 결과 없음 분기와 초기화를 CandidateEmptyGuard 내부로 이동하고 정상 결과에는 children을 반환합니다.
