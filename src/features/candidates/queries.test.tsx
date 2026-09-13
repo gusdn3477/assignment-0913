@@ -327,3 +327,202 @@ describe("card-scoped optimistic mutations", () => {
     expect(candidateApi.updateCandidateStage).not.toHaveBeenCalled();
   });
 });
+
+describe("last saved move undo", () => {
+  function savedMoves(context: ReturnType<typeof setup>) {
+    vi.mocked(candidateApi.updateCandidateStage).mockImplementation(
+      async ({ id, stage }) => ({
+        ...context.data().find((candidate) => candidate.id === id)!,
+        stage,
+      }),
+    );
+  }
+
+  it("records only success, replaces the last target, consumes undo, and allows no redo", async () => {
+    const context = setup();
+    savedMoves(context);
+    const hook = renderHook(useMoveCandidate, { wrapper: context.wrapper });
+    const id = context.candidates[0].id;
+    expect(hook.result.current.undoHistory.size).toBe(0);
+    act(() => hook.result.current.move(id, "interview"));
+    expect(hook.result.current.undoHistory.size).toBe(0);
+    await waitFor(() => expect(hook.result.current.pendingIds.size).toBe(0));
+    expect(hook.result.current.undoHistory.get(id)).toEqual({
+      previousStage: "review",
+      savedStage: "interview",
+    });
+    const firstHistory = hook.result.current.undoHistory;
+    act(() => hook.result.current.move(id, "offer"));
+    await waitFor(() => expect(hook.result.current.pendingIds.size).toBe(0));
+    expect(hook.result.current.undoHistory.get(id)).toEqual({
+      previousStage: "interview",
+      savedStage: "offer",
+    });
+    expect(firstHistory.get(id)?.previousStage).toBe("review");
+    act(() => expect(hook.result.current.undo(id)).toBe(true));
+    await waitFor(() => expect(hook.result.current.pendingIds.size).toBe(0));
+    expect(context.data()[0].stage).toBe("interview");
+    expect(hook.result.current.undoHistory.has(id)).toBe(false);
+    act(() => expect(hook.result.current.undo(id)).toBe(false));
+    expect(candidateApi.updateCandidateStage).toHaveBeenCalledTimes(3);
+    expect(candidateApi.updateCandidateStage).toHaveBeenLastCalledWith({
+      id,
+      stage: "interview",
+    });
+  });
+
+  it("preserves history on failed moves and failed undo, rolling back before retry", async () => {
+    const context = setup();
+    savedMoves(context);
+    const hook = renderHook(useMoveCandidate, { wrapper: context.wrapper });
+    const id = context.candidates[0].id;
+    act(() => hook.result.current.move(id, "interview"));
+    await waitFor(() => expect(hook.result.current.pendingIds.size).toBe(0));
+    const history = hook.result.current.undoHistory;
+    vi.mocked(candidateApi.updateCandidateStage).mockRejectedValueOnce(
+      Error("failed move"),
+    );
+    act(() => hook.result.current.move(id, "hired"));
+    await waitFor(() => expect(hook.result.current.pendingIds.size).toBe(0));
+    expect(context.data()[0].stage).toBe("interview");
+    expect(hook.result.current.undoHistory).toBe(history);
+    const undoRequest = deferred<Candidate>();
+    vi.mocked(candidateApi.updateCandidateStage).mockReturnValueOnce(
+      undoRequest.promise,
+    );
+    act(() => hook.result.current.undo(id));
+    await waitFor(() => expect(context.data()[0].stage).toBe("review"));
+    expect(hook.result.current.undoHistory).toBe(history);
+    await act(async () => undoRequest.reject(Error("failed undo")));
+    await waitFor(() => expect(hook.result.current.pendingIds.size).toBe(0));
+    expect(context.data()[0].stage).toBe("interview");
+    expect(hook.result.current.undoHistory).toBe(history);
+    expect(toast.error).toHaveBeenLastCalledWith(
+      "되돌리기를 저장하지 못했습니다. 다시 시도해 주세요.",
+    );
+    act(() => hook.result.current.undo(id));
+    await waitFor(() => expect(hook.result.current.pendingIds.size).toBe(0));
+    expect(context.data()[0].stage).toBe("review");
+    expect(hook.result.current.undoHistory.size).toBe(0);
+  });
+
+  it.each(["undo-first", "move-first"])(
+    "shares same-card exclusion across hook instances (%s)",
+    async (order) => {
+      const context = setup();
+      savedMoves(context);
+      const first = renderHook(useMoveCandidate, { wrapper: context.wrapper });
+      const second = renderHook(useMoveCandidate, { wrapper: context.wrapper });
+      const id = context.candidates[0].id;
+      act(() => first.result.current.move(id, "interview"));
+      await waitFor(() => expect(first.result.current.pendingIds.size).toBe(0));
+      const request = deferred<Candidate>();
+      vi.mocked(candidateApi.updateCandidateStage).mockReturnValue(
+        request.promise,
+      );
+      act(() => {
+        if (order === "undo-first") {
+          expect(first.result.current.undo(id)).toBe(true);
+          second.result.current.move(id, "hired");
+        } else {
+          first.result.current.move(id, "hired");
+          expect(second.result.current.undo(id)).toBe(false);
+        }
+        expect(second.result.current.undo(id)).toBe(false);
+      });
+      await waitFor(() =>
+        expect(candidateApi.updateCandidateStage).toHaveBeenCalledTimes(2),
+      );
+      await act(async () =>
+        request.resolve({
+          ...context.candidates[0],
+          stage: order === "undo-first" ? "review" : "hired",
+        }),
+      );
+      await waitFor(() =>
+        expect(second.result.current.pendingIds.size).toBe(0),
+      );
+      expect(second.result.current.undoHistory.get(id)?.previousStage).toBe(
+        order === "undo-first" ? undefined : "interview",
+      );
+    },
+  );
+
+  it.each(["success-first", "failure-first"])(
+    "isolates concurrent undo histories and rollback (%s)",
+    async (order) => {
+      const context = setup();
+      savedMoves(context);
+      const hook = renderHook(useMoveCandidate, { wrapper: context.wrapper });
+      const [a, b] = context.candidates;
+      act(() => {
+        hook.result.current.move(a.id, "hired");
+        hook.result.current.move(b.id, "hired");
+      });
+      await waitFor(() => expect(hook.result.current.pendingIds.size).toBe(0));
+      const requestA = deferred<Candidate>();
+      const requestB = deferred<Candidate>();
+      vi.mocked(candidateApi.updateCandidateStage).mockImplementation(
+        ({ id }) => (id === a.id ? requestA.promise : requestB.promise),
+      );
+      act(() => {
+        hook.result.current.undo(a.id);
+        hook.result.current.undo(b.id);
+      });
+      await waitFor(() =>
+        expect(candidateApi.updateCandidateStage).toHaveBeenCalledTimes(4),
+      );
+      if (order === "success-first") {
+        await act(async () => requestB.resolve(b));
+        await act(async () => requestA.reject(Error("A undo failed")));
+      } else {
+        await act(async () => requestA.reject(Error("A undo failed")));
+        expect(hook.result.current.pendingIds.has(b.id)).toBe(true);
+        await act(async () => requestB.resolve(b));
+      }
+      await waitFor(() => expect(hook.result.current.pendingIds.size).toBe(0));
+      expect(context.data()[0].stage).toBe("hired");
+      expect(context.data()[1]).toEqual(b);
+      expect(hook.result.current.undoHistory.has(a.id)).toBe(true);
+      expect(hook.result.current.undoHistory.has(b.id)).toBe(false);
+    },
+  );
+
+  it.each(["different-stage", "removed"])(
+    "rejects stale history at action time (%s)",
+    async (change) => {
+      const context = setup();
+      savedMoves(context);
+      const hook = renderHook(useMoveCandidate, { wrapper: context.wrapper });
+      const id = context.candidates[0].id;
+      act(() => hook.result.current.move(id, "interview"));
+      await waitFor(() => expect(hook.result.current.pendingIds.size).toBe(0));
+      act(() => {
+        context.client.setQueryData(
+          CANDIDATES_QUERY_KEY,
+          change === "removed"
+            ? []
+            : [{ ...context.candidates[0], stage: "offer" }],
+        );
+        expect(hook.result.current.undo(id)).toBe(false);
+      });
+      expect(candidateApi.updateCandidateStage).toHaveBeenCalledTimes(1);
+      expect(hook.result.current.undoHistory.size).toBe(0);
+    },
+  );
+
+  it("keeps history across remounts but isolates a new client session", async () => {
+    const context = setup();
+    savedMoves(context);
+    const first = renderHook(useMoveCandidate, { wrapper: context.wrapper });
+    const id = context.candidates[0].id;
+    act(() => first.result.current.move(id, "interview"));
+    first.unmount();
+    const second = renderHook(useMoveCandidate, { wrapper: context.wrapper });
+    await waitFor(() => expect(second.result.current.pendingIds.size).toBe(0));
+    expect(second.result.current.undoHistory.has(id)).toBe(true);
+    const fresh = setup();
+    const third = renderHook(useMoveCandidate, { wrapper: fresh.wrapper });
+    expect(third.result.current.undoHistory.size).toBe(0);
+  });
+});

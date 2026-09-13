@@ -378,3 +378,72 @@ describe("CandidatesApp acceptance", () => {
     expect(refreshButton).toBeEnabled();
   });
 });
+
+describe("saved stage undo menu", () => {
+  it("supports keyboard undo, scoped pending, failure retry, successful consumption and focus", async () => {
+    const user = userEvent.setup();
+    const saved = { ...candidates[0], stage: "interview" as const };
+    const failedUndo = deferred<Candidate>();
+    const successfulUndo = deferred<Candidate>();
+    vi.mocked(candidateApi.updateCandidateStage)
+      .mockResolvedValueOnce(saved)
+      .mockReturnValueOnce(failedUndo.promise)
+      .mockReturnValueOnce(successfulUndo.promise);
+    mount();
+    const trigger = () =>
+      screen.getByRole("button", { name: "김하늘 단계 변경" });
+    await user.click(
+      await screen.findByRole("button", { name: "김하늘 단계 변경" }),
+    );
+    expect(
+      screen.queryByRole("menuitem", { name: /되돌리기/ }),
+    ).not.toBeInTheDocument();
+    await user.click(screen.getByRole("menuitem", { name: "면접" }));
+    await screen.findByRole("region", { name: "면접 2명" });
+    await screen.findByRole("button", { name: "김하늘 단계 변경" });
+    act(() => trigger().focus());
+    await user.keyboard("{Enter}{End}");
+    expect(
+      screen.getByRole("menuitem", { name: "서류검토로 되돌리기" }),
+    ).toHaveFocus();
+    await user.keyboard("{Enter}");
+    await screen.findByRole("region", { name: "서류검토 1명" });
+    expect(
+      screen.getByRole("button", { name: "김하늘 단계 변경 (저장 중)" }),
+    ).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: "김여름 단계 변경" }),
+    ).toBeEnabled();
+    expect(detail("김하늘")).toHaveFocus();
+    await act(async () => failedUndo.reject(Error("private internal failure")));
+    await screen.findByRole("button", { name: "김하늘 단계 변경" });
+    expect(
+      screen.getByRole("region", { name: "면접 2명" }),
+    ).toBeInTheDocument();
+    expect(detail("김하늘")).toHaveFocus();
+    expect(
+      await screen.findByText(
+        "되돌리기를 저장하지 못했습니다. 다시 시도해 주세요.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("private internal failure"),
+    ).not.toBeInTheDocument();
+    await user.click(trigger());
+    await user.click(
+      screen.getByRole("menuitem", { name: "서류검토로 되돌리기" }),
+    );
+    await act(async () => successfulUndo.resolve(candidates[0]));
+    await screen.findByRole("button", { name: "김하늘 단계 변경" });
+    expect(detail("김하늘")).toHaveFocus();
+    expect(candidateApi.updateCandidateStage).toHaveBeenLastCalledWith({
+      id: "a",
+      stage: "review",
+    });
+    await user.click(trigger());
+    expect(
+      screen.queryByRole("menuitem", { name: /되돌리기/ }),
+    ).not.toBeInTheDocument();
+    await user.keyboard("{Escape}");
+  });
+});

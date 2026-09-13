@@ -191,3 +191,44 @@ function DetailHarness() {
     </>
   );
 }
+
+describe("undo in virtualized columns", () => {
+  it("restores an offscreen undo target and hides mismatched history", async () => {
+    const target = { ...candidates[500], stage: "interview" as const };
+    const initial = candidates.map((candidate) =>
+      candidate.id === target.id ? target : candidate,
+    );
+    const onUndo = vi.fn(() => true);
+    const undoHistory = new Map([
+      [
+        target.id,
+        { previousStage: "review" as const, savedStage: "interview" as const },
+      ],
+    ]);
+    const { rerender } = render(
+      <CandidateBoard
+        {...props}
+        candidates={initial}
+        onUndo={onUndo}
+        undoHistory={undoHistory}
+      />,
+    );
+    await userEvent.click(
+      screen.getByRole("button", { name: "지원자500 단계 변경" }),
+    );
+    await userEvent.keyboard("{End}{Enter}");
+    expect(onUndo).toHaveBeenCalledWith(target.id);
+    rerender(
+      <CandidateBoard {...props} onUndo={onUndo} undoHistory={undoHistory} />,
+    );
+    expect(detail(500)).toHaveFocus();
+    expect(screen.getAllByRole("listitem").length).toBeLessThan(15);
+    await userEvent.click(
+      screen.getByRole("button", { name: "지원자500 단계 변경" }),
+    );
+    expect(
+      screen.queryByRole("menuitem", { name: /되돌리기/ }),
+    ).not.toBeInTheDocument();
+    await userEvent.keyboard("{Escape}");
+  });
+});

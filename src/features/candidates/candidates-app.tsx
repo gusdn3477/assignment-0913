@@ -36,7 +36,7 @@ const DeferredBoard = memo(CandidateBoard);
 
 function BoardContent() {
   const query = useCandidates();
-  const { move, pendingIds } = useMoveCandidate();
+  const { move, pendingIds, undo, undoHistory } = useMoveCandidate();
   const search = useCandidateUI((state) => state.search);
   const job = useCandidateUI((state) => state.job);
   const selectedId = useCandidateUI((state) => state.selectedId);
@@ -177,7 +177,7 @@ function BoardContent() {
           </div>
           <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <CircleHelp className="size-3.5" aria-hidden />
-            카드 메뉴에서 단계를 이동할 수 있어요
+            카드 메뉴에서 단계 이동과 되돌리기를 할 수 있어요
           </span>
         </div>
         {showInitialError ? (
@@ -236,6 +236,8 @@ function BoardContent() {
                 candidates={filtered}
                 pendingIds={pendingIds}
                 onMove={move}
+                onUndo={undo}
+                undoHistory={undoHistory}
                 onOpenDetail={onOpenDetail}
               />
             </div>
