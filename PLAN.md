@@ -43,3 +43,6 @@ Undo, 가상화, DnD, 로그인, 지원자 생성/삭제, 실제 백엔드, 다�
 
 ## 후속 승인: 검색 조합과 보드 공간 (2026-09-13)
 사용자 요청에 따라 Input 좌우 슬롯과 실제 SearchBar 조합, ReloadButton 역할 분리, 보드 높이 확대 및 목록 끝 카드 가시성을 독립 search-board-polish 세션에서 구현합니다. 기존 native input/포커스/가상화/저장 계약을 유지합니다.
+
+## 후속 승인: DnD 라이브러리와 선언적 조회 경계 (2026-09-13)
+사용자 요청에 따라 DnD 직접 구현을 @dnd-kit 기반으로 단순화하고, useQuery 최초 로딩·오류·재시도 처리를 Guard/Wrapper로 캡슐화하며 상세 닫기 호출을 기본값 조합으로 정리합니다. 독립 dnd-kit-migration/query-guard-close 세션에서 구현 후 통합합니다. 커밋 접두사/scope는 영어, 설명은 한글을 사용합니다.
