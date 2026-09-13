@@ -323,3 +323,89 @@ Integration explicitly requested retaining the movement regression rather than h
 ## 정리 / 한계
 검색 조건을 초기화하고 viewport override를 해제했습니다. 최서연의 면접 이동은 해당 브라우저 origin의 데모 저장소에 남아 있습니다. 다른 브라우저/포트의 초기 데이터에는 영향을 주지 않습니다.
 전체 빈 데이터·손상 데이터는 자동 테스트와 README 재현 절차로 검증합니다. 이 기록은 수동 UI 관찰이며 성능 수치 벤치마크를 의미하지 않습니다.
+
+
+---
+
+## 후속 승인 기능: concurrent-feedback (2026-09-13)
+
+# concurrent-feedback 실행 기록
+
+## 실제 요청과 배정
+사용자: `useTransition. useDeffredValue 같은 동시성 기능 적극 활용도 좀 넣고 에러 처리나 로딩 처리도 좀 깔끔하게`, 이어서 `작업 시작`.
+
+통합 에이전트 배정: `Implement bounded feature in /Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/concurrent-feedback on codex/concurrent-feedback.` 검색/직무의 안정된 값을 지연하고 메모 경계를 두되 mutation 데이터/잠금은 즉시 반영한다. 명시적 조회 재시도에는 React async Action을 적용한다. 최초 skeleton/안전한 오류 복구, 배경 갱신 중 데이터 유지, 저장 중 갱신 제외, 관련 회귀 검증을 소유한다.
+
+## 읽은 자료
+- 주 체크아웃의 최신 AGENTS.md 및 이 워크트리의 PLAN.md, STATUS.md, DECISIONS.md, docs/tasks/concurrent-feedback.md.
+- frontend-fundamentals readability SKILL.md: 오류/갱신 UI를 별도 작은 컴포넌트로 분리하고 복합 상태에 이름 부여.
+- 설치된 Next `node_modules/next/dist/docs/01-app/01-getting-started/10-error-handling.md`: 예상 가능한 요청 실패는 명시적 UI로 처리, 렌더 예외 경계는 기존 경계 유지.
+- 통합 에이전트가 React 공식 useTransition/useDeferredValue 문서 확인. 실제 공유 설치 React 19.3.0, Next 16.3.5, Query 5.102.8.
+
+## 결과와 결정
+- 검색/직무 객체를 useMemo + useDeferredValue로 처리. 입력은 Zustand에 즉시 반영. 필터 개수/빈 상태/보드는 동일한 지연 필터 결과를 사용. CandidateBoard에 memo 경계를 두어 긴 보드가 긴급 입력에 따라 불필요하게 재렌더하지 않음.
+- 카드 데이터/잠금은 지연하지 않음. 서로 다른 카드 병렬 저장, 같은 카드 요청 제외 및 카드별 롤백은 기존 계약 유지.
+- 명시적 목록 retry/refresh를 useTransition async Action으로 추적. Query의 외부 상태 변경을 비차단 상태로 취급하지 않으며 ref 잠금을 별도로 사용. 저장 중 목록 갱신을 막고 기존 mutation의 query 취소를 유지.
+- 첫 로딩 skeleton을 실제 보드의 5열/최소 너비와 일치. 최초 실패는 retry 버튼을 로딩 중에도 유지. 재시도 성공 시 없어진 버튼의 포커스를 검색창으로 복구하되 사용자가 다른 요소에 둔 포커스를 훔치지 않음.
+- 배경 갱신 실패는 기존 카드/검색/상세를 유지하며 작은 오류와 재시도 제공. MockApiError의 storage/corrupt-storage 코드에 맞는 안전한 복구 안내, 임의 내부 error.message 노출 없음.
+- 검색 개수는 aria-live=off인 명명된 상태로 두어 키 입력마다 읽지 않음. 지연 결과의 aria-busy/시각 피드백 제공. 조회 pending은 별도의 작은 live status.
+- 공통 Input/Button은 기존 native props 확장/전달 구현을 유지; 추가 의존성 없음.
+
+## 검토와 수정
+- 통합 리뷰: paragraph의 aria-label 대신 role=status + aria-live=off를 사용해 유효한 의미론 유지. 적용.
+- 통합 리뷰: 최초 retry 성공 후 포커스 복구, 반복 실패, 저장/목록 갱신 경쟁, 안전한 저장소 오류 분류를 확인. 구현 및 테스트 적용.
+- 최초 실행 5개 기존 app 테스트 통과 후 회귀 항목을 추가. 테스트를 생략하거나 timeout을 늘리지 않음.
+
+## 실제 명령 / 결과
+- `pnpm exec prettier --write ...`: symlink node_modules에서 pnpm 자동 install 시도 후 `ERR_PNPM_ABORTED_REMOVE_MODULES_DIR_NO_TTY` 발생. 공유 의존성을 변경하지 않고 설치된 바이너리로 실행.
+- `node_modules/.bin/prettier --write` (소유 TSX 4개): 통과.
+- `node_modules/.bin/vitest run src/features/candidates/candidates-app.test.tsx`: 11/11 통과.
+- `node_modules/.bin/eslint .`: 통과.
+- `node_modules/.bin/tsc --noEmit`: 통과.
+- `node_modules/.bin/vitest run`: 5 files, 56/56 통과. 기존 50개 + 새 6개 (it.each 포함).
+- `node_modules/.bin/prettier --check` (소유 TSX 4개): 통과.
+- `git diff --check`: 통과.
+
+## 인계 / 남은 일
+기능 코드와 자동 검증 완료. 통합 에이전트가 main 통합 후 production build와 실제 브라우저 확인, STATUS/PROMPTS를 갱신한다. 알려진 기능 미해결 없음. 강제 지연/성능 수치 테스트 대신 실제 비동기 요청과 최종 UI 일관성 검증을 사용했다. 검색은 250명 범위이며 가상화는 원래 제외 범위다.
+
+---
+
+# 동시 렌더링·상태 피드백 통합 기록
+
+## 실제 사용자 지시
+> AGENTS.md와 STATUS.md를 읽고 현재 완료 상태를 파악해줘.
+> 추가로 하나만 더. 공통 컴포넌트(input, button 등은 기본 element를 확장시킨 방식으로 구현하자)
+> 추가로 동시성 기능이 필요한 곳에 적극적으로 올바르게 활용
+
+> useTransition. useDeffredValue 같은 동시성 기능 적극 활용도 좀 넣고
+> 에러 처리나 로딩 처리도 좀 깔끔하게
+
+> 작업 시작
+
+## 초기 확인과 구현 범위
+- 기존 `main` HEAD `0cad6b2`. 첫 상태 확인 때 작업 트리는 깨끗했고, 이후 AGENTS/DECISIONS/STATUS에 사용자 요청을 기록했습니다.
+- Input/Button은 native element props를 확장하고 props/ref를 전달하는 구현입니다.
+- 검색은 useMemo만 사용하고 조회 오류가 기존 데이터의 보드까지 가리는 분기였습니다.
+- AGENTS의 기능당 독립 세션·워크트리 규칙에 따라 `codex/concurrent-feedback`을 만들고 기능 세션에 구현·테스트·기능 기록을 맡겼습니다. 통합은 main에서 문서·리뷰·전체 검증을 맡습니다.
+- readability 스킬을 읽고 로딩·오류·결과 분기를 분리하도록 적용했습니다. 설치된 Next use-client 가이드를 확인했습니다.
+- React 공식 [useTransition](https://react.dev/reference/react/useTransition), [useDeferredValue](https://react.dev/reference/react/useDeferredValue)를 확인했습니다. 비동기 Action의 pending과 결과 렌더링 지연을 구분하며 외부 store 변경이 자동으로 transition이 된다고 가정하지 않습니다.
+
+## 검증 진행
+- 구현 전 문서 변경 `git diff --check`: 통과.
+- 기능 `4ceb4f7`을 main에 `b02690c`로 병합. 문서 외 실행 코드에 통합 추가 수정 없음.
+- main `pnpm format:check && pnpm verify`: format/lint/strict typecheck/56 tests/webpack production build 모두 통과. 테스트 5 files, 56 passed, 12.90s. 성능 벤치마크가 아닌 해당 환경의 테스트 실행 시간입니다.
+- 최초 `pnpm start --port 3101`은 sandbox listen EPERM으로 실패. 자동 승인 검토를 거친 `pnpm start --hostname 127.0.0.1 --port 3101` 실행 성공. 첫 연결 실패 탭 대신 새 탭에서 준비된 서버를 확인했습니다.
+
+## 실제 production 브라우저 확인
+2026-09-13, Codex in-app browser, `http://127.0.0.1:3101`.
+- 초기 skeleton 이후 250명 표시. `김서준` 검색 1명, 빈 검색 결과와 초기화 후 250명 복원.
+- 새로고침 직후 pending 안내와 기존 카드가 동시에 보임. 추가 새로고침 두 번째 시도에서 기본 확률 실패 재현, 오류 안내와 250개 카드 유지. 다시 불러오기 성공 후 정상 버튼과 250개 카드 확인.
+- 상세 버튼 Enter로 Sheet 열기, Escape 후 해당 상세 버튼의 aria-label을 가진 요소로 포커스 복귀 확인.
+- 390×844에서 document 폭 390, main 폭 390, toolbar/board 폭 350 확인. 기본 viewport로 복원. 데스크톱 screenshot 시각 확인.
+- 페이지 새로고침 두 번째에서 초기 조회 실패 재현. Enter 재시도 직후 pending/버튼 비활성 확인. 첫 retry도 기본 확률 실패여서 searchbox 대기 timeout이 발생했으나 화면을 재확인해 retry 가능 상태임을 확인. 두 번째 retry 성공 후 activeElement가 INPUT[type=search]인 것을 확인.
+- 필터 초기화 후 `전체 250명 중 250명`. 앱 error/warn logs `[]`.
+- QA 탭을 닫고 임시 production 서버를 Ctrl-C로 종료했습니다. 이전 연결 실패 임시 탭의 닫기 호출은 브라우저 data URL 정책으로 거절되어 자동 정리에 맡겼습니다. 사용자 기존 dev 서버는 종료하지 않았습니다.
+
+## 결론과 한계
+승인된 추가 기능과 검증 완료. 알려진 기능 이슈 없음. 이전 기능의 카드별 rollback/같은 카드 잠금/다른 카드 병렬 저장은 전체 자동 테스트에서 재검증했습니다. React 지연 렌더링의 시간·성능 향상 수치를 측정한 것은 아니며, 250명 동작 및 입력/결과 일관성을 확인했습니다. 다중 탭·가상화 등 기존 제외 범위는 유지합니다.
