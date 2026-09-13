@@ -3,7 +3,7 @@
 ## 요청 / 소유권
 
 선택사항 2~4 및 기능별 skeleton: 컴포넌트별 폴더, constants/types/utils/hooks/api/query keys/options 분리와 합리적인 입력 훅 추상화.
-새 `.worktrees/candidate-structure`, `codex/candidate-structure`에서 `src/features/candidates/**`, `src/app/page.tsx`의 import, 이 task와 `docs/records/candidate-structure.md`만 소유합니다. 공통 src/components 및 package/상위 문서는 수정하지 않습니다.
+새 `[기능 작업 공간]`, `[기능 브랜치]`에서 `src/features/candidates/**`, `src/app/page.tsx`의 import, 이 task와 `docs/records/candidate-structure.md`만 소유합니다. 공통 src/components 및 package/상위 문서는 수정하지 않습니다.
 
 ## 계약 / 완료 기준
 
@@ -22,4 +22,4 @@
 - useSuspenseQuery는 공식 cancellation 미지원 및 browser-only 조회/현재 오류 복구 계약 때문에 미도입. 근거: docs/records/candidate-structure.md.
 - 검증: 7 files 87 tests, lint, typecheck 통과. 최종 format:check/lint 재확인 통과.
 - 통합: `components/workspace-header/workspace-header.tsx`, toolbar, detail, load-feedback, app에 공통 UI 연결. `hooks/use-candidate-search.ts`가 value/setValue/onChange/clear 제공. toolbar에서 clear를 추가로 받아 clearButton onClear에 연결하면 됨. 직무 유지/clear focus는 통합 UI 테스트 대상.
-- 현재 위치 `.worktrees/candidate-structure`, branch `codex/candidate-structure`. 알려진 결함 없음. build/browser는 통합 담당.
+- 현재 위치 `[기능 작업 공간]`, branch `[기능 브랜치]`. 알려진 결함 없음. build/browser는 통합 담당.

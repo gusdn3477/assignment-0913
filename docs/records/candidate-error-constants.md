@@ -1,7 +1,7 @@
 # 조회 에러 상수화 기록
 
 ## 실제 요청과 범위
-사용자는 기존 loadErrorMessage(error: Error | null)의 corrupt-storage/storage 분기와 한국어 메시지를 제시하고 “에러코드 에러메시지 상수화”를 요청했습니다. 통합 담당은 독립 codex/candidate-error-constants 워크트리에 에러 상수, MockApiError 타입, API/검증 코드 생성처, 조회 feedback 소비처를 배정했습니다.
+사용자는 기존 loadErrorMessage(error: Error | null)의 corrupt-storage/storage 분기와 한국어 메시지를 제시하고 “에러코드 에러메시지 상수화”를 요청했습니다. 통합 담당은 독립 [기능 브랜치] 워크트리에 에러 상수, MockApiError 타입, API/검증 코드 생성처, 조회 feedback 소비처를 배정했습니다.
 
 ## 구현 결과와 결정
 - constants/candidate-errors.ts에 MOCK_API_ERROR_CODES를 as const로 정의하고 MockApiErrorCode를 value union으로 유도했습니다. 중복 문자열 union을 제거했습니다.
@@ -19,6 +19,6 @@
 - 통합 담당 리뷰: partial typed map/fallback, 코드 union 유도, 내부 진단 유지 적절함.
 
 ## 인계
-워크트리: /Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/candidate-error-constants
-브랜치: codex/candidate-error-constants
+워크트리: [기능 작업 공간]
+브랜치: [기능 브랜치]
 production build/browser는 통합 담당 소유입니다. 알려진 미해결 사항 없음.

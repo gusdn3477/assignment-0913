@@ -3,7 +3,7 @@
 ## 실제 요청
 사용자: “문서 보고 선택 작업도 이어서 진행(가상화 등)”
 
-통합 배정: “Implement assigned virtualization feature in /Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/virtualization branch codex/virtualization only. Read AGENTS PLAN STATUS DECISIONS docs/tasks/virtualization.md first. Task file created uncommitted for you to own. Follow task requirements especially keyboard reachability, focus on offscreen moves/rollback/detail, filter scroll reset and 1000 items. Request dependencies from integration; do not change package/lock. Fresh independent feature session required by AGENTS. Implement and test, record actual prompt/commands and handoff, commit. I handle main scope docs and production/browser integration. No subdelegation needed.”
+통합 배정: “Implement assigned virtualization feature in [기능 작업 공간] branch [기능 브랜치] only. Read AGENTS PLAN STATUS DECISIONS docs/tasks/virtualization.md first. Task file created uncommitted for you to own. Follow task requirements especially keyboard reachability, focus on offscreen moves/rollback/detail, filter scroll reset and 1000 items. Request dependencies from integration; do not change package/lock. Fresh independent feature session required by AGENTS. Implement and test, record actual prompt/commands and handoff, commit. I handle main scope docs and production/browser integration. No subdelegation needed.”
 
 ## 결과 / 선택
 - 컬럼마다 TanStack Virtual `useVirtualizer`, stable candidate key, 실제 li 높이 측정, overscan 2. 별도 scroll 계산기를 자체 작성하지 않았습니다. 의존성 `@tanstack/react-virtual 3.14.12`는 통합 담당이 설치했습니다.
@@ -20,7 +20,7 @@
 - 테스트는 라이브러리를 mock하지 않습니다. JSDOM의 실제 layout 부재를 보완하는 candidate-column/row 한정 geometry와 browser처럼 비동기 scroll event를 테스트 setup에 추가했습니다(통합 승인). 실제 픽셀 배치/viewport 스크롤은 integration browser 검증 대상입니다.
 
 ## 실행 / 실제 결과
-작업 경로: `/Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/virtualization`, 브랜치 `codex/virtualization`.
+작업 경로: `[기능 작업 공간]`, 브랜치 `[기능 브랜치]`.
 
 - 일반 `pnpm exec prettier ...` 최초 실행: 공유 node_modules와 worktree package manifest 차이로 pnpm의 자동 install이 `ERR_PNPM_ABORTED_REMOVE_MODULES_DIR_NO_TTY` 실패. 공유 디렉터리를 재설치하지 않고 아래 명령에 `--config.verify-deps-before-run=false`를 사용했습니다.
 - 최초 typecheck: range implicit any 수정. geometry mock scrollTo optional options type 수정.

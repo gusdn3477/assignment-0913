@@ -2,7 +2,7 @@
 
 ## 요청 / 소유권
 
-가상 지원자 목록 컴포넌트에 직접 작성된 스크롤·포커스 복원 effect를 의도가 드러나는 전용 훅으로 분리한다. `codex/candidate-scroll-restoration` 워크트리에서 가상 목록, 인접 훅, 관련 테스트와 작업 기록을 소유한다.
+가상 지원자 목록 컴포넌트에 직접 작성된 스크롤·포커스 복원 effect를 의도가 드러나는 전용 훅으로 분리한다. `[기능 브랜치]` 워크트리에서 가상 목록, 인접 훅, 관련 테스트와 작업 기록을 소유한다.
 
 ## 계약
 
@@ -21,4 +21,4 @@
 - `VirtualCandidateList`의 스크롤 초기화와 가상 카드 포커스 복원 effect를 인접한 `useCandidateScrollRestoration` 훅으로 분리했다.
 - 이미 처리한 요청 차단, `scrollToIndex` 후 control focus 및 근거리 보정 스크롤 동작을 유지했다.
 - 대상 Prettier/ESLint, strict typecheck와 가상화 7 tests를 통과했다.
-- 브랜치 `codex/candidate-scroll-restoration`, 워크트리 `.worktrees/candidate-scroll-restoration`.
+- 브랜치 `[기능 브랜치]`, 워크트리 `[기능 작업 공간]`.

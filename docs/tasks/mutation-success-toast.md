@@ -2,7 +2,7 @@
 
 ## 요청 / 소유권
 
-단계 이동 mutation과 단계 되돌리기 mutation이 실제 저장에 성공했을 때 성공 토스트를 표시한다. `codex/mutation-success-toast` 워크트리에서 mutation hook, 관련 hook test 및 작업 기록을 소유한다.
+단계 이동 mutation과 단계 되돌리기 mutation이 실제 저장에 성공했을 때 성공 토스트를 표시한다. `[기능 브랜치]` 워크트리에서 mutation hook, 관련 hook test 및 작업 기록을 소유한다.
 
 ## 계약
 
@@ -20,4 +20,4 @@
 - API 성공 확정 뒤 일반 이동/Undo 구분 성공 토스트와 `지원자 이름 · 확정 단계` 설명을 추가했다.
 - 대상 format/lint/strict typecheck, hook 22 tests와 CandidatesApp 14 tests를 통과했다.
 - 실제 브라우저에서 일반 이동 성공 `단계 이동을 저장했습니다. / 최서연 · 면접`, Undo 성공 `단계 되돌리기를 저장했습니다. / 최서연 · 서류검토`를 확인하고 원래 단계로 복구했다. console error/warn 없음.
-- 브랜치 `codex/mutation-success-toast`, 워크트리 `.worktrees/mutation-success-toast`. 통합 담당은 main 전체 verify와 문서 갱신을 이어서 수행한다.
+- 브랜치 `[기능 브랜치]`, 워크트리 `[기능 작업 공간]`. 통합 담당은 main 전체 verify와 문서 갱신을 이어서 수행한다.

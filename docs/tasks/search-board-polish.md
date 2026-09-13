@@ -2,7 +2,7 @@
 
 ## 요청 / 소유권
 사용자: 카드 영역 height가 좁고 하단 잘림, Input left/right에 돋보기/clearButton을 넣어 SearchBar처럼 확장 가능하게 구성, ResetButton/ReloadButton 추상화.
-새 codex/search-board-polish, .worktrees/search-board-polish 기능 세션이 src/**와 본 task/docs/records/search-board-polish.md를 소유합니다. 통합 담당은 상위 기록·설치·build/browser·main 병합을 담당합니다. 새 의존성 불필요.
+새 [기능 브랜치], [기능 작업 공간] 기능 세션이 src/**와 본 task/docs/records/search-board-polish.md를 소유합니다. 통합 담당은 상위 기록·설치·build/browser·main 병합을 담당합니다. 새 의존성 불필요.
 
 ## 계약
 - Input은 native input props/ref를 유지하고 left/right ReactNode 슬롯을 실제 지원. 좌우 슬롯 크기에 따라 입력과 겹치지 않는 레이아웃. 기존 clearButton API 호환하며 clear는 right 슬롯 조합을 활용; disabled/readOnly/빈 값/keyboard/native form 동작 보존.

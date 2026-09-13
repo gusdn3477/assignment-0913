@@ -17,7 +17,7 @@
 - git diff --check 통과, src clearButton 참조0건.
 
 ## 인계
-codex/input-primitive / .worktrees/input-primitive. 추가 의존성/미해결 기능 이슈 없음. 통합 build/browser 추가 기록 예정.
+[기능 브랜치] / [기능 작업 공간]. 추가 의존성/미해결 기능 이슈 없음. 통합 build/browser 추가 기록 예정.
 
 ## 통합 검증 완료
 기능25c2006 / main e91600f. 통합 next build --webpack 통과. localhost:3024 production 250명 로드→최서연 검색1명, input wrapper 좌돋보기/우버튼 DOM 확인. Tab/Enter 지우기로 입력 비움/X 숨김/input focus 복귀 확인. 즉시 스냅샷은 deferred 결과 업데이트 중이며 최종250명 복원은 자동 테스트로 검증. console error/warn []. 탭/서버 정리. README에서 예전 Input clear 계약과 폴더 위치 설명 수정. 미해결 이슈 없음.

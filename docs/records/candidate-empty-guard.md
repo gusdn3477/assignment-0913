@@ -16,7 +16,7 @@ CandidateEmptyGuard(total, filtered, children)를 추가. 결과가 있으면 ch
 - git diff --check: 통과.
 
 ## 인계
-독립 워크트리 .worktrees/candidate-empty-guard, 브랜치 codex/candidate-empty-guard. 추가 의존성 없음. 통합 production build/browser 검증 예정.
+독립 워크트리 [기능 작업 공간], 브랜치 [기능 브랜치]. 추가 의존성 없음. 통합 production build/browser 검증 예정.
 
 ## 통합 검증 완료
 기능 3f068eb를 main에 merge. 통합 후 node_modules/.bin/next build --webpack 성공. localhost:3021 production 브라우저에서 250명→없는 이름 검색→0명 및 안내만 표시(보드 없음)→검색 조건 초기화→250명과 보드 복원 확인. console error/warn []. 테스트 탭/서버 정리. 통합 이전 시작한 빌드는 검증으로 집계하지 않고 병합 후 다시 수행. 미해결 사항 없음.

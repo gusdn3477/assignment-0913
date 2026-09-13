@@ -1,7 +1,7 @@
 # explorer 작업 기록
 
 ## 실제 받은 지시
-> Implement ONE feature explorer (search/filter/detail UI state) in worktree /Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/explorer branch codex/explorer start 12ed483. Read AGENTS.md PLAN.md STATUS.md docs/SESSION_GUIDE.md docs/tasks/explorer.md. Own only task files. Build Zustand provider persist safely at mount validating stored UI data + filter helper + polished toolbar + shadcn detail Sheet. Card detail buttons expose data-candidate-detail=id for focus return. Shared UI and node_modules ready. Test persist/bad storage/filter/detail; run checks, log actual received prompt and evidence docs/records/explorer.md, update task handoff, commit feat(explorer). No shared/app/package edits, no agents. Final path/branch/SHA/tests/issues.
+> Implement ONE feature explorer (search/filter/detail UI state) in worktree [기능 작업 공간] branch [기능 브랜치] start 12ed483. Read AGENTS.md PLAN.md STATUS.md docs/SESSION_GUIDE.md docs/tasks/explorer.md. Own only task files. Build Zustand provider persist safely at mount validating stored UI data + filter helper + polished toolbar + shadcn detail Sheet. Card detail buttons expose data-candidate-detail=id for focus return. Shared UI and node_modules ready. Test persist/bad storage/filter/detail; run checks, log actual received prompt and evidence docs/records/explorer.md, update task handoff, commit feat(explorer). No shared/app/package edits, no agents. Final path/branch/SHA/tests/issues.
 
 후속 지시:
 > Use direct ./node_modules/.bin/vitest /tsc /eslint for checks; pnpm in worktree may try reinstall linked node_modules. Root foundation build passed. Root app uses all contracts exactly as task.
@@ -27,4 +27,4 @@
 
 ## 인계
 기능 미완료 없음. 앱에서 Provider 아래 Toolbar/Detail 연결, 보드 상세 버튼 data-candidate-detail=id 계약 유지 필요.
-워크트리 /Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/explorer, 브랜치 codex/explorer.
+워크트리 [기능 작업 공간], 브랜치 [기능 브랜치].

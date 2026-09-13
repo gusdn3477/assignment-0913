@@ -20,5 +20,5 @@ package와 공유 타입은 수정하지 않습니다. 테스트 명령·결과�
 - `MockApiError.code`: storage / corrupt-storage / network / not-found / invalid-input / busy.
 - `STORAGE_KEY`: hiring-pipeline:candidates:v1. 데이터는 버전 1 envelope이며 조회는 저장하지 않습니다.
 - 테스트 17개, 전체 typecheck/lint 통과. 공유 node_modules이므로 pnpm 실행에 `--config.verify-deps-before-run=false` 사용.
-- 워크트리: `/Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/mock-api`; 브랜치: `codex/mock-api`.
+- 워크트리: `[기능 작업 공간]`; 브랜치: `[기능 브랜치]`.
 - 실제 지시·결정·검증은 `docs/records/mock-api.md`에 기록했습니다. 남은 기능 이슈 없음. 통합에서 UI/Query 연결과 build/browser 검증 필요.

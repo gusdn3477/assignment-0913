@@ -4,7 +4,7 @@
 
 사용자: “선택사항 이어서 진행하자”.
 
-통합 담당의 배정: “Implement assigned DnD feature in /Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/dnd branch codex/dnd. Read AGENTS.md PLAN STATUS DECISIONS docs/tasks/dnd.md and relevant installed Next docs first. Own src/features/candidates implementation/tests + docs/tasks/dnd.md docs/records/dnd.md only. Integration (me) handles top docs and main browser/build. No new dependencies unless coordinated. Use native drag handle desktop DnD and existing accessible menu for keyboard/touch; guard external/same-stage/pending/canceled/stale drag, preserve virtualization and focus, reuse onMove for rollback and Undo. Add meaningful board DnD and app integration tests. Run lint/typecheck/tests/format (symlink deps use pnpm --config.verify-deps-before-run=false). Commit feature after records/handoff. Do not edit main. Report SHA and evidence.”
+통합 담당의 배정: “Implement assigned DnD feature in [기능 작업 공간] branch [기능 브랜치]. Read AGENTS.md PLAN STATUS DECISIONS docs/tasks/dnd.md and relevant installed Next docs first. Own src/features/candidates implementation/tests + docs/tasks/dnd.md docs/records/dnd.md only. Integration (me) handles top docs and main browser/build. No new dependencies unless coordinated. Use native drag handle desktop DnD and existing accessible menu for keyboard/touch; guard external/same-stage/pending/canceled/stale drag, preserve virtualization and focus, reuse onMove for rollback and Undo. Add meaningful board DnD and app integration tests. Run lint/typecheck/tests/format (symlink deps use pnpm --config.verify-deps-before-run=false). Commit feature after records/handoff. Do not edit main. Report SHA and evidence.”
 
 ## 읽은 자료 / 결정
 
@@ -45,4 +45,4 @@
 
 기능 구현 완료. 알려진 기능 결함 없음. native DnD가 지원되는 데스크톱 입력을 대상으로 하며 터치·키보드는 기존 메뉴 경로 사용. 컬럼 내 순서 변경은 범위 밖. production build와 실제 브라우저 최종 Undo·모바일·저장 검증, main 통합/최상위 문서 갱신은 통합 담당이 수행.
 
-워크트리: `/Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/dnd`, 브랜치: `codex/dnd`.
+워크트리: `[기능 작업 공간]`, 브랜치: `[기능 브랜치]`.

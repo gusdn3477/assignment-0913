@@ -3,7 +3,7 @@
 ## 요청/소유권
 
 사용자: DnD 직접 구현 코드가 늘어 @dnd-kit 등을 고려하는 방향으로 구현. 최신 공식 @dnd-kit/react 우선 검토 후 적합한 API로 실제 전환.
-독립 codex/dnd-kit-migration/.worktrees/dnd-kit-migration. 소유: candidate-board/**, candidate-card/**, hooks/use-candidate-drag.ts 및 새 DnD 전용 파일, candidates-app.test.tsx, 이 task/record. candidates-app.tsx, 상세, 공통 buttons/guard, 최상위 문서/package/lock은 수정 금지. 패키지는 통합 담당 설치.
+독립 [기능 브랜치]/[기능 작업 공간]. 소유: candidate-board/**, candidate-card/**, hooks/use-candidate-drag.ts 및 새 DnD 전용 파일, candidates-app.test.tsx, 이 task/record. candidates-app.tsx, 상세, 공통 buttons/guard, 최상위 문서/package/lock은 수정 금지. 패키지는 통합 담당 설치.
 
 ## 계약
 

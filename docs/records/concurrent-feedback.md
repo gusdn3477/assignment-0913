@@ -3,7 +3,7 @@
 ## 실제 요청과 배정
 사용자: `useTransition. useDeffredValue 같은 동시성 기능 적극 활용도 좀 넣고 에러 처리나 로딩 처리도 좀 깔끔하게`, 이어서 `작업 시작`.
 
-통합 에이전트 배정: `Implement bounded feature in /Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/concurrent-feedback on codex/concurrent-feedback.` 검색/직무의 안정된 값을 지연하고 메모 경계를 두되 mutation 데이터/잠금은 즉시 반영한다. 명시적 조회 재시도에는 React async Action을 적용한다. 최초 skeleton/안전한 오류 복구, 배경 갱신 중 데이터 유지, 저장 중 갱신 제외, 관련 회귀 검증을 소유한다.
+통합 에이전트 배정: `Implement bounded feature in [기능 작업 공간] on [기능 브랜치].` 검색/직무의 안정된 값을 지연하고 메모 경계를 두되 mutation 데이터/잠금은 즉시 반영한다. 명시적 조회 재시도에는 React async Action을 적용한다. 최초 skeleton/안전한 오류 복구, 배경 갱신 중 데이터 유지, 저장 중 갱신 제외, 관련 회귀 검증을 소유한다.
 
 ## 읽은 자료
 - 주 체크아웃의 최신 AGENTS.md 및 이 워크트리의 PLAN.md, STATUS.md, DECISIONS.md, docs/tasks/concurrent-feedback.md.

@@ -2,7 +2,7 @@
 
 ## 요청 / 소유권
 
-검색 결과가 없을 때 보드 높이가 급격히 줄어 사용자의 문서 내 위치가 달라지는 문제를 수정한다. `codex/empty-result-stability` 워크트리에서 CandidateEmptyGuard와 관련 acceptance test 및 기록을 소유한다.
+검색 결과가 없을 때 보드 높이가 급격히 줄어 사용자의 문서 내 위치가 달라지는 문제를 수정한다. `[기능 브랜치]` 워크트리에서 CandidateEmptyGuard와 관련 acceptance test 및 기록을 소유한다.
 
 ## 계약
 
@@ -20,4 +20,4 @@
 - CandidateEmptyGuard가 결과 있음/없음에 동일한 최소 높이 결과 셸을 유지하도록 구현했다.
 - 960px 브라우저 viewport에서 결과 있음 800.5px, 없음 800px, 문서 높이 모두 1521px, 결과 영역 절대 top 모두 620px을 확인했다.
 - 대상 Prettier/ESLint, strict typecheck, CandidatesApp acceptance 14 tests를 통과했다.
-- 브랜치 `codex/empty-result-stability`, 워크트리 `.worktrees/empty-result-stability`. 통합 담당은 production build와 main 병합 및 상위 문서 갱신을 이어서 수행한다.
+- 브랜치 `[기능 브랜치]`, 워크트리 `[기능 작업 공간]`. 통합 담당은 production build와 main 병합 및 상위 문서 갱신을 이어서 수행한다.

@@ -4,7 +4,7 @@
 SearchBar는 Input left의 돋보기와 right의 CloseButton을 직접 래핑하여 사용처가 최소 props만 전달해야 한다. 기존 외부 clearButton/onClear 조립이 의도에 맞지 않았음.
 
 ## 소유권/계약
-- 독립 codex/search-bar-defaults / .worktrees/search-bar-defaults.
+- 독립 [기능 브랜치] / [기능 작업 공간].
 - 소유 SearchBar 구현/테스트, CandidateToolbar 및 useCandidateSearch, 필요 관련 tests, task/record. 공통 Input은 기본 슬롯 API 유지. root는 README/최상위 문서/통합 담당.
 - SearchBar controlled API: value:string + onValueChange(value:string). native input props/ref 전달, native onChange 관찰은 실제 타이핑에만 전달 가능. clear는 onValueChange("") 한 번 호출하며 가짜 ChangeEvent 생성 금지.
 - Input left 기본 Search 아이콘, right 실제 공통 CloseButton 조합. clearButton 설정은 사용처에서 제거. 값 없거나 disabled/readOnly면 지우기 액션 숨김. 검색 지우기 기본 접근성 이름, type=button/키보드 지우기/입력 focus 복귀, native 중복 검색 X 숨김.

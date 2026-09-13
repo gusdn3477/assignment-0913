@@ -1,7 +1,7 @@
 # mock-api 실행 기록
 
 ## 실제 받은 작업 지시
-> Implement ONE feature mock-api in worktree /Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/mock-api branch codex/mock-api, start 12ed483. Read AGENTS.md PLAN.md STATUS.md docs/SESSION_GUIDE.md docs/tasks/mock-api.md. Own only files in task. Implement robust browser mock API + deterministic 250 seed + tests. Shared node_modules already linked. Run pnpm test targeted/typecheck/lint; write actual received prompt and evidence in docs/records/mock-api.md, update task handoff, commit feat(mock-api). Do not change shared/package/app files. Do not spawn subagents. Final report path/branch/SHA/tests/open issues. Root integrates independently.
+> Implement ONE feature mock-api in worktree [기능 작업 공간] branch [기능 브랜치], start 12ed483. Read AGENTS.md PLAN.md STATUS.md docs/SESSION_GUIDE.md docs/tasks/mock-api.md. Own only files in task. Implement robust browser mock API + deterministic 250 seed + tests. Shared node_modules already linked. Run pnpm test targeted/typecheck/lint; write actual received prompt and evidence in docs/records/mock-api.md, update task handoff, commit feat(mock-api). Do not change shared/package/app files. Do not spawn subagents. Final report path/branch/SHA/tests/open issues. Root integrates independently.
 
 추가 검토 지시:
 > Please change validation to allow any valid array length including [] (seed is 250 but valid stored empty supports required whole-empty UI and avoids conflating seed size with schema). Keep uniqueness, fields and version validation. Add empty persistence read test before commit. Known jobs restriction okay but unknown user corrupted reject explicit.

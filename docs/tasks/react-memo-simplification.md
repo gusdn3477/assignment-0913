@@ -7,7 +7,7 @@ React 19 환경에 맞춰 불필요한 `memo`, `useMemo`, `useCallback`을 제�
 
 ## 소유 및 계약
 
-`codex/react-memo-simplification` / `.worktrees/react-memo-simplification`에서
+`[기능 브랜치]` / `[기능 작업 공간]`에서
 React Compiler 설정, 지원자 앱·보드·카드·훅의 수동 메모이제이션과 관련 문서·테스트를
 소유한다. 검색 입력은 즉시 반영하고 `useDeferredValue`가 보드 갱신을 늦추는 기존 계약,
 카드별 저장·Undo·DnD·가상화·포커스 동작을 유지한다. 외부 가상화 라이브러리 옵션처럼

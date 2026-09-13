@@ -4,7 +4,7 @@
 “더 진행할 거 없나? 마지막으로 초기 요구사항에 어긋난 거 있는지 확실히 확인해”
 
 ## 기준과 범위
-- 통합 checkout: `/Users/phw4483/Documents/ChatGPT/assignment_0913`, branch `main`, 검토 코드 SHA `2878f98`.
+- 통합 checkout: `.`, branch `main`, 검토 코드 SHA `2878f98`.
 - 작업 시작 시 git status clean. 초기 `12ed483:PLAN.md`를 직접 읽어 현재 PLAN/STATUS/DECISIONS/PROMPTS 및 기능별 계약과 대조했습니다.
 - 새 기능 구현 요청이 아닌 통합 최종 감사입니다. 기존 완료 기능 세션을 재사용하지 않고 main에서 검토·검증·통합 기록만 수행했습니다.
 

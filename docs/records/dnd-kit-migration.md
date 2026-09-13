@@ -3,7 +3,7 @@
 ## 실제 요청
 
 사용자: “dnd의 경우 구현 코드가 너무 늘어난다고 판단되어 @dnd-kit 등을 고려하는 방향으로 구현”. 커밋은 접두사/scope 영어, 설명 한글.
-통합 배정: 독립 `codex/dnd-kit-migration` 워크트리에서 board/card/DnD hook/tests 소유, 기존 mutation/Undo/가상화/잠금 계약 유지. 패키지 설치와 main build/browser는 통합 담당.
+통합 배정: 독립 `[기능 브랜치]` 워크트리에서 board/card/DnD hook/tests 소유, 기존 mutation/Undo/가상화/잠금 계약 유지. 패키지 설치와 main build/browser는 통합 담당.
 
 ## 산출물과 검토
 

@@ -4,7 +4,7 @@
 
 사용자: 후보 단계 DnD 훅을 역할이 드러나는 `useCandidateStageDrag`로 변경하고 훅 네이밍 기준을 `AGENTS.md`에 명시. 실제 드래그 시 발생하는 React `flushSync was called from inside a lifecycle method` 오류 수정.
 
-독립 `codex/dnd-lifecycle-fix` / `.worktrees/dnd-lifecycle-fix`. 소유: `AGENTS.md`, 후보 DnD 훅과 사용처/관련 테스트, 이 task/record. 기존 동작과 의존성은 유지합니다.
+독립 `[기능 브랜치]` / `[기능 작업 공간]`. 소유: `AGENTS.md`, 후보 DnD 훅과 사용처/관련 테스트, 이 task/record. 기존 동작과 의존성은 유지합니다.
 
 ## 계약
 

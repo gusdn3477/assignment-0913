@@ -5,7 +5,7 @@
 - 컴포넌트 폴더 세분화: candidate 하위 board, card, detail 등.
 
 ## 계약/소유권
-- 독립 codex/candidate-layout / .worktrees/candidate-layout.
+- 독립 [기능 브랜치] / [기능 작업 공간].
 - src/features/candidates/api → src/api/candidate.
 - src/features/candidates/components → src/components/candidate. 폴더 매핑 candidate-board→board, candidate-card→card, candidate-detail→detail, candidate-toolbar→toolbar, candidate-metric→metric, candidate-error-boundary→error-boundary, candidate-load-feedback→load-feedback, candidates-app→app, workspace-header→workspace-header, virtual-candidate-list→board/virtual-list.
 - 파일명/컴포넌트 API/동작 유지. 테스트는 관련 파일과 함께 이동, 모든 소스 import/mock 경로 갱신. 미사용 호환 re-export 추가 금지.

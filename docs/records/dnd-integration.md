@@ -3,7 +3,7 @@
 ## 요청과 배정
 - 사용자 원문: “선택사항 이어서 진행하자”. STATUS에서 가상화·Undo 완료 및 다음 독립 후보 DnD 확인, 남은 선택사항을 DnD로 해석해 진행.
 - 시작 main `ba34e22`, 작업 트리 깨끗함. AGENTS/PLAN/STATUS/DECISIONS와 Undo task/통합 기록 확인.
-- 범위 커밋 `8203cf3`, 새 `.worktrees/dnd` / `codex/dnd` 생성. AGENTS의 독립 기능 세션 규칙에 따라 기능 에이전트 배정.
+- 범위 커밋 `8203cf3`, 새 `[기능 작업 공간]` / `[기능 브랜치]` 생성. AGENTS의 독립 기능 세션 규칙에 따라 기능 에이전트 배정.
 - 실제 위임: `docs/tasks/dnd.md` 읽기, 후보 기능/테스트·task·기록만 소유, native drag handle/기존 메뉴와 mutation 재사용, 외부·같은 단계·저장 중·취소·stale drag 방어, 가상화/포커스/Undo 유지, lint/typecheck/test/format과 커밋 인계.
 - git 최초 쓰기 sandbox EPERM은 require_escalated로 재실행 성공. rg 미설치로 find 사용. 추가 의존성 없음.
 

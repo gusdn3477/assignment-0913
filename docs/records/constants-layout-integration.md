@@ -9,7 +9,7 @@ src/constants/candidate.ts에 지원자 단계·직무·스타일·저장 키·�
 TypeScript AST printer로 이전 다섯 파일의 import를 제외한 선언과 새 파일을 비교한 결과 12개 공개 선언이 모두 동일했습니다.
 
 ## 통합 검증
-- 기능 b4b81a2 / codex/constants-layout / .worktrees/constants-layout → main 7227fd0 통합.
+- 기능 b4b81a2 / [기능 브랜치] / [기능 작업 공간] → main 7227fd0 통합.
 - lint/typecheck/format 통과. 전체114개 중113개 통과, 가상화 키보드 탐색1개 30초 초과. 해당 파일 단독7개 통과(문제 테스트29.09초). 테스트/제한 변경 없음.
 - main 병행 화면 변경과 자동 merge된 app test diff를 확인: 추가된 빈 결과 높이 검증을 보존하면서 상수 import가 갱신됨. app14개 재검증은13개 통과, DnD1개 5초 초과. 빌드 종료 후 실패 테스트만 단독 재실행해2.713초에 통과. 실제 assertion 실패 없음.
 - pnpm build(webpack) 통과. 기존 상수/Query 키 경로 src 잔여 참조0건.

@@ -31,8 +31,8 @@ PLAN, STATUS, DECISIONS, 작업 계약과 설치된 Next `node_modules/next/dist
 
 ## 인계
 
-- 워크트리: `/Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/constants-layout`
-- 브랜치: `codex/constants-layout`
+- 워크트리: `[기능 작업 공간]`
+- 브랜치: `[기능 브랜치]`
 - 통합 담당이 상위 문서, production build 및 브라우저 확인을 수행합니다.
 
 미해결 기능 이슈 없음. 대량 키보드 탐색 테스트는 실행 시간이 30초 제한에 가까워 실행 환경 부하에 따라 제한 초과가 발생할 수 있습니다.

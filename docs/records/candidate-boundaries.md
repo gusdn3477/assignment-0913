@@ -4,7 +4,7 @@
 “워크트리를 파든지 해서 선택 추가사항 적용” 및 Tailwind ESLint canonical class, useQuery 래퍼로 소비처의 ?? 제거, vite alias, 영역별 loading/error fallback, 서버/클라이언트 경계 설정.
 
 ## 시작 / 조율
-- PLAN/STATUS/DECISIONS와 진행 중 두 task를 읽고 main 6a4878d에서 독립 codex/candidate-boundaries 워크트리를 만들었습니다.
+- PLAN/STATUS/DECISIONS와 진행 중 두 task를 읽고 main 6a4878d에서 독립 [기능 브랜치] 워크트리를 만들었습니다.
 - 기존 통합 담당과 충돌 방지를 조율했습니다. 이전 워크트리 파일을 수정하지 않으며 기존 구조/UI가 main에 통합되면 반영합니다.
 - Next 설치 문서 use-client/loading/error를 읽었습니다. reset은 재조회 없이 render reset, retry는 서버 재요청을 포함하므로 브라우저 API인 현재 route fallback은 reset 유지.
 
@@ -42,5 +42,5 @@
 - 기존 통합 담당에게 main 소유권 인계 ce40c73 수신. 기능 최종 브랜치 d1a203e를 main 93a50eb에 no-ff 통합.
 - `pnpm install --frozen-lockfile --offline` 성공. 새 ESLint 의존성 10개 패키지 캐시 사용.
 - main `pnpm format:check && pnpm verify` 재실행: format/lint/typecheck/**11 files, 103/103 tests**/production build 모두 통과. tests 16.35s.
-- `git diff codex/candidate-boundaries -- src package.json pnpm-lock.yaml eslint.config.mjs` 결과 없음: 실제 production 브라우저 검증 코드와 main 동일. `git diff --check` 통과.
+- `git diff [기능 브랜치] -- src package.json pnpm-lock.yaml eslint.config.mjs` 결과 없음: 실제 production 브라우저 검증 코드와 main 동일. `git diff --check` 통과.
 - README/STATUS/PROMPTS/PLAN/DECISIONS/task/실제 record 갱신. 기존 브랜치·correction·merge 커밋 보존. 배포/외부 메시지/푸시 없음. 미해결 기능 이슈 없음.

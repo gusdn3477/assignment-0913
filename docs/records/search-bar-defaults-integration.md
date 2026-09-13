@@ -6,7 +6,7 @@
 기존 구현은 돋보기만 기본값으로 두고 clearButton/onClear를 소비처가 조립해 사용자 의도를 충분히 반영하지 못했음을 인정하고 정정.
 
 ## 배정/계약
-- 시작 main7c42f0b clean. 범위5f01a99, 독립 codex/search-bar-defaults/.worktrees/search-bar-defaults. 기능 SearchBar/toolbar/search hook/tests/task/record, 통합 README/최상위 기록/리뷰/build/browser.
+- 시작 main7c42f0b clean. 범위5f01a99, 독립 [기능 브랜치]/[기능 작업 공간]. 기능 SearchBar/toolbar/search hook/tests/task/record, 통합 README/최상위 기록/리뷰/build/browser.
 - 초기 제안(아래 최신 사용자 정정으로 대체): value/onValueChange로 입력/지우기 동작. SearchBar 내부 Input left Search/right CloseButton. 기존 Input 옵션 API는 유지. native props/ref/keyboard/form/focus와 후보 검색/직무/persist 유지.
 
 ## 검토/검증

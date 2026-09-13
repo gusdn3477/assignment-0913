@@ -6,7 +6,7 @@
 
 - 시작 main `a8be3cc`, git 작업 트리 깨끗함.
 - AGENTS/PLAN/STATUS/DECISIONS, 이전 optimistic-update/virtualization task와 통합 기록 확인.
-- AGENTS의 독립 기능 세션 규칙에 따라 `.worktrees/undo`, `codex/undo` 생성. 기능 담당은 후보 모듈·테스트·기능 기록, 통합은 상위 문서·리뷰·build·browser를 소유.
+- AGENTS의 독립 기능 세션 규칙에 따라 `[기능 작업 공간]`, `[기능 브랜치]` 생성. 기능 담당은 후보 모듈·테스트·기능 기록, 통합은 상위 문서·리뷰·build·browser를 소유.
 - 실제 위임: `docs/tasks/undo.md`의 카드별 마지막 성공 이동 Undo 계약 구현, 기존 잠금/롤백/성공 저장/가상화 접근성 유지, 테스트·lint·typecheck·format 및 커밋 인계.
 - 통합 리뷰 지시: Undo 이력 참조를 안정적으로 유지하여 deferred board memo를 보존하고 실행 시점에도 현재 단계를 검증. 정상 이동 실패의 기존 이력 보존, 여러 hook 간 잠금 공유 확인.
 - rg 미설치로 find 사용. 추가 의존성 없음.

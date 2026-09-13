@@ -6,7 +6,7 @@
 ## 범위와 분담
 - 시작 HEAD `03e73bc`, main 깨끗함 확인. AGENTS/PLAN/STATUS/DECISIONS 및 이전 기능 인계/기록 확인.
 - 문서의 1,000건 가상화를 이번 독립 기능으로 선정. 기본 250명 시드는 유지. Undo/DnD는 다음 후보.
-- AGENTS의 독립 세션·워크트리 규칙에 따라 `.worktrees/virtualization`, `codex/virtualization` 생성. 기능 세션은 보드·가상 목록·회귀 테스트·기능 기록, 통합은 의존성·상위 문서·리뷰·production 검증.
+- AGENTS의 독립 세션·워크트리 규칙에 따라 `[기능 작업 공간]`, `[기능 브랜치]` 생성. 기능 세션은 보드·가상 목록·회귀 테스트·기능 기록, 통합은 의존성·상위 문서·리뷰·production 검증.
 - 실제 위임: task 계약을 읽고 컬럼별 가상화, Tab 전체 접근, 화면 밖 이동/롤백/상세 포커스, 검색 후 스크롤 회복을 구현·검증·커밋하도록 요청.
 - `pnpm add @tanstack/react-virtual`: 3.14.12 설치. package/lockfile 통합 담당 변경. 기존 eslint/whatwg-encoding deprecated 경고 확인.
 - rg 미설치로 find 사용. 첫 일반 git commit은 .git/index.lock sandbox EPERM, 같은 범위 git 명령을 require_escalated로 실행해 성공.

@@ -6,7 +6,7 @@
 - “초기화 / 새로고침도 ResetButton, ReloadButton 등으로 추상화 가능”
 
 ## 배정/검토
-- AGENTS의 독립 기능 세션·워크트리 규칙에 따라 새 codex/search-board-polish/.worktrees/search-board-polish 세션을 배정. 기능 담당은 src/task/feature record, 통합은 상위 문서/build/browser/main 병합 소유.
+- AGENTS의 독립 기능 세션·워크트리 규칙에 따라 새 [기능 브랜치]/[기능 작업 공간] 세션을 배정. 기능 담당은 src/task/feature record, 통합은 상위 문서/build/browser/main 병합 소유.
 - cohesion skill 적용: 슬롯 배치와 검색 조합은 공통 Input/SearchBar에 모으고 호출부 absolute icon/padding 제거. 기존 ResetButton/RetryButton은 역할 유지, ReloadButton은 배경 새로고침.
 - 관련 Next 설치 use-client 문서와 기존 native input/ref/clear 테스트, 가상화 전체 키보드 순회/끝 카드 테스트 검토.
 

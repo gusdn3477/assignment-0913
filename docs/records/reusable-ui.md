@@ -3,7 +3,7 @@
 ## 실제 요청과 배정
 사용자: “선택사항 추가 … 재사용성을 고려해 공통 컴포넌트 더 만들거나 구체화 … Input의 경우 clearButton까지 포함한 것으로 만들기 … Button도 종류가 여러개면 그걸 래핑한 CanCelButton 등으로 만들기 … 헤더도 left, center, right 등의 props를 뚫어두는 방식으로 뼈대 등 갖추기”.
 
-통합 배정: `codex/reusable-ui`, `.worktrees/reusable-ui`에서 `src/components/**`, 필요한 `src/hooks/**`, 이 기능 task/record만 수정. Input controlled onClear/native props/ref/focus, 실제 사용할 ResetButton/RetryButton/CloseButton, Header slots 구현. 새 의존성 없이 의미 있는 상호작용 검증 후 커밋. candidates/app 소비 연결과 build/browser는 통합 담당.
+통합 배정: `[기능 브랜치]`, `[기능 작업 공간]`에서 `src/components/**`, 필요한 `src/hooks/**`, 이 기능 task/record만 수정. Input controlled onClear/native props/ref/focus, 실제 사용할 ResetButton/RetryButton/CloseButton, Header slots 구현. 새 의존성 없이 의미 있는 상호작용 검증 후 커밋. candidates/app 소비 연결과 build/browser는 통합 담당.
 
 ## 읽은 근거
 AGENTS.md, PLAN.md, STATUS.md, DECISIONS.md, docs/tasks/reusable-ui.md 및 설치된 `node_modules/next/dist/docs/01-app/03-api-reference/01-directives/use-client.md`. 처음 `.mdx` 경로는 존재하지 않아 파일 검색 후 `.md`를 읽음.

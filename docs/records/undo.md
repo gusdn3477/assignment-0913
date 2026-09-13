@@ -3,7 +3,7 @@
 ## 실제 요청 / 배정
 - 사용자: “후속 작업 이어서 작업하자.”
 - 선택 답변: “Undo: 저장된 단계 이동 되돌리기 (추천)”
-- 통합 담당 배정: “Implement Undo in fresh assigned worktree .../.worktrees/undo branch codex/undo. Read AGENTS/PLAN/STATUS/DECISIONS and docs/tasks/undo.md first ... Own src/features/candidates changes/tests and task + docs/records/undo.md ... Implement card-scoped last-successful-move Undo through existing mutation/locking, failure preserves history, stale history guard, accessible menu action and virtualization focus retention. Validate meaningful tests lint typecheck format; commit feature and send SHA/handoff.”
+- 통합 담당 배정: “Implement Undo in fresh assigned worktree .../[기능 작업 공간] branch [기능 브랜치]. Read AGENTS/PLAN/STATUS/DECISIONS and docs/tasks/undo.md first ... Own src/features/candidates changes/tests and task + docs/records/undo.md ... Implement card-scoped last-successful-move Undo through existing mutation/locking, failure preserves history, stale history guard, accessible menu action and virtualization focus retention. Validate meaningful tests lint typecheck format; commit feature and send SHA/handoff.”
 - 후속 리뷰 기준: history 참조/콜백 안정성 유지, 실행 시점 stale guard, 실패한 일반 이동의 기존 이력 보존, hook 인스턴스 간 동일 카드 잠금 공유.
 
 ## 산출물 / 결정

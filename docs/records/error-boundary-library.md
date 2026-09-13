@@ -2,7 +2,7 @@
 
 ## 실제 요청과 작업
 - 사용자: “errorboudary는 직접 구현 대신 어차피 같은 동작만 정확하게 하는 react-error-boundary와 같은 라이브러리 사용해서 코드 감소 및 좋은 예시 참고”.
-- 통합 담당 배정: 독립 codex/error-boundary-library 워크트리에서 boundary 구현/테스트와 task/record만 수정. 통합 담당이 react-error-boundary 6.1.5 설치, 공식 README 확인 및 전체 검증을 담당.
+- 통합 담당 배정: 독립 [기능 브랜치] 워크트리에서 boundary 구현/테스트와 task/record만 수정. 통합 담당이 react-error-boundary 6.1.5 설치, 공식 README 확인 및 전체 검증을 담당.
 - AGENTS.md, PLAN.md, STATUS.md, DECISIONS.md, docs/tasks/error-boundary-library.md와 설치된 Next use-client 가이드를 읽고 구현했다.
 
 ## 출력과 설계 검토

@@ -6,7 +6,7 @@ UI 저장 상태 복원 호출 앞의 불필요한 `void`를 제거하고, 관�
 
 ## 소유 및 계약
 
-`codex/ui-hydration-cleanup` / `.worktrees/ui-hydration-cleanup`. UI store와 이 task/record만 수정한다. 동기·비동기 저장소를 모두 지원하는 복원 완료 시점과 저장소 실패 시 메모리 UI 유지 동작은 바꾸지 않는다.
+`[기능 브랜치]` / `[기능 작업 공간]`. UI store와 이 task/record만 수정한다. 동기·비동기 저장소를 모두 지원하는 복원 완료 시점과 저장소 실패 시 메모리 UI 유지 동작은 바꾸지 않는다.
 
 ## 완료 인계
 

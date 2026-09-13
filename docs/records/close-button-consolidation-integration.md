@@ -7,7 +7,7 @@
 공용 buttons/close-button과 상세용 candidate/detail/close-button이 같은 이름으로 존재했습니다. SheetContent에도 자체 X 아이콘 조합이 있었습니다. SheetContent의 production 소비처는 CandidateDetail 한 곳입니다. 상세 래퍼 제거 후 Sheet가 공용 버튼을 조합하도록 책임을 통합합니다. SearchBar의 native onChange/onClear 및 값이 있을 때만 표시하는 계약은 유지합니다.
 
 ## 작업 분리
-codex/close-button-consolidation, .worktrees/close-button-consolidation에서 기능 구현. 통합 담당은 소비처/ActionButton의 props·ref 전달과 문서를 검토합니다. 설치된 Next use-client 문서를 확인했고 의존성 변경은 없습니다.
+[기능 브랜치], [기능 작업 공간]에서 기능 구현. 통합 담당은 소비처/ActionButton의 props·ref 전달과 문서를 검토합니다. 설치된 Next use-client 문서를 확인했고 의존성 변경은 없습니다.
 
 ## 검증
 - 기능 304de15, main 통합 818e3c4. 공용 CloseButton 파일 1개만 남음을 find로 확인.

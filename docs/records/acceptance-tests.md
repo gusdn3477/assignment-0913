@@ -2,7 +2,7 @@
 
 ## Actual assignment
 
-“Implement ONE feature integration acceptance tests in /Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/acceptance-tests branch codex/acceptance-tests start a2dacf1. Read AGENTS PLAN STATUS and app source. Own ONLY src/features/candidates/candidates-app.test.tsx, docs/tasks/acceptance-tests.md, docs/records/acceptance-tests.md. Test real CandidatesApp+Providers with mocked candidateApi deterministic promises: initial loading, query failure+retry, empty dataset vs filtered empty, search/filter composition, failed save UI rollback+toast if manageable; preserve actual UI not mock hooks/children. No fragile long waits, no package changes. Existing board focus bug being fixed independently, don't edit board. Run your targeted tests, write actual prompt/evidence, commit test(acceptance). No agents. Report SHA/tests/issues.”
+“Implement ONE feature integration acceptance tests in [기능 작업 공간] branch [기능 브랜치] start a2dacf1. Read AGENTS PLAN STATUS and app source. Own ONLY src/features/candidates/candidates-app.test.tsx, docs/tasks/acceptance-tests.md, docs/records/acceptance-tests.md. Test real CandidatesApp+Providers with mocked candidateApi deterministic promises: initial loading, query failure+retry, empty dataset vs filtered empty, search/filter composition, failed save UI rollback+toast if manageable; preserve actual UI not mock hooks/children. No fragile long waits, no package changes. Existing board focus bug being fixed independently, don't edit board. Run your targeted tests, write actual prompt/evidence, commit test(acceptance). No agents. Report SHA/tests/issues.”
 
 ## Output and review
 

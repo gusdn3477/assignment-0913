@@ -9,8 +9,8 @@
 
 ## 범위와 배정
 - 시작 main `81e7a91`, 작업 트리 clean. 공통 규칙, PLAN/STATUS/DECISIONS와 세션 가이드 확인.
-- `reusable-ui`: `.worktrees/reusable-ui`, `codex/reusable-ui`; 공통 components와 관련 tests 소유.
-- `candidate-structure`: `.worktrees/candidate-structure`, `codex/candidate-structure`; 지원자 기능과 page import, 관련 tests 소유.
+- `reusable-ui`: `[기능 작업 공간]`, `[기능 브랜치]`; 공통 components와 관련 tests 소유.
+- `candidate-structure`: `[기능 작업 공간]`, `[기능 브랜치]`; 지원자 기능과 page import, 관련 tests 소유.
 - 통합 담당: 상위 기록·공통 API 계약·사용처 연결·review·main build/browser. 두 기능 담당에게 docs/tasks의 계약과 실제 지시를 전달했습니다.
 - 첫 git add는 sandbox index.lock EPERM. 같은 범위 커밋/워크트리 생성을 require_escalated로 실행하여 성공 (`485d8a2`). node_modules는 기존 설치를 링크하며 새 의존성은 추가하지 않습니다.
 - cohesion/coupling 스킬을 적용해 도메인 경계 안에서 책임별 분리와 작은 상태 인터페이스를 선택했습니다. 사용자 요청의 폴더 구분을 우선하며 함께 수정되는 기능 파일은 candidates에 모읍니다.
@@ -36,4 +36,4 @@
 ## 인계
 이번 요청 네 항목의 구현·검토·통합 검증 완료. useSuspenseQuery는 적합성 검토 후 보류한 항목이며 queryOptions와 입력 훅은 실사용합니다. 알려진 미해결 결함 없음.
 
-별도 사용자 작업 `01a09a9f-69fa-7cd3-b743-631f80ed19b8`에서 `codex/candidate-boundaries` 추가사항(Tailwind canonical lint, useCandidates 반환 추상화, loading/error 및 server/client 경계)을 진행한다는 인계를 받았습니다. 패키지 변경 소유권을 그 작업에 두고 기존 두 워크트리는 건드리지 않도록 조율했습니다. 이번 검증은 main `4f36d6f` 코드 기준이며 이후 추가 작업의 통합/검증은 해당 작업이 담당합니다.
+별도 사용자 작업 `01a09a9f-69fa-7cd3-b743-631f80ed19b8`에서 `[기능 브랜치]` 추가사항(Tailwind canonical lint, useCandidates 반환 추상화, loading/error 및 server/client 경계)을 진행한다는 인계를 받았습니다. 패키지 변경 소유권을 그 작업에 두고 기존 두 워크트리는 건드리지 않도록 조율했습니다. 이번 검증은 main `4f36d6f` 코드 기준이며 이후 추가 작업의 통합/검증은 해당 작업이 담당합니다.

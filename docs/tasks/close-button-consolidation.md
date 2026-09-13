@@ -9,7 +9,7 @@
 - Sheet 실제 키보드 닫기·포커스 복귀·속성 전달 및 숨김 옵션을 검증합니다.
 
 ## 소유
-codex/close-button-consolidation / .worktrees/close-button-consolidation. Sheet, 상세 close 파일/테스트, CandidateDetail, 이 작업 문서와 기록. 통합 담당은 최상위 문서·production build·브라우저 검증.
+[기능 브랜치] / [기능 작업 공간]. Sheet, 상세 close 파일/테스트, CandidateDetail, 이 작업 문서와 기록. 통합 담당은 최상위 문서·production build·브라우저 검증.
 
 ## 상태
 구현 완료. 공용 CloseButton 한 구현만 남기고 상세 래퍼를 제거했습니다. SheetContent의 closeButtonProps는 공유 버튼의 native props/ref를 그대로 사용합니다. 상세는 라벨만 지정합니다.

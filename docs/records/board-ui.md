@@ -2,7 +2,7 @@
 
 ## 실제 받은 지시
 
-> Implement ONE feature board-ui in worktree /Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/board-ui branch codex/board-ui, start 12ed483. Read AGENTS.md PLAN.md STATUS.md docs/SESSION_GUIDE.md docs/tasks/board-ui.md. Build polished Korean hiring board, 5 stage columns/card/menu, callbacks only, accessible focus continuity, relevant tests. Shared shadcn installed and node_modules linked. IMPORTANT expose card detail button data-candidate-detail={id} for explorer focus return, move trigger data-candidate-move={id}. Ownership per task; no shared/app/package edits. Write actual received prompt & review/test evidence docs/records/board-ui.md; update task handoff; commit feat(board-ui). Do not spawn agents. Final path/branch/SHA/tests/issues.
+> Implement ONE feature board-ui in worktree [기능 작업 공간] branch [기능 브랜치], start 12ed483. Read AGENTS.md PLAN.md STATUS.md docs/SESSION_GUIDE.md docs/tasks/board-ui.md. Build polished Korean hiring board, 5 stage columns/card/menu, callbacks only, accessible focus continuity, relevant tests. Shared shadcn installed and node_modules linked. IMPORTANT expose card detail button data-candidate-detail={id} for explorer focus return, move trigger data-candidate-move={id}. Ownership per task; no shared/app/package edits. Write actual received prompt & review/test evidence docs/records/board-ui.md; update task handoff; commit feat(board-ui). Do not spawn agents. Final path/branch/SHA/tests/issues.
 
 ## 구현·리뷰
 

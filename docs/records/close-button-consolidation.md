@@ -21,4 +21,4 @@ PLAN.md, STATUS.md, DECISIONS.md 및 이 기능 작업서를 확인했습니다.
 - production build 및 실제 브라우저 검증은 통합 담당 인계. 기능 미해결 이슈 없음.
 
 ## 위치
-.worktrees/close-button-consolidation / codex/close-button-consolidation. 커밋은 영어 type/scope와 한글 설명을 사용합니다.
+[기능 작업 공간] / [기능 브랜치]. 커밋은 영어 type/scope와 한글 설명을 사용합니다.

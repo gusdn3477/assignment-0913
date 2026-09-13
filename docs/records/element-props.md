@@ -22,7 +22,7 @@
 - git diff --check 통과. src/components의 onValueChange는 Select 내부 연결과 Omit만 존재, pending= 없음.
 
 ## 인계
-codex/element-props / .worktrees/element-props. 추가 의존성/기능 이슈 없음. 통합 build/browser 추가 기록 예정.
+[기능 브랜치] / [기능 작업 공간]. 추가 의존성/기능 이슈 없음. 통합 build/browser 추가 기록 예정.
 
 ## 정정 검증
 Select 원본 onValueChange 복원 후 관련2파일 eslint, 전체 strict tsc --noEmit, explorer9 tests, diff-check 통과. git diff 2372527^ -- 두 소스 파일은 출력 없음으로 원래 코드 동일 확인. 앞서 실행한 build는 onChange 변환 중간본의 검사이며 최종 정정 검증으로 집계하지 않는다. 최종 소스 변경이 없어 추가 browser 검사는 생략한다. 미해결 이슈 없음.

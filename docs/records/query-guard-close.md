@@ -2,7 +2,7 @@
 
 ## 실제 요청과 범위
 사용자: “loading은 useQuery 써서 어쩔 수 없다면 차라리 Guard나 Wrapper 등을 사용해 사용자는 loading props만 던져주거나 아예 몰라도 Suspense와 비슷한 효과 내게 구현”, 상세 버튼의 명시적 variant/size/aria-label/className/null children 호출을 “<CloseButton /> 이렇게 호출하게 수정”. 커밋 접두사·scope 영어/설명 한글.
-독립 워크트리 `.worktrees/query-guard-close`, 브랜치 `codex/query-guard-close`. DnD 및 의존성은 별도 담당.
+독립 워크트리 `[기능 작업 공간]`, 브랜치 `[기능 브랜치]`. DnD 및 의존성은 별도 담당.
 
 ## 구현 출력
 - `CandidateQueryGuard`가 hydration, 최초 loading fallback, 초기 API 오류, 재시도 화면 유지, 성공 후 검색 focus 복원과 background refresh 안내를 조합합니다. 기존 데이터를 가진 조회는 새로고침 중에도 children을 유지합니다.

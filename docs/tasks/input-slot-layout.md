@@ -2,7 +2,7 @@
 
 ## 요청/소유
 if (!hasSlots) return input 분기 제거. 슬롯 유무와 무관한 동일 UI, 슬롯이 있을 때 해당 좌/우 공간에 아이콘 배치.
-codex/input-slot-layout / .worktrees/input-slot-layout. ui/input 및 tests, SearchBar 연관 테스트, task/record 소유.
+[기능 브랜치] / [기능 작업 공간]. ui/input 및 tests, SearchBar 연관 테스트, task/record 소유.
 
 ## 계약
 항상 같은 wrapper/input 구조와 스타일 사용. 좌/우 슬롯 노드가 있을 때만 공간/gap 추가. native input props/ref 및 동적 슬롯 전환 시 DOM/입력값/선택/포커스 유지. SearchBar 의미/키보드/지우기 유지.

@@ -2,7 +2,7 @@
 
 ## 사용자 요청/배정
 사용자: “errorboudary는 직접 구현 대신 어차피 같은 동작만 정확하게 하는 react-error-boundary와 같은 라이브러리 사용해서 코드 감소 및 좋은 예시 참고”.
-- 시작 main368904d clean. 새 codex/error-boundary-library/.worktrees/error-boundary-library 독립 기능, boundary/tests/task/record 소유. root는 의존성/최상위 문서/리뷰/build/browser.
+- 시작 main368904d clean. 새 [기능 브랜치]/[기능 작업 공간] 독립 기능, boundary/tests/task/record 소유. root는 의존성/최상위 문서/리뷰/build/browser.
 - root pnpm add react-error-boundary 성공,6.1.5 추가1패키지. 기존 eslint/whatwg-encoding deprecation 경고는 이번 변경 원인이 아니며 패키지 업그레이드로 범위 확장하지 않음. 범위/의존성b3f2a52 기록.
 
 ## 공식 예시와 검토

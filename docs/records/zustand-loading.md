@@ -22,7 +22,7 @@
 - git diff --check: 통과. CandidateUIProvider/UIContext/pending= 소스 검색 0건.
 
 ## 인계
-codex/zustand-loading / .worktrees/zustand-loading. 기능 미해결 이슈 없음. 통합 build/browser 후 추가 기록.
+[기능 브랜치] / [기능 작업 공간]. 기능 미해결 이슈 없음. 통합 build/browser 후 추가 기록.
 
 ## 통합 검증 완료
 기능 d8459d5 / main e07e5ff. 통합 후 node_modules/.bin/next build --webpack 통과. localhost:3023 production 초기 skeleton→250명 확인. 최서연 입력 후 페이지 reload로 입력값/검색1명 복원 확인. 상세 열기/Escape 닫기/원래 버튼 포커스 복귀, 새로고침 완료 후 데이터 유지, 초기화250명 확인. console error/warn [] (hydration mismatch 없음). 짧은 새로고침 중간 loading은 브라우저 스냅샷에서 포착하지 못했으며 버튼 disabled/aria-busy/loading 동작은 자동 테스트에서 검증. 탭/서버 정리. 미해결 이슈 없음.

@@ -2,7 +2,7 @@
 
 ## 요청 / 소유권
 
-`CandidateBoard` JSX에 인라인으로 작성된 키보드·포인터·포커스 capture 로직을 컴포넌트 상단의 이름 있는 이벤트 핸들러로 이동한다. `codex/board-handler-extraction` 워크트리에서 보드 컴포넌트, 관련 테스트와 작업 기록을 소유한다.
+`CandidateBoard` JSX에 인라인으로 작성된 키보드·포인터·포커스 capture 로직을 컴포넌트 상단의 이름 있는 이벤트 핸들러로 이동한다. `[기능 브랜치]` 워크트리에서 보드 컴포넌트, 관련 테스트와 작업 기록을 소유한다.
 
 ## 계약
 
@@ -21,4 +21,4 @@
 - 키보드, pointer, focus capture 로직을 각각 이름 있는 `handleBoard*Capture` 함수로 이동했다.
 - JSX에는 이벤트 prop과 handler 참조만 남기고 기존 조건·탐색·포커스 동작은 변경하지 않았다.
 - 대상 format/lint, strict typecheck와 보드·가상화 15 tests를 통과했다.
-- 브랜치 `codex/board-handler-extraction`, 워크트리 `.worktrees/board-handler-extraction`.
+- 브랜치 `[기능 브랜치]`, 워크트리 `[기능 작업 공간]`.

@@ -4,7 +4,7 @@
 Candidate UI Provider는 Zustand와 역할이 겹쳐 삭제. Button과 다른 컴포넌트의 pending을 loading으로 변경.
 
 ## 소유 및 계약
-codex/zustand-loading / .worktrees/zustand-loading. UI store/app, loading 관련 컴포넌트/도메인 훅/스토어/테스트와 이 task/record 소유. Query/DnD 라이브러리 Provider는 해당 라이브러리 전용 연결이므로 유지.
+[기능 브랜치] / [기능 작업 공간]. UI store/app, loading 관련 컴포넌트/도메인 훅/스토어/테스트와 이 task/record 소유. Query/DnD 라이브러리 Provider는 해당 라이브러리 전용 연결이므로 유지.
 Context 없이 Zustand bound store 직접 구독. skipHydration + client effect 복원/런타임 검증/검색·직무만 persist 유지. 테스트는 singleton 초기 상태를 명시적으로 리셋. UI loading, 카드 loadingIds 및 관련 계약 함께 변경. React Query 내부 isPending 등 외부 API는 유지.
 
 ## 완료 인계

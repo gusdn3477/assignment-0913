@@ -5,7 +5,7 @@
 
 - 시작 main e1da022, clean. AGENTS/PLAN/STATUS/DECISIONS 및 기존 조회 task 확인.
 - cohesion 스킬에 따라 지원자 도메인 내부에서 코드 및 조회 표시 메시지 공유. 내부 진단 메시지와 모든 UI 문구로 범위를 확장하지 않음.
-- 새 codex/candidate-error-constants / .worktrees/candidate-error-constants와 독립 기능 세션. 기능은 상수/API/검증/조회 소비처 및 task/record, 통합은 최상위 기록/리뷰/build/browser 담당.
+- 새 [기능 브랜치] / [기능 작업 공간]와 독립 기능 세션. 기능은 상수/API/검증/조회 소비처 및 task/record, 통합은 최상위 기록/리뷰/build/browser 담당.
 - 기존 API tests17과 app acceptance14가 storage/corrupt-storage/일반 오류 및 초기/배경 재시도 안내를 검증. 상수와 동일한 값을 복제하는 신규 테스트는 만들지 않음.
 
 ## 검토 및 검증

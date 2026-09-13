@@ -5,7 +5,7 @@
 후속 정정: “props 이름은 일반 element 요소와 최대한 비슷하게 해 SearchBar의 경우도 onChange로 하고 onClear 넘겨주면 x버튼 보이는 방식으로 구현”.
 
 ## 작업과 결과
-- 독립 codex/search-bar-defaults / .worktrees/search-bar-defaults에서 수행. AGENTS/PLAN/STATUS/DECISIONS/task 및 설치된 Next `use-client.md` 확인.
+- 독립 [기능 브랜치] / [기능 작업 공간]에서 수행. AGENTS/PLAN/STATUS/DECISIONS/task 및 설치된 Next `use-client.md` 확인.
 - SearchBar가 Input left Search, right 공통 CloseButton과 기본 높이/배경, clear 후 입력 focus 복원을 소유. 사용처의 clearButton 객체와 기본 스타일 제거.
 - native input props/onChange/value/defaultValue/ref 전달, onClear만 선택 추가. controlled 강제 및 내부 검색 상태 없음. X는 onClear가 있으면 빈값에도 표시하고 disabled/readOnly에서는 비활성화.
 - clear는 부모 onClear를 한 번 호출하고 focus만 복구. 가짜 change event나 직접 DOM 값 변경 없음. additional right 슬롯과 close 공존, left 교체/제거 지원. 브라우저 기본 search cancel UI 중복 숨김.

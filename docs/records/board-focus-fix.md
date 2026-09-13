@@ -2,7 +2,7 @@
 
 ## 실제 받은 지시
 
-> Fix ONE feature defect board focus in /Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/board-focus-fix branch codex/board-focus-fix start a2dacf1. Read AGENTS PLAN STATUS docs/tasks/board-focus-fix and docs/records/board-ui. Board original agent reported 7/8 tests pass, test restores focus moved card/rollback hangs. Diagnose real issue (Radix lifecycle vs immediate layout focus?) preserve tests/no skipping/no longer timeout hiding. Own board.tsx, board.test.tsx, task and docs/records/board-focus-fix.md only. Direct node_modules/.bin tests to avoid pnpm reinstall. Check docs Next local if relevant. Root does real browser flows in parallel. Commit fix(board-focus) plus actual prompt/review/tests records. No subagents. Report SHA/evidence.
+> Fix ONE feature defect board focus in [기능 작업 공간] branch [기능 브랜치] start a2dacf1. Read AGENTS PLAN STATUS docs/tasks/board-focus-fix and docs/records/board-ui. Board original agent reported 7/8 tests pass, test restores focus moved card/rollback hangs. Diagnose real issue (Radix lifecycle vs immediate layout focus?) preserve tests/no skipping/no longer timeout hiding. Own board.tsx, board.test.tsx, task and docs/records/board-focus-fix.md only. Direct node_modules/.bin tests to avoid pnpm reinstall. Check docs Next local if relevant. Root does real browser flows in parallel. Commit fix(board-focus) plus actual prompt/review/tests records. No subagents. Report SHA/evidence.
 
 ## 진단·수정·리뷰
 

@@ -19,7 +19,7 @@
 - git diff --check: 통과.
 
 ## 인계
-codex/concurrency-simplification / .worktrees/concurrency-simplification. 의존성 추가 없음. 기능 미해결 이슈 없음. 통합 build/browser 후 기록 추가.
+[기능 브랜치] / [기능 작업 공간]. 의존성 추가 없음. 기능 미해결 이슈 없음. 통합 build/browser 후 기록 추가.
 
 ## 통합 검증
 기능 e735dd0 / main927a3df. 통합 후 node_modules/.bin/next build --webpack 통과. localhost:3022 production 초기 로딩→250명, 없는 이름 입력→0명 안내, 초기화→250명 복원. 새로고침 버튼 disabled와 pending 문구 중 기존 보드 유지, 완료 후 버튼 활성화/pending 제거 확인. console error/warn []. 탭/서버 정리. 소스 검색에서 useTransition/startTransition 0건, useDeferredValue(search)만 존재. 미해결 이슈 없음.

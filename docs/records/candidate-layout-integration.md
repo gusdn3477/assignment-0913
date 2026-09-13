@@ -4,7 +4,7 @@
 사용자: “api 폴더는 components와 같은 레벨로 빼자”, “컴포넌트 폴더를 더 세분화. candidate 라는 폴더를 만들고 그 하위에 board, card, detail도 가능해보임”.
 
 - 시작 main c4c449e clean. 앞선 메시지 한글화로 과거 문서 SHA는 재작성 전 참조이며 원본/대응표는 .git/korean-message-backup-20260913-215520에 보존.
-- 범위822855e, 독립 codex/candidate-layout/.worktrees/candidate-layout. 기능 src와 task/record, 통합 README/최상위 기록/리뷰/build/browser 소유.
+- 범위822855e, 독립 [기능 브랜치]/[기능 작업 공간]. 기능 src와 task/record, 통합 README/최상위 기록/리뷰/build/browser 소유.
 - src/api/candidate, src/components/candidate/{app,board,card,detail,toolbar,metric,error-boundary,load-feedback,workspace-header}; virtual list는 board/virtual-list로 배치. 파일명/컴포넌트 계약/나머지 도메인 계층 유지.
 
 ## 검토/검증

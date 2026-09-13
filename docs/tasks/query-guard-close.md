@@ -2,7 +2,7 @@
 
 ## 요청/소유권
 사용자: useQuery 로딩을 Guard/Wrapper로 감싸 사용처가 loading만 전달하거나 모르게 Suspense 유사 효과, 상세 CloseButton 호출을 <CloseButton />로 단순화.
-독립 codex/query-guard-close/.worktrees/query-guard-close. 소유: candidates-app.tsx(테스트 제외), hooks/use-candidates.ts 및 필요 새 query presentation hooks/context, candidate-load-feedback/**, candidate-metric/**, candidate-detail/**, src/components/buttons/close-button.tsx 및 tests, 새 공통 guard files/tests, 이 task/record. board/card/DnD/candidates-app.test.tsx/package/lock/최상위 문서 금지.
+독립 [기능 브랜치]/[기능 작업 공간]. 소유: candidates-app.tsx(테스트 제외), hooks/use-candidates.ts 및 필요 새 query presentation hooks/context, candidate-load-feedback/**, candidate-metric/**, candidate-detail/**, src/components/buttons/close-button.tsx 및 tests, 새 공통 guard files/tests, 이 task/record. board/card/DnD/candidates-app.test.tsx/package/lock/최상위 문서 금지.
 
 ## 계약
 - 실제 사용되는 LoadingGuard 또는 query wrapper로 initial loading/error/retry 상태와 자식 분기 캡슐화. 선언적 fallback + children 형태. 호출 컴포넌트에 중첩 ternary/수동 retry locking/hasData 체크 반복 제거. 단순 조건 이동보다 데이터와 상태 계약 명확히.

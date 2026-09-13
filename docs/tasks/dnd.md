@@ -7,7 +7,7 @@
 
 ## 소유권 / 계약
 
-- 기능 담당: src/features/candidates의 DnD 구현과 테스트, 이 문서, docs/records/dnd.md. 독립 codex/dnd 워크트리.
+- 기능 담당: src/features/candidates의 DnD 구현과 테스트, 이 문서, docs/records/dnd.md. 독립 [기능 브랜치] 워크트리.
 - 통합 담당: 최상위 문서, 의존성, main 병합, production build와 브라우저 확인.
 - 가능하면 native HTML drag/drop으로 의존성 없이 구현. 별도 드래그 핸들로 상세/메뉴 클릭과 충돌 방지. 지원하지 않는 입력은 기존 메뉴 제공.
 - 기존 onMove 경로와 카드별 잠금/실패 롤백/Undo를 재사용. 같은 단계·외부 드롭·저장 중 카드·취소는 저장하지 않음. 드래그 피드백과 목적지 강조, 가상화 중 원본 보존, 포커스 복구를 유지.

@@ -2,7 +2,7 @@
 
 ## 실제 작업 지시
 
-> Implement ONE feature optimistic-update in /Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/optimistic-update branch codex/optimistic-update start 74e4736. Read AGENTS.md PLAN.md STATUS.md docs/SESSION_GUIDE.md docs/tasks/optimistic-update.md. Existing candidateApi mock ready. Implement queries.ts hooks exactly task contract plus strong deterministic hook tests of optimistic apply, isolated rollback, overlap/duplicate prevention, reverse success. Direct ./node_modules/.bin/{vitest,tsc,eslint} recommended to avoid pnpm linked-dir auto-install. Own queries/tests/task/record only. Record actual prompt & tests, commit feat(optimistic-update), report SHA/evidence. No agents. Root handles integration app.
+> Implement ONE feature optimistic-update in [기능 작업 공간] branch [기능 브랜치] start 74e4736. Read AGENTS.md PLAN.md STATUS.md docs/SESSION_GUIDE.md docs/tasks/optimistic-update.md. Existing candidateApi mock ready. Implement queries.ts hooks exactly task contract plus strong deterministic hook tests of optimistic apply, isolated rollback, overlap/duplicate prevention, reverse success. Direct ./node_modules/.bin/{vitest,tsc,eslint} recommended to avoid pnpm linked-dir auto-install. Own queries/tests/task/record only. Record actual prompt & tests, commit feat(optimistic-update), report SHA/evidence. No agents. Root handles integration app.
 
 추가로 DECISIONS.md와 mock-api 구현 및 공통 Providers 설정을 읽었습니다.
 
@@ -33,8 +33,8 @@
 
 ## 인계
 
-워크트리: `/Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/optimistic-update`
+워크트리: `[기능 작업 공간]`
 
-브랜치: `codex/optimistic-update`
+브랜치: `[기능 브랜치]`
 
 완료: 기능 구현·독립 검증. 미완료/알려진 문제 없음. 통합 담당자가 앱 연결, production build, 브라우저 검증, STATUS 및 PROMPTS 갱신을 수행합니다.

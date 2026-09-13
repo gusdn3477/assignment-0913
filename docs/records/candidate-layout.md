@@ -3,7 +3,7 @@
 ## 실제 요청과 배정
 사용자: “api 폴더는 components와 같은 레벨로 빼자”, “컴포넌트 폴더를 더 세분화. candidate 라는 폴더를 만들고 그 하위에 board, card, detail도 가능해보임”.
 
-통합 배정: 독립 codex/candidate-layout / .worktrees/candidate-layout, 기준 HEAD 822855e. docs/tasks/candidate-layout.md 경로 매핑에 따라 src 파일/참조와 기능 인계 기록만 소유하며, 동작·타입·파일명 보존 및 호환 re-export 금지. 커밋 설명은 한글.
+통합 배정: 독립 [기능 브랜치] / [기능 작업 공간], 기준 HEAD 822855e. docs/tasks/candidate-layout.md 경로 매핑에 따라 src 파일/참조와 기능 인계 기록만 소유하며, 동작·타입·파일명 보존 및 호환 re-export 금지. 커밋 설명은 한글.
 
 ## 확인과 결과
 - AGENTS.md, PLAN.md, STATUS.md, DECISIONS.md와 배정 task를 읽었습니다.

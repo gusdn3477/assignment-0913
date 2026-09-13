@@ -3,37 +3,37 @@
 ## 현재 결론
 TanStack Query와 React 19 `useOptimistic` 역할 재검토 완료: 지원자 조회·취소·재시도·배경 갱신·mutation lifecycle과 카드별 낙관적 rollback을 공유 Query 캐시에서 일관되게 관리하므로 별도 `useOptimistic` 상태를 중복하지 않는 판단을 README/DECISIONS에 보강했다. 사용자가 실패 UI, 낙관 반영, 성공 알림, 최종 요구사항 대조를 직접 리뷰·검증하도록 지시한 흐름을 PROMPTS 최상단에 핵심 평가 근거로 정리했다. 코드 변경 없음.
 
-후보자 가상 목록 스크롤 복원 훅 분리 완료: 필터 변경 시 상단 복원과 화면 밖 카드의 포커스 복원 effect를 인접한 `useCandidateScrollRestoration`으로 이동했다. 이미 처리한 요청 차단과 키보드·단계 이동·롤백 포커스 계약을 유지했다. 기능/통합 `96cf146`/`72f5258`, `codex/candidate-scroll-restoration` / `.worktrees/candidate-scroll-restoration`. 대상 format/lint/strict typecheck와 가상화 7 tests 통과. 기록: `docs/records/candidate-scroll-restoration.md`. 미해결 이슈 없음.
+후보자 가상 목록 스크롤 복원 훅 분리 완료: 필터 변경 시 상단 복원과 화면 밖 카드의 포커스 복원 effect를 인접한 `useCandidateScrollRestoration`으로 이동했다. 이미 처리한 요청 차단과 키보드·단계 이동·롤백 포커스 계약을 유지했다. 기능/통합 `96cf146`/`72f5258`, `[기능 브랜치]` / `[기능 작업 공간]`. 대상 format/lint/strict typecheck와 가상화 7 tests 통과. 기록: `docs/records/candidate-scroll-restoration.md`. 미해결 이슈 없음.
 
-UI 저장 상태 복원 호출 정리 완료: 불필요한 선두 `void`와 UI store에서 구현을 반복하던 영어 주석 4개를 제거했다. `rehydrate()`의 `Promise<void> | void` 반환형을 정규화하는 `Promise.resolve`와 완료 후 `hydrated` 설정은 유지했다. `codex/ui-hydration-cleanup` / `.worktrees/ui-hydration-cleanup`, 관련 9 tests 및 format/lint/typecheck/diff 검사 통과. 커밋 본문에 AI 초안의 수정 판단을 기록했다. 미해결 이슈 없음.
+UI 저장 상태 복원 호출 정리 완료: 불필요한 선두 `void`와 UI store에서 구현을 반복하던 영어 주석 4개를 제거했다. `rehydrate()`의 `Promise<void> | void` 반환형을 정규화하는 `Promise.resolve`와 완료 후 `hydrated` 설정은 유지했다. `[기능 브랜치]` / `[기능 작업 공간]`, 관련 9 tests 및 format/lint/typecheck/diff 검사 통과. 커밋 본문에 AI 초안의 수정 판단을 기록했다. 미해결 이슈 없음.
 
-Mutation 성공 토스트 완료: 단계 이동/Undo가 API 성공으로 확정된 뒤 각각 `단계 이동을 저장했습니다.` / `단계 되돌리기를 저장했습니다.`를 표시하고 description에 `지원자 이름 · 확정 단계`를 제공한다. 기능/통합 `66ba489`/`a59904c`, `codex/mutation-success-toast` / `.worktrees/mutation-success-toast`. 관련36 tests 및 main format/lint/typecheck/13 files 114 tests/production build 통과. 실제 실패 롤백→재시도 성공 토스트→Undo 성공 토스트/원상 복구와 console error/warn 없음 확인. 기록: `docs/records/mutation-success-toast.md`. 미해결 이슈 없음.
+Mutation 성공 토스트 완료: 단계 이동/Undo가 API 성공으로 확정된 뒤 각각 `단계 이동을 저장했습니다.` / `단계 되돌리기를 저장했습니다.`를 표시하고 description에 `지원자 이름 · 확정 단계`를 제공한다. 기능/통합 `66ba489`/`a59904c`, `[기능 브랜치]` / `[기능 작업 공간]`. 관련36 tests 및 main format/lint/typecheck/13 files 114 tests/production build 통과. 실제 실패 롤백→재시도 성공 토스트→Undo 성공 토스트/원상 복구와 console error/warn 없음 확인. 기록: `docs/records/mutation-success-toast.md`. 미해결 이슈 없음.
 
-검색 0건 레이아웃 안정화 완료: CandidateEmptyGuard가 결과 있음/없음에 동일한 결과 셸과 `min-height: calc(max(720px, 75vh) + 5rem)`을 유지한다. 기능/통합 `7719238`/`f4d2e0a`, `codex/empty-result-stability` / `.worktrees/empty-result-stability`. main format/lint/typecheck/13 files 114 tests/production build 통과. 실제 960px viewport에서 결과 셸 높이 800.5px→800px, 문서 높이 1521px 및 절대 top 620px 동일, console error/warn 없음. mutation 실패는 기존 카드별 rollback+Sonner toast, 조회 실패는 인라인 retry UI로 확인했다. 기록: `docs/records/empty-result-stability.md`. 미해결 이슈 없음.
+검색 0건 레이아웃 안정화 완료: CandidateEmptyGuard가 결과 있음/없음에 동일한 결과 셸과 `min-height: calc(max(720px, 75vh) + 5rem)`을 유지한다. 기능/통합 `7719238`/`f4d2e0a`, `[기능 브랜치]` / `[기능 작업 공간]`. main format/lint/typecheck/13 files 114 tests/production build 통과. 실제 960px viewport에서 결과 셸 높이 800.5px→800px, 문서 높이 1521px 및 절대 top 620px 동일, console error/warn 없음. mutation 실패는 기존 카드별 rollback+Sonner toast, 조회 실패는 인라인 retry UI로 확인했다. 기록: `docs/records/empty-result-stability.md`. 미해결 이슈 없음.
 
-도메인별 상수 배치 완료: src/constants/candidate.ts에 기존 지원자 상수와 Query 키 통합, 소비23파일 import 갱신. 기능b4b81a2/main7227fd0, codex/constants-layout / .worktrees/constants-layout. 공개12선언 동일, lint/type/format/build 통과. 전체 테스트 및 통합 app 테스트에서 시간 초과 각1건은 단독 재실행 통과(제한 변경 없음). production 오류 재시도250명/5단계/검색1명/console[] 확인. 기록: docs/records/constants-layout-integration.md.
+도메인별 상수 배치 완료: src/constants/candidate.ts에 기존 지원자 상수와 Query 키 통합, 소비23파일 import 갱신. 기능b4b81a2/main7227fd0, [기능 브랜치] / [기능 작업 공간]. 공개12선언 동일, lint/type/format/build 통과. 전체 테스트 및 통합 app 테스트에서 시간 초과 각1건은 단독 재실행 통과(제한 변경 없음). production 오류 재시도250명/5단계/검색1명/console[] 확인. 기록: docs/records/constants-layout-integration.md.
 
-React 메모이제이션 단순화 완료: Next와 Vitest에 React Compiler를 활성화하고 `DeferredBoard = memo(CandidateBoard)`를 제거해 `CandidateBoard`를 직접 렌더링한다. 앱 소유 코드의 단순 `memo`/`useMemo`/`useCallback`을 제거했으며 mutable virtualizer로 Compiler를 제외한 목록의 `rangeExtractor`만 참조 안정성 근거와 함께 유지했다. 전체 114 tests/lint/typecheck/format/webpack production build 통과. `codex/react-memo-simplification` / `.worktrees/react-memo-simplification`. 기록: `docs/records/react-memo-simplification.md`. 미해결 기능 이슈 없음.
+React 메모이제이션 단순화 완료: Next와 Vitest에 React Compiler를 활성화하고 `DeferredBoard = memo(CandidateBoard)`를 제거해 `CandidateBoard`를 직접 렌더링한다. 앱 소유 코드의 단순 `memo`/`useMemo`/`useCallback`을 제거했으며 mutable virtualizer로 Compiler를 제외한 목록의 `rangeExtractor`만 참조 안정성 근거와 함께 유지했다. 전체 114 tests/lint/typecheck/format/webpack production build 통과. `[기능 브랜치]` / `[기능 작업 공간]`. 기록: `docs/records/react-memo-simplification.md`. 미해결 기능 이슈 없음.
 
-DnD lifecycle 경고 수정 완료: `useCandidateDrag`를 구체적인 `useCandidateStageDrag`와 `use-candidate-stage-drag.ts`로 변경하고 AGENTS.md에 훅 이름·파일명 일치 규칙을 추가했다. 원인은 단계 이동 중 가상 행 재측정이 TanStack Virtual의 동기 `flushSync` 렌더를 React lifecycle 안에서 호출한 것이며, 해당 목록에 `useFlushSync: false`를 적용해 React 스케줄링에 맡겼다. 라이브러리 교체 없이 기존 DnD/가상화 계약을 유지했다. 기능67fd1d3/main통합f047184, `codex/dnd-lifecycle-fix` / `.worktrees/dnd-lifecycle-fix`. 기능 전체113 tests/lint/type/format/build, 최신 main 관련32 tests/lint/type/build 및 production pointer DnD/console 경고0건 확인. 기록: `docs/records/dnd-lifecycle-fix.md`. 미해결 DnD 이슈 없음.
+DnD lifecycle 경고 수정 완료: `useCandidateDrag`를 구체적인 `useCandidateStageDrag`와 `use-candidate-stage-drag.ts`로 변경하고 AGENTS.md에 훅 이름·파일명 일치 규칙을 추가했다. 원인은 단계 이동 중 가상 행 재측정이 TanStack Virtual의 동기 `flushSync` 렌더를 React lifecycle 안에서 호출한 것이며, 해당 목록에 `useFlushSync: false`를 적용해 React 스케줄링에 맡겼다. 라이브러리 교체 없이 기존 DnD/가상화 계약을 유지했다. 기능67fd1d3/main통합f047184, `[기능 브랜치]` / `[기능 작업 공간]`. 기능 전체113 tests/lint/type/format/build, 최신 main 관련32 tests/lint/type/build 및 production pointer DnD/console 경고0건 확인. 기록: `docs/records/dnd-lifecycle-fix.md`. 미해결 DnD 이슈 없음.
 
-CloseButton 중복 정리 완료: 상세 래퍼 삭제, SheetContent에서 공용 버튼 조합. 기능304de15/main818e3c4, codex/close-button-consolidation / .worktrees/close-button-consolidation. 관련23 tests/lint/type/format/main build 및 production 상세 Enter 닫기·focus 복귀/검색 지우기·250명 복원/console[] 확인. 미해결 이슈 없음. 기록: docs/records/close-button-consolidation-integration.md.
+CloseButton 중복 정리 완료: 상세 래퍼 삭제, SheetContent에서 공용 버튼 조합. 기능304de15/main818e3c4, [기능 브랜치] / [기능 작업 공간]. 관련23 tests/lint/type/format/main build 및 production 상세 Enter 닫기·focus 복귀/검색 지우기·250명 복원/console[] 확인. 미해결 이슈 없음. 기록: docs/records/close-button-consolidation-integration.md.
 
-ErrorBoundary 라이브러리 전환 완료: react-error-boundary6.1.5, 직접 class/state 제거,49→38행. 기능a3c4bf3/main통합daf119d, `codex/error-boundary-library` / `.worktrees/error-boundary-library`. 실제 library 경계3+app14 총17tests/lint/type/format 및 main build 통과. production 보드250명/검색/상세/닫기/focus/console[] 확인. 공식 fallbackRender/resetErrorBoundary/onReset 패턴 참고. 기록: `docs/records/error-boundary-library-integration.md`. 미해결 이슈 없음.
+ErrorBoundary 라이브러리 전환 완료: react-error-boundary6.1.5, 직접 class/state 제거,49→38행. 기능a3c4bf3/main통합daf119d, `[기능 브랜치]` / `[기능 작업 공간]`. 실제 library 경계3+app14 총17tests/lint/type/format 및 main build 통과. production 보드250명/검색/상세/닫기/focus/console[] 확인. 공식 fallbackRender/resetErrorBoundary/onReset 패턴 참고. 기록: `docs/records/error-boundary-library-integration.md`. 미해결 이슈 없음.
 
-SearchBar 기본 조합 정정 완료: native `onChange`와 선택적 `onClear`, 콜백 존재+비어 있지 않은 `value`일 때만 X 표시. Input left Search/right CloseButton과 지우기 후 focus를 내부 조합하고 toolbar 반복 설정 제거. 기능19e5d07/보정e9c2baf → main a8f2722/cc2c7f5, `codex/search-bar-defaults` / `.worktrees/search-bar-defaults`. 이전 통합 전체113tests 및 최종 조건 관련20tests/lint/type/format/build 검증, 최종 production 빈값 숨김→입력 표시→Tab/Enter 지우기/숨김/focus/250명/console[] 확인. 상세: `docs/records/search-bar-defaults-integration.md`.
+SearchBar 기본 조합 정정 완료: native `onChange`와 선택적 `onClear`, 콜백 존재+비어 있지 않은 `value`일 때만 X 표시. Input left Search/right CloseButton과 지우기 후 focus를 내부 조합하고 toolbar 반복 설정 제거. 기능19e5d07/보정e9c2baf → main a8f2722/cc2c7f5, `[기능 브랜치]` / `[기능 작업 공간]`. 이전 통합 전체113tests 및 최종 조건 관련20tests/lint/type/format/build 검증, 최종 production 빈값 숨김→입력 표시→Tab/Enter 지우기/숨김/focus/250명/console[] 확인. 상세: `docs/records/search-bar-defaults-integration.md`.
 
 
-빈 결과 Guard 완료: `codex/candidate-empty-guard` 기능 `3f068eb` main 통합. CandidateEmptyGuard가 빈 데이터/검색 결과 없음/초기화를 처리하고 정상 결과에 children 반환. lint/typecheck/app14 tests 및 통합 production build 통과. 브라우저 250명→0명 안내(보드 미렌더)→초기화 250명 복원, console error/warn 없음. 미해결 이슈 없음. 기록: docs/records/candidate-empty-guard.md.
-API·지원자 컴포넌트 배치 정리 완료: 기능 `6986331`, main 통합 `b69e741`, `codex/candidate-layout` / `.worktrees/candidate-layout`. API는 `src/api/candidate`, UI는 `src/components/candidate/{app,board,card,detail,...}`, 가상 목록은 `board/virtual-list`. 전체109 tests/lint/typecheck/format 및 main production build 통과. 브라우저 로딩→250명/검색/상세/닫기/focus/console[] 확인. README 구조 갱신, 미해결 이슈 없음. 상세: `docs/records/candidate-layout-integration.md`.
+빈 결과 Guard 완료: `[기능 브랜치]` 기능 `3f068eb` main 통합. CandidateEmptyGuard가 빈 데이터/검색 결과 없음/초기화를 처리하고 정상 결과에 children 반환. lint/typecheck/app14 tests 및 통합 production build 통과. 브라우저 250명→0명 안내(보드 미렌더)→초기화 250명 복원, console error/warn 없음. 미해결 이슈 없음. 기록: docs/records/candidate-empty-guard.md.
+API·지원자 컴포넌트 배치 정리 완료: 기능 `6986331`, main 통합 `b69e741`, `[기능 브랜치]` / `[기능 작업 공간]`. API는 `src/api/candidate`, UI는 `src/components/candidate/{app,board,card,detail,...}`, 가상 목록은 `board/virtual-list`. 전체109 tests/lint/typecheck/format 및 main production build 통과. 브라우저 로딩→250명/검색/상세/닫기/focus/console[] 확인. README 구조 갱신, 미해결 이슈 없음. 상세: `docs/records/candidate-layout-integration.md`.
 
-에러 코드·조회 안내 상수화 완료: 기능 `cce063b`, main 통합 `c47a148`, 브랜치 `codex/candidate-error-constants`, 워크트리 `.worktrees/candidate-error-constants`. 기존 API17/app14 총31 tests, lint/typecheck/format 및 main production build 통과. 브라우저 기본 오류 안내→재시도→250명 복구/포커스/console[] 확인. 코드·메시지·fallback 동작 유지, 미해결 이슈 없음. 상세: `docs/records/candidate-error-constants-integration.md`.
+에러 코드·조회 안내 상수화 완료: 기능 `cce063b`, main 통합 `c47a148`, 브랜치 `[기능 브랜치]`, 워크트리 `[기능 작업 공간]`. 기존 API17/app14 총31 tests, lint/typecheck/format 및 main production build 통과. 브라우저 기본 오류 안내→재시도→250명 복구/포커스/console[] 확인. 코드·메시지·fallback 동작 유지, 미해결 이슈 없음. 상세: `docs/records/candidate-error-constants-integration.md`.
 
 **DnD 라이브러리 전환·조회 Guard·상세 CloseButton 호출 단순화 완료**. 독립 기능 브랜치를 main으로 통합했고, 포맷/lint/typecheck/109 tests/production build 및 브라우저 검증 완료. 미해결 기능 이슈 없음.
 
 ## 최신 DnD·조회 Guard 검증 (2026-09-13)
-- codex/dnd-kit-migration / .worktrees/dnd-kit-migration: 기능1e3c698, 통합7524686, 테스트 보정a16b1d9 → main783c35f.
-- codex/query-guard-close / .worktrees/query-guard-close: 기능167450e, 통합9bc8066.
+- [기능 브랜치] / [기능 작업 공간]: 기능1e3c698, 통합7524686, 테스트 보정a16b1d9 → main783c35f.
+- [기능 브랜치] / [기능 작업 공간]: 기능167450e, 통합9bc8066.
 - @dnd-kit/react/dom0.5.0 센서/충돌/표시/자동 스크롤, 기존 mutation/Undo/카드별 잠금/가상화 유지. 훅144→60행, 관련 production 세 파일605→565행.
 - CandidateQueryGuard/LoadingGuard로 조회 분기 캡슐화, observer 훅의 retry Action/잠금, 상세 사용처 <CloseButton />.
 - main pnpm format:check && pnpm verify: format/lint/typecheck/13 files109 tests/webpack production build 모두 통과. 가짜 타이머 예약 프레임 폐기 원인을 수정하고 Vitest worker1로 DOM CPU 경합 방지. 테스트 생략/시간 제한 완화 없음.
@@ -45,14 +45,14 @@ API·지원자 컴포넌트 배치 정리 완료: 기능 `6986331`, main 통합 
 기존 기능에 이어 **Input 좌우 슬롯·SearchBar·ReloadButton·카드 목록 높이/끝 여백 보완 구현 완료**. 기능 `ccd5a50`, main 통합 `d378dc0`. main 전체 검사와 production 브라우저 재확인까지 완료했습니다.
 
 ## 최신 검색 조합·카드 공간 검증 (2026-09-13)
-- 독립 codex/search-board-polish, `.worktrees/search-board-polish`에서 구현. Input left/right ReactNode와 clearButton 조합, 실제 SearchBar 사용, ReloadButton과 RetryButton 역할 분리.
+- 독립 [기능 브랜치], `[기능 작업 공간]`에서 구현. Input left/right ReactNode와 clearButton 조합, 실제 SearchBar 사용, ReloadButton과 RetryButton 역할 분리.
 - 카드 목록 max-height=max(720px,75vh), 가상화 paddingStart=6/paddingEnd=16. 고정 카드 높이/데이터 전체 렌더를 도입하지 않고 기존 실측/키보드/가상화 유지.
 - 기능 및 main `pnpm format:check && pnpm verify`: 12 files/108 tests, lint/typecheck/format/build 모두 통과. browser 기존 432px 높이→720px, 마지막 카드 아래 2.5px→16.5px 확인.
 - 브라우저에서 발견한 composite input의 중복 내부 outline을 한정 CSS로 수정하고 final main에서 확인. input outline:none + wrapper 3px ring 유지, clear 버튼 자체 outline 유지. 390px document 폭 정상.
 - 상세: `docs/records/search-board-polish.md`, `docs/records/search-board-polish-integration.md`.
 
 ## 최신 Query·렌더링 경계 검증 (2026-09-13)
-- 독립 `codex/candidate-boundaries`, 워크트리 `.worktrees/candidate-boundaries`에서 구현·커밋 후 main 통합.
+- 독립 `[기능 브랜치]`, 워크트리 `[기능 작업 공간]`에서 구현·커밋 후 main 통합.
 - Tailwind 4 canonical ESLint error + lint:fix, min-w-310/max-w-420 표기 정리. 실제 오류 검출/autofix 검증 완료.
 - useCandidates의 안정적인 배열/hasData/summary/선택 후보 반환으로 소비 컴포넌트 ?? 제거. Query cache의 미조회와 빈 목록 성공 구분, 취소/롤백 계약 유지.
 - server page가 정적 header/소개/footer를 조합하고 후보 client 영역을 포함. route loading, query 초기/배경 상태, 보드/상세 render 예외 복구 분리.
@@ -75,7 +75,7 @@ API·지원자 컴포넌트 배치 정리 완료: 기능 `6986331`, main 통합 
 - 초기 제외 범위와 과거 50 tests 기록을 현재 상태로 오해하지 않도록 문서 제목/설명을 정리했습니다. 코드 변경 없음. 상세: `docs/records/final-audit.md`.
 
 ## 최신 DnD 검증 (2026-09-13)
-- 기능 `ca7687a`, main 통합 `d4ea5f8`. 브랜치 `codex/dnd`, 워크트리 `.worktrees/dnd`.
+- 기능 `ca7687a`, main 통합 `d4ea5f8`. 브랜치 `[기능 브랜치]`, 워크트리 `[기능 작업 공간]`.
 - 전용 손잡이로 단계 간 native 드래그, 목적지 강조, 가장자리 가로 스크롤, 원본 가상화 보존. 기존 메뉴/잠금/롤백/Undo 경로 재사용.
 - main `pnpm format:check && pnpm verify`: 포맷/lint/strict typecheck/**87/87 tests**/production build 통과.
 - 실제 브라우저 드래그 성공·실패 롤백·재시도, 키보드 Undo/포커스, reload 후 저장 유지, 390px 메뉴 확인. console error/warn 없음.
@@ -83,7 +83,7 @@ API·지원자 컴포넌트 배치 정리 완료: 기능 `6986331`, main 통합 
 - 상세: `docs/records/dnd.md`, `docs/records/dnd-integration.md`. 아래 수치는 각 기능 완료 당시 기록입니다.
 
 ## 최신 Undo 검증 (2026-09-13)
-- 기능 `a3c8274`, main 통합 `57cbfa0`. 브랜치 `codex/undo`, 워크트리 `.worktrees/undo`.
+- 기능 `a3c8274`, main 통합 `57cbfa0`. 브랜치 `[기능 브랜치]`, 워크트리 `[기능 작업 공간]`.
 - 카드별 마지막 성공 이동 한 번 되돌리기, 실패 시 롤백·이력 보존·재시도. 같은 카드 잠금과 다른 카드 병렬 유지. 이력은 페이지 새로고침 시 초기화.
 - main `pnpm format:check && pnpm verify`: 포맷/lint/strict typecheck/**73/73 tests**/production build 통과.
 - production 브라우저: 키보드 Undo·포커스 복귀·성공 이력 소모·되돌린 단계의 reload 후 유지, 390px 메뉴와 Undo 확인. 일반 이동 실패도 실제 발생하여 롤백/재시도 확인. console error/warn 없음.
@@ -91,7 +91,7 @@ API·지원자 컴포넌트 배치 정리 완료: 기능 `6986331`, main 통합 
 - 상세: `docs/records/undo.md`, `docs/records/undo-integration.md`. 아래 이전 검증 수치는 각 기능 완료 당시의 기록입니다.
 
 ## 최신 가상화 검증 (2026-09-13)
-- 기능 `2c0a912`, main 통합 `da3da3f`. 브랜치 `codex/virtualization`, 워크트리 `.worktrees/virtualization`.
+- 기능 `2c0a912`, main 통합 `da3da3f`. 브랜치 `[기능 브랜치]`, 워크트리 `[기능 작업 공간]`.
 - TanStack Virtual 컬럼별 가상화, 전체 Tab/Shift+Tab 탐색, 상세·메뉴·단계 이동·롤백 포커스 보존, 검색/직무 변경 스크롤 초기화. 기본 250명 유지.
 - main `pnpm format:check && pnpm verify`: 포맷/lint/strict typecheck/**62/62 tests**/production build 통과.
 - production 1,000명 초기 카드 DOM 30개, 끝 스크롤/검색 축소/키보드 경계/화면 밖 이동/저장 영속성/오류 재시도/빈 상태 확인. 390px document/350px board, console error/warn 없음.
@@ -107,18 +107,18 @@ API·지원자 컴포넌트 배치 정리 완료: 기능 `6986331`, main 통합 
 ## 완료된 세션
 | 기능 | 브랜치 | 기능 커밋 | 최종 상태 |
 |---|---|---|---|
-| mock-api | codex/mock-api | 540d933 | 지연/실패/저장/검증, 17 tests |
-| board-ui | codex/board-ui | 67b4202, 83422ff | 보드/메뉴/키보드, 8 tests |
-| explorer | codex/explorer | 57ca2e9 | Zustand/검색/필터/상세, 9 tests |
-| optimistic-update | codex/optimistic-update | 63a3abe | Query/카드별 롤백/잠금, 11 tests |
-| board-focus-fix | codex/board-focus-fix | 1d41614 | 메뉴 종료 후 포커스 검증 보강 |
-| acceptance-tests | codex/acceptance-tests | a0755c8 | 실제 통합 UI 상태, 5 tests |
-| concurrent-feedback | codex/concurrent-feedback | 4ceb4f7 | 동시 렌더링·재시도·갱신 피드백, app 11 tests / 전체 56 tests |
-| virtualization | codex/virtualization | 2c0a912 | 1,000건 가상화/키보드/포커스, 전체 62 tests |
-| undo | codex/undo | a3c8274 | 카드별 성공 이동 되돌리기/실패 재시도, 전체 73 tests |
-| dnd | codex/dnd | ca7687a | 단계 간 드래그/취소·stale 방어/가상화 유지, 전체 87 tests |
-| reusable-ui | codex/reusable-ui | 9f97bae | clear Input·의미별 버튼·Header slots, 공통 UI 12 tests |
-| candidate-structure | codex/candidate-structure | 2bd8ad9 | 도메인 폴더·queryOptions·입력 훅·skeleton, 통합 전체 100 tests |
+| mock-api | [기능 브랜치] | 540d933 | 지연/실패/저장/검증, 17 tests |
+| board-ui | [기능 브랜치] | 67b4202, 83422ff | 보드/메뉴/키보드, 8 tests |
+| explorer | [기능 브랜치] | 57ca2e9 | Zustand/검색/필터/상세, 9 tests |
+| optimistic-update | [기능 브랜치] | 63a3abe | Query/카드별 롤백/잠금, 11 tests |
+| board-focus-fix | [기능 브랜치] | 1d41614 | 메뉴 종료 후 포커스 검증 보강 |
+| acceptance-tests | [기능 브랜치] | a0755c8 | 실제 통합 UI 상태, 5 tests |
+| concurrent-feedback | [기능 브랜치] | 4ceb4f7 | 동시 렌더링·재시도·갱신 피드백, app 11 tests / 전체 56 tests |
+| virtualization | [기능 브랜치] | 2c0a912 | 1,000건 가상화/키보드/포커스, 전체 62 tests |
+| undo | [기능 브랜치] | a3c8274 | 카드별 성공 이동 되돌리기/실패 재시도, 전체 73 tests |
+| dnd | [기능 브랜치] | ca7687a | 단계 간 드래그/취소·stale 방어/가상화 유지, 전체 87 tests |
+| reusable-ui | [기능 브랜치] | 9f97bae | clear Input·의미별 버튼·Header slots, 공통 UI 12 tests |
+| candidate-structure | [기능 브랜치] | 2bd8ad9 | 도메인 폴더·queryOptions·입력 훅·skeleton, 통합 전체 100 tests |
 
 ## 초기 필수 기능 완료 당시 검증 (후속 기능 추가 전)
 - `pnpm format:check`: 통과.
@@ -136,19 +136,19 @@ API·지원자 컴포넌트 배치 정리 완료: 기능 `6986331`, main 통합 
 이번 승인 범위의 필수 미완료와 알려진 결함은 없습니다. 로그인·실제 백엔드·다중 탭 동기화·공개 저장소 생성/푸시/배포는 승인 범위 밖입니다.
 
 ## 최신 동시 렌더링 단순화 완료
-기능 e735dd0 / main 통합927a3df, codex/concurrency-simplification / .worktrees/concurrency-simplification. useTransition 제거, 검색 문자열 useDeferredValue만 유지. Query 기반 조회 피드백과 재시도 focus/잠금 보존. lint/typecheck/app14 tests/production build 및 브라우저 검색/초기화/refresh pending 보드 유지와 완료 확인. console error/warn 없음, 미해결 이슈 없음. 상세 docs/records/concurrency-simplification.md.
+기능 e735dd0 / main 통합927a3df, [기능 브랜치] / [기능 작업 공간]. useTransition 제거, 검색 문자열 useDeferredValue만 유지. Query 기반 조회 피드백과 재시도 focus/잠금 보존. lint/typecheck/app14 tests/production build 및 브라우저 검색/초기화/refresh pending 보드 유지와 완료 확인. console error/warn 없음, 미해결 이슈 없음. 상세 docs/records/concurrency-simplification.md.
 
 ## 최신 UI Provider 제거와 loading 명칭 통합 완료
-기능 d8459d5 / main e07e5ff, codex/zustand-loading / .worktrees/zustand-loading. CandidateUIProvider/UIContext 제거, Zustand 직접 구독과 effect 복원. loading/loadingIds/isLoading 명칭 통일. lint/typecheck/13 files113 tests/production build 통과. 브라우저 250명→이름검색→reload후1명과 입력 복원, 상세/Escape 포커스, 새로고침 완료/초기화250명 확인. console error/warn 없음. 미해결 기능 이슈 없음. docs/records/zustand-loading.md.
+기능 d8459d5 / main e07e5ff, [기능 브랜치] / [기능 작업 공간]. CandidateUIProvider/UIContext 제거, Zustand 직접 구독과 effect 복원. loading/loadingIds/isLoading 명칭 통일. lint/typecheck/13 files113 tests/production build 통과. 브라우저 250명→이름검색→reload후1명과 입력 복원, 상세/Escape 포커스, 새로고침 완료/초기화250명 확인. console error/warn 없음. 미해결 기능 이슈 없음. docs/records/zustand-loading.md.
 
 ## 최신 props 명칭 점검 완료
-Input/SearchBar native onChange, Button onClick/loading 정상 확인. Select는 사용자 후속 정정에 따라 Radix 원래 onValueChange 유지. 임시 변환을 e29b2bc로 복원하고 main 통합. 두 소스가 작업 전과 동일함을 diff로 확인. 정정 후 lint/typecheck/explorer9 tests 통과. codex/element-props / .worktrees/element-props, 미해결 이슈 없음. docs/records/element-props.md.
+Input/SearchBar native onChange, Button onClick/loading 정상 확인. Select는 사용자 후속 정정에 따라 Radix 원래 onValueChange 유지. 임시 변환을 e29b2bc로 복원하고 main 통합. 두 소스가 작업 전과 동일함을 diff로 확인. 정정 후 lint/typecheck/explorer9 tests 통과. [기능 브랜치] / [기능 작업 공간], 미해결 이슈 없음. docs/records/element-props.md.
 
 ## 최신 Input primitive 정리 완료
-기능25c2006 / main e91600f, codex/input-primitive / .worktrees/input-primitive. Input은 native props/ref·스타일·좌우 슬롯만 제공. clearButton 중복 기능 제거, SearchBar 지우기/focus 유지. 테스트는 ui/input.test.tsx에 위치. lint/typecheck/관련26 tests/production build 통과. 브라우저 검색1명·좌돋보기/우X·키보드 지우기·입력 focus·빈값 X 숨김 확인, console[]. 미해결 이슈 없음. docs/records/input-primitive.md.
+기능25c2006 / main e91600f, [기능 브랜치] / [기능 작업 공간]. Input은 native props/ref·스타일·좌우 슬롯만 제공. clearButton 중복 기능 제거, SearchBar 지우기/focus 유지. 테스트는 ui/input.test.tsx에 위치. lint/typecheck/관련26 tests/production build 통과. 브라우저 검색1명·좌돋보기/우X·키보드 지우기·입력 focus·빈값 X 숨김 확인, console[]. 미해결 이슈 없음. docs/records/input-primitive.md.
 
 ## 최신 Input 동일 구조 통합 완료
-기능13ab27a / main e39199c, codex/input-slot-layout / .worktrees/input-slot-layout. 슬롯 유무와 무관한 wrapper/input 및 외곽 스타일, 슬롯 방향만 너비+gap 추가. lint/typecheck/관련26 tests/동일 소스 production build 통과. 브라우저4종 동일448×38px, 슬롯16px+gap8px 공간만 추가 확인, console[]. 슬롯 전환 시 DOM/값/선택/focus 유지 검증. 미해결 이슈 없음. docs/records/input-slot-layout.md.
+기능13ab27a / main e39199c, [기능 브랜치] / [기능 작업 공간]. 슬롯 유무와 무관한 wrapper/input 및 외곽 스타일, 슬롯 방향만 너비+gap 추가. lint/typecheck/관련26 tests/동일 소스 production build 통과. 브라우저4종 동일448×38px, 슬롯16px+gap8px 공간만 추가 확인, console[]. 슬롯 전환 시 DOM/값/선택/focus 유지 검증. 미해결 이슈 없음. docs/records/input-slot-layout.md.
 
 ## 최신 SearchBar 고정 아이콘 완료
-기능4ad67ae / main103a8ca, codex/search-bar-fixed-icons / .worktrees/search-bar-fixed-icons. 공개 left/right 제거, 내부 돋보기/CloseButton 고정 조합. lint/typecheck/관련20 tests/통합소스 production build 통과. 브라우저 검색1명, 좌돋보기/우버튼, Enter지우기→250명/focus/X숨김 확인. console[]. 미해결 이슈 없음. docs/records/search-bar-fixed-icons.md.
+기능4ad67ae / main103a8ca, [기능 브랜치] / [기능 작업 공간]. 공개 left/right 제거, 내부 돋보기/CloseButton 고정 조합. lint/typecheck/관련20 tests/통합소스 production build 통과. 브라우저 검색1명, 좌돋보기/우버튼, Enter지우기→250명/focus/X숨김 확인. console[]. 미해결 이슈 없음. docs/records/search-bar-fixed-icons.md.

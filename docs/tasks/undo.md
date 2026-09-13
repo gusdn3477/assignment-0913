@@ -16,8 +16,8 @@
 
 ## 기능 인계 (2026-09-13)
 - 상태: 구현 및 기능 검증 완료. 통합 담당 코드 리뷰에서 blocking finding 없음.
-- 워크트리: `/Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/undo`
-- 브랜치: `codex/undo`
+- 워크트리: `[기능 작업 공간]`
+- 브랜치: `[기능 브랜치]`
 - 변경: QueryClient 단위 마지막 성공 이동 이력, 기존 mutation을 통한 Undo와 실패 시 이력 보존/카드 롤백, stale action guard, 한국어 메뉴/키보드/가상화 포커스.
 - 검증: 전체 73/73 tests, lint, strict typecheck, format:check 통과. symlink 의존성에서는 `pnpm --config.verify-deps-before-run=false <command>` 사용.
 - 기록: `docs/records/undo.md`. 의존성 변경 및 알려진 구현 미해결 이슈 없음.

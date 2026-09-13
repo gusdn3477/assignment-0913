@@ -19,5 +19,5 @@ mock-api의 candidateApi를 사용. API 주입/vi.mock 방식으로 deterministi
 - hook 11개 + mock-api 17개 = 28 테스트 통과. TypeScript 및 변경 파일 ESLint 통과.
 - 추가 의존성/공통 파일 수정 없음. 알려진 미완료 사항 없음.
 - 상세 작업 기록: `docs/records/optimistic-update.md`.
-- 인계 브랜치: `codex/optimistic-update`, 워크트리: `/Users/phw4483/Documents/ChatGPT/assignment_0913/.worktrees/optimistic-update`.
+- 인계 브랜치: `[기능 브랜치]`, 워크트리: `[기능 작업 공간]`.
 - 통합 담당자: 앱에서 두 훅을 연결하고 build/브라우저 확인 및 STATUS/PROMPTS 갱신.
