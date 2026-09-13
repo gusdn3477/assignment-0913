@@ -1,1 +1,2 @@
-export default function Page() { return <main>Orbit 채용 보드 준비 중</main>; }
+import { CandidatesApp } from "@/features/candidates/candidates-app";
+export default function Page() { return <CandidatesApp />; }
