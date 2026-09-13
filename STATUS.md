@@ -120,3 +120,6 @@ API·지원자 컴포넌트 배치 정리 완료: 기능 `6986331`, main 통합 
 
 ## 최신 UI Provider 제거와 loading 명칭 통합 완료
 기능 d8459d5 / main e07e5ff, codex/zustand-loading / .worktrees/zustand-loading. CandidateUIProvider/UIContext 제거, Zustand 직접 구독과 effect 복원. loading/loadingIds/isLoading 명칭 통일. lint/typecheck/13 files113 tests/production build 통과. 브라우저 250명→이름검색→reload후1명과 입력 복원, 상세/Escape 포커스, 새로고침 완료/초기화250명 확인. console error/warn 없음. 미해결 기능 이슈 없음. docs/records/zustand-loading.md.
+
+## 최신 props 명칭 점검 완료
+Input/SearchBar native onChange, Button onClick/loading 정상 확인. Select는 사용자 후속 정정에 따라 Radix 원래 onValueChange 유지. 임시 변환을 e29b2bc로 복원하고 main 통합. 두 소스가 작업 전과 동일함을 diff로 확인. 정정 후 lint/typecheck/explorer9 tests 통과. codex/element-props / .worktrees/element-props, 미해결 이슈 없음. docs/records/element-props.md.

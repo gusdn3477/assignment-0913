@@ -734,3 +734,8 @@ Codex in-app browser, 127.0.0.1:3101, 기본 viewport 1280×720.
 - 상세 통합 검증: docs/records/zustand-loading.md.
 
 - 최종 결과: native onChange/optional onClear, 콜백+value길이>0일 때 X 표시. 기능19e5d07/보정e9c2baf → maina8f2722/cc2c7f5. 이전 전체113tests 및 최종20관련tests/build/browser 성공. Enter clear후 숨김/focus/250명, console[].
+
+## props 명칭 점검과 Select 정정
+- 요청: element 이벤트와 유사한 prop 명칭 확인/수정. 이어서 “Select는 원래 onValueChange인가? 그럼 유지해”.
+- 결과: 점검 후 Select 임시 onChange 변환을 원래 onValueChange로 복원. 최종 코드 차이 없음. correction e29b2bc와 이전 변경 이력 보존.
+- 검증: 정정 후 lint/typecheck/explorer9 tests/diff-check 통과. 상세 docs/records/element-props.md.

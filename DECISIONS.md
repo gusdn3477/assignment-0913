@@ -105,3 +105,6 @@
 ## UI 상태 직접 구독과 loading 명칭
 - 사용자 정정에 따라 provider별 Zustand 인스턴스 대신 클라이언트 단일 bound store를 사용합니다. CandidateUIProvider/UIContext 제거, useHydrateCandidateUI는 client effect 최초 복원만 담당합니다. SSR은 초기 snapshot, 브라우저에서만 상태 변경하며 검색/직무만 영속 저장합니다.
 - loading/ loadingIds/ normalized isLoading으로 앱 로딩 계약을 통일합니다. Query 원본 isPending과 API 내부 진행 요청 값은 의미를 보존합니다. QueryClientProvider와 DragDropProvider는 라이브러리 필수 연결로 유지합니다.
+
+## 이벤트 props 명칭 점검
+사용자 정정에 따라 라이브러리 원래 이벤트 이름은 유지합니다. Select는 Radix onValueChange(string), Input/SearchBar는 native onChange(event), Button은 onClick/loading을 사용합니다. 의미별 도메인 콜백을 일괄 onClick으로 바꾸지 않습니다.
