@@ -3,7 +3,6 @@
 import { useRef } from "react";
 import { Mail, CalendarDays, BriefcaseBusiness } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { CloseButton } from "./close-button";
 import {
   Sheet,
   SheetContent,
@@ -31,7 +30,7 @@ export function CandidateDetail({
       }}
     >
       <SheetContent
-        showCloseButton={false}
+        closeButtonProps={{ "aria-label": "상세 닫기" }}
         className="w-full overflow-y-auto border-slate-200 bg-white p-0 sm:max-w-lg"
         onOpenAutoFocus={() => {
           returnId.current = selectedId;
@@ -50,7 +49,6 @@ export function CandidateDetail({
           }
         }}
       >
-        <CloseButton />
         <SheetHeader className="border-b border-slate-100 bg-slate-50 px-7 pt-10 pb-7">
           <p className="mb-4 text-xs font-semibold tracking-widest text-slate-500">
             CANDIDATE PROFILE
