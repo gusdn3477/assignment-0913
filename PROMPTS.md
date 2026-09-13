@@ -694,3 +694,10 @@ Codex in-app browser, 127.0.0.1:3101, 기본 viewport 1280×720.
 - 상세 명령·결과와 브라우저는 docs/records/dnd-kit-migration.md, query-guard-close.md, dnd-query-integration.md 참조.
 
 - 최종: main 보정783c35f, pnpm format:check && pnpm verify 전체 통과(13 files109 tests, lint/typecheck/format/production build). 예약 fake frame 폐기 원인을 수정했고 maxWorkers1로 검사 CPU 경합 제거. production pointer/취소/저장 격리, 상세 키보드 닫기/focus/Guard refresh/390px/console[] 확인, 테스트 상태/탭/서버 복원.
+
+## 조회 에러 상수화 (2026-09-13)
+- 실제 요청: loadErrorMessage 코드를 제시하며 “에러코드 에러메시지 상수화”.
+- 새 codex/candidate-error-constants 세션/워크트리에서 에러 코드/메시지 상수, MockApiError 타입 및 API/검증/UI 소비처 변경. 통합은 기록/리뷰/검증 담당.
+- 기존 코드 값·안내 메시지·fallback을 유지하며 내부 진단 메시지는 화면에 노출하지 않음. 상세 결과는 docs/records/candidate-error-constants.md 및 candidate-error-constants-integration.md 참조.
+
+- 결과: 기능cce063b/main통합c47a148, 기존31 tests/lint/typecheck/format/build 통과. production 실제 초기 실패 기본 안내/재시도250명 복구/검색 focus/console[] 확인.

@@ -1,6 +1,8 @@
 # 세션 인계 / 현재 상태
 
 ## 현재 결론
+에러 코드·조회 안내 상수화 완료: 기능 `cce063b`, main 통합 `c47a148`, 브랜치 `codex/candidate-error-constants`, 워크트리 `.worktrees/candidate-error-constants`. 기존 API17/app14 총31 tests, lint/typecheck/format 및 main production build 통과. 브라우저 기본 오류 안내→재시도→250명 복구/포커스/console[] 확인. 코드·메시지·fallback 동작 유지, 미해결 이슈 없음. 상세: `docs/records/candidate-error-constants-integration.md`.
+
 **DnD 라이브러리 전환·조회 Guard·상세 CloseButton 호출 단순화 완료**. 독립 기능 브랜치를 main으로 통합했고, 포맷/lint/typecheck/109 tests/production build 및 브라우저 검증 완료. 미해결 기능 이슈 없음.
 
 ## 최신 DnD·조회 Guard 검증 (2026-09-13)
