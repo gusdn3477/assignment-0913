@@ -1,3 +1,7 @@
+import {
+  setupDragGeometry,
+  sensorDrag,
+} from "@/features/candidates/components/candidate-board/dnd-test-helpers";
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -494,30 +498,12 @@ describe("saved stage undo menu", () => {
 });
 
 describe("drag moves through the real mutation flow", () => {
-  function drag(id: string, stage: string) {
-    const values = new Map<string, string>();
-    const dataTransfer = {
-      types: [] as string[],
-      effectAllowed: "",
-      dropEffect: "",
-      setData(type: string, value: string) {
-        values.set(type, value);
-        this.types.push(type);
-      },
-      getData(type: string) {
-        return values.get(type) ?? "";
-      },
-    };
-    fireEvent.dragStart(
-      document.querySelector(`[data-candidate-drag="${id}"]`)!,
-      { dataTransfer },
-    );
-    fireEvent.drop(document.querySelector(`[data-drop-stage="${stage}"]`)!, {
-      dataTransfer,
-    });
-  }
-
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+  });
   it("rolls back only a failed dragged card, keeps another save, and offers Undo after success", async () => {
+    setupDragGeometry();
     const first = deferred<Candidate>();
     const second = deferred<Candidate>();
     vi.mocked(candidateApi.updateCandidateStage).mockImplementation(({ id }) =>
@@ -525,11 +511,11 @@ describe("drag moves through the real mutation flow", () => {
     );
     mount();
     await screen.findByRole("searchbox");
-    drag("a", "offer");
+    await sensorDrag("a", "offer");
     await screen.findByRole("button", { name: "김하늘 단계 변경 (저장 중)" });
     expect(detail("김하늘")).toHaveFocus();
-    drag("a", "hired");
-    drag("b", "hired");
+    await sensorDrag("a", "hired");
+    await sensorDrag("b", "hired");
     await screen.findByRole("button", { name: "김여름 단계 변경 (저장 중)" });
     expect(candidateApi.updateCandidateStage).toHaveBeenCalledTimes(2);
     await act(async () => first.reject(Error("private save error")));

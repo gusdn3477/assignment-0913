@@ -27,3 +27,10 @@ HTMLElement.prototype.scrollTo = function (
     typeof options === "number" ? (y ?? 0) : (options.top ?? this.scrollTop);
   queueMicrotask(() => this.dispatchEvent(new Event("scroll")));
 };
+
+// dnd-kit observes element geometry; JSDOM supplies no ResizeObserver.
+globalThis.ResizeObserver = class {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};
