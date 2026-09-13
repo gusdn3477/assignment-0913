@@ -8,3 +8,4 @@ coverage/
 .worktrees/
 artifacts/
 .pnpm-store/
+next-env.d.ts
