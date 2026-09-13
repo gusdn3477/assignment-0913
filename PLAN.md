@@ -82,3 +82,6 @@ Input은 native props/ref와 스타일·left/right 슬롯만 제공하는 primit
 
 ## 사용자 정정: SearchBar 고정 아이콘
 SearchBar의 공개 left/right props를 제거하고 내부 Input에 돋보기/CloseButton을 고정 배치합니다. onClear와 비어 있지 않은 value에 따른 지우기 표시 조건은 유지합니다.
+
+## 사용자 정정: React 메모이제이션 단순화
+React Compiler를 Next production과 Vitest 양쪽에 적용하고 단순 렌더 최적화 목적의 `memo`, `useMemo`, `useCallback`을 제거합니다. 검색 입력의 deferred 보드 렌더링과 1,000건 가상화 성능은 유지합니다. mutable virtualizer를 사용하는 opt-out 컴포넌트의 옵션처럼 외부 라이브러리 참조 안정성에 필요한 수동 메모이제이션만 근거와 함께 유지합니다.

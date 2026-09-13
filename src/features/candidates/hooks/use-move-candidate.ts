@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 import {
   type QueryClient,
   useMutation,
@@ -77,36 +77,30 @@ export function useMoveCandidate(): {
       store.set(id, false);
     },
   });
-  const move = useCallback(
-    (id: string, stage: Stage) => {
-      if (store.getSnapshot().loadingIds.has(id)) return;
-      const candidate = client
-        .getQueryData<Candidate[]>(CANDIDATES_QUERY_KEY)
-        ?.find((item) => item.id === id);
-      if (!candidate || candidate.stage === stage) return;
-      store.set(id, true);
-      mutate({ id, stage });
-    },
-    [client, mutate, store],
-  );
-  const undo = useCallback(
-    (id: string) => {
-      const snapshot = store.getSnapshot();
-      if (snapshot.loadingIds.has(id)) return false;
-      const entry = snapshot.undoHistory.get(id);
-      if (!entry) return false;
-      const candidate = client
-        .getQueryData<Candidate[]>(CANDIDATES_QUERY_KEY)
-        ?.find((item) => item.id === id);
-      if (!candidate || candidate.stage !== entry.savedStage) {
-        store.record(id);
-        return false;
-      }
-      store.set(id, true);
-      mutate({ id, stage: entry.previousStage, undo: true });
-      return true;
-    },
-    [client, mutate, store],
-  );
+  function move(id: string, stage: Stage) {
+    if (store.getSnapshot().loadingIds.has(id)) return;
+    const candidate = client
+      .getQueryData<Candidate[]>(CANDIDATES_QUERY_KEY)
+      ?.find((item) => item.id === id);
+    if (!candidate || candidate.stage === stage) return;
+    store.set(id, true);
+    mutate({ id, stage });
+  }
+  function undo(id: string) {
+    const snapshot = store.getSnapshot();
+    if (snapshot.loadingIds.has(id)) return false;
+    const entry = snapshot.undoHistory.get(id);
+    if (!entry) return false;
+    const candidate = client
+      .getQueryData<Candidate[]>(CANDIDATES_QUERY_KEY)
+      ?.find((item) => item.id === id);
+    if (!candidate || candidate.stage !== entry.savedStage) {
+      store.record(id);
+      return false;
+    }
+    store.set(id, true);
+    mutate({ id, stage: entry.previousStage, undo: true });
+    return true;
+  }
   return { move, loadingIds, undo, undoHistory };
 }

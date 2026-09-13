@@ -1,5 +1,5 @@
 "use client";
-import { memo, useRef } from "react";
+import { useRef } from "react";
 import { useDraggable } from "@dnd-kit/react";
 import {
   Check,
@@ -20,7 +20,7 @@ import {
 import { cn } from "@/lib/utils";
 import { STAGES, STAGE_LABELS, stageStyles } from "@/constants/candidate";
 import type { Candidate, Stage } from "@/features/candidates/types/candidate";
-export const CandidateCard = memo(function CandidateCard({
+export function CandidateCard({
   candidate,
   loading,
   undoStage,
@@ -196,4 +196,4 @@ export const CandidateCard = memo(function CandidateCard({
       </div>
     </div>
   );
-});
+}

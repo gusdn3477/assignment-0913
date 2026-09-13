@@ -75,6 +75,9 @@ export function VirtualCandidateList({
     scrollPaddingStart: 6,
     scrollPaddingEnd: 16,
     initialRect: { width: 240, height: 720 },
+    // This component opts out of the compiler because the virtualizer is mutable.
+    // Keep this option stable so the external instance does not recalculate its range
+    // solely because the component rendered.
     rangeExtractor: useCallback(
       (range: Range) => {
         const indexes = defaultRangeExtractor(range);

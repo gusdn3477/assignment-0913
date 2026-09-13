@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useRef } from "react";
+import { useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { candidatesQueryOptions } from "@/features/candidates/queries/candidate-options";
 import type { Candidate } from "@/features/candidates/types/candidate";
@@ -26,18 +26,15 @@ export function useCandidates(selectedId?: string | null) {
 
   const data = query.data ?? EMPTY_CANDIDATES;
   const hasData = query.data !== undefined;
-  const summary = useMemo(
-    () => ({
-      jobs: [...new Set(data.map((candidate) => candidate.job))].sort(),
-      total: data.length,
-      active: data.filter(
-        (candidate) =>
-          candidate.stage !== "hired" && candidate.stage !== "rejected",
-      ).length,
-      hired: data.filter((candidate) => candidate.stage === "hired").length,
-    }),
-    [data],
-  );
+  const summary = {
+    jobs: [...new Set(data.map((candidate) => candidate.job))].sort(),
+    total: data.length,
+    active: data.filter(
+      (candidate) =>
+        candidate.stage !== "hired" && candidate.stage !== "rejected",
+    ).length,
+    hired: data.filter((candidate) => candidate.stage === "hired").length,
+  };
 
   return {
     data,

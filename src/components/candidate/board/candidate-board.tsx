@@ -8,7 +8,7 @@ import {
 } from "@dnd-kit/react";
 import { Accessibility, Feedback } from "@dnd-kit/dom";
 import type { ComponentProps } from "react";
-import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import {
   VirtualCandidateList,
   type CandidateListHandle,
@@ -49,28 +49,22 @@ export function CandidateBoard({
   const lists = useRef<Partial<Record<Stage, CandidateListHandle>>>({});
   const requestedMove = useRef<string | null>(null);
   const previousStages = useRef(new Map<string, Stage>());
-  const columns = useMemo(() => {
-    const grouped: Record<Stage, Candidate[]> = {
-      review: [],
-      interview: [],
-      offer: [],
-      hired: [],
-      rejected: [],
-    };
-    const sorted = [...candidates].sort(
-      (a, b) =>
-        b.appliedAt.localeCompare(a.appliedAt) || a.id.localeCompare(b.id),
-    );
-    for (const candidate of sorted) grouped[candidate.stage].push(candidate);
-    return grouped;
-  }, [candidates]);
-  const move = useCallback(
-    (id: string, stage: Stage) => {
-      requestedMove.current = id;
-      onMove(id, stage);
-    },
-    [onMove],
+  const columns: Record<Stage, Candidate[]> = {
+    review: [],
+    interview: [],
+    offer: [],
+    hired: [],
+    rejected: [],
+  };
+  const sorted = [...candidates].sort(
+    (a, b) =>
+      b.appliedAt.localeCompare(a.appliedAt) || a.id.localeCompare(b.id),
   );
+  for (const candidate of sorted) columns[candidate.stage].push(candidate);
+  function move(id: string, stage: Stage) {
+    requestedMove.current = id;
+    onMove(id, stage);
+  }
 
   const drag = useCandidateStageDrag({
     candidates,
@@ -79,14 +73,11 @@ export function CandidateBoard({
     onMove: move,
   });
 
-  const undo = useCallback(
-    (id: string) => {
-      if (!onUndo?.(id)) return false;
-      requestedMove.current = id;
-      return true;
-    },
-    [onUndo],
-  );
+  function undo(id: string) {
+    if (!onUndo?.(id)) return false;
+    requestedMove.current = id;
+    return true;
+  }
 
   useLayoutEffect(() => {
     const id = requestedMove.current ?? focusedCard.current;

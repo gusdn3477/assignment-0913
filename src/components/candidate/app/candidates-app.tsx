@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useCallback, useDeferredValue, useMemo } from "react";
+import { useDeferredValue } from "react";
 import { ArrowUpRight, CircleHelp, Layers3, Users } from "lucide-react";
 import { CandidateErrorBoundary } from "@/components/candidate/error-boundary/candidate-error-boundary";
 import { CandidateEmptyGuard } from "@/components/candidate/empty-guard/candidate-empty-guard";
@@ -18,9 +18,6 @@ import {
   useCandidateUI,
 } from "@/features/candidates/stores/ui-store";
 
-// Urgent input renders can skip the board until the deferred search catches up.
-const DeferredBoard = memo(CandidateBoard);
-
 function BoardContent() {
   const { move, loadingIds, undo, undoHistory } = useMoveCandidate();
   const search = useCandidateUI((state) => state.search);
@@ -31,14 +28,7 @@ function BoardContent() {
   const candidates = query.data;
   const deferredSearch = useDeferredValue(search);
   const isStale = search !== deferredSearch;
-  const filtered = useMemo(
-    () => filterCandidates(candidates, deferredSearch, job),
-    [candidates, deferredSearch, job],
-  );
-  const onOpenDetail = useCallback(
-    (id: string) => selectCandidate(id),
-    [selectCandidate],
-  );
+  const filtered = filterCandidates(candidates, deferredSearch, job);
 
   return (
     <>
@@ -109,14 +99,14 @@ function BoardContent() {
               filtered={filtered.length}
             >
               <CandidateErrorBoundary label="지원자 보드">
-                <DeferredBoard
+                <CandidateBoard
                   resetKey={JSON.stringify({ search: deferredSearch, job })}
                   candidates={filtered}
                   loadingIds={loadingIds}
                   onMove={move}
                   onUndo={undo}
                   undoHistory={undoHistory}
-                  onOpenDetail={onOpenDetail}
+                  onOpenDetail={selectCandidate}
                 />
               </CandidateErrorBoundary>
             </CandidateEmptyGuard>

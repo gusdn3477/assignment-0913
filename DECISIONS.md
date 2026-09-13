@@ -128,3 +128,8 @@ hasSlots와 조기 반환을 제거하고 wrapper에서 border/background/focus/
 
 ## SearchBar 고정 조합
 범용 Input은 left/right 슬롯을 제공하지만 검색 전용 SearchBar는 슬롯을 공개하지 않습니다. 내부 left=Search, right=조건부 CloseButton으로 고정합니다. native onChange/ref와 기존 onClear·disabled/readOnly·focus 계약은 유지합니다.
+
+## React Compiler와 수동 메모이제이션
+- React 19만으로는 자동 메모이제이션이 켜지지 않으므로 `babel-plugin-react-compiler`를 개발 의존성으로 추가하고 Next의 `reactCompiler` 옵션을 활성화합니다. Vitest도 같은 Babel plugin을 적용해 production과 테스트의 렌더링 특성을 맞춥니다.
+- 호출부의 `DeferredBoard = memo(CandidateBoard)`를 포함해 앱 소유 컴포넌트와 훅의 단순 `memo`, `useMemo`, `useCallback`은 제거합니다. Compiler가 후보 필터·단계 그룹·요약과 콜백의 안정성을 관리하므로 도메인 코드는 계산과 이벤트 의미만 표현합니다.
+- `VirtualCandidateList`는 mutable 외부 인스턴스를 직접 읽어 `"use no memo"`로 Compiler를 제외합니다. virtualizer의 `rangeExtractor` 옵션은 렌더만으로 범위를 재계산하지 않도록 수동 `useCallback`을 유지합니다.
