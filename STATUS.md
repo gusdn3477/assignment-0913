@@ -1,7 +1,15 @@
 # 세션 인계 / 현재 상태
 
 ## 현재 결론
-필수 기능, concurrent-feedback, **virtualization** 완료 후 사용자 선택으로 **Undo 구현 진행 중**입니다. 기준 main `a8be3cc`에서 `codex/undo`, `.worktrees/undo` 독립 기능 세션을 시작했습니다. 카드별 마지막 성공 이동 되돌리기와 실패 재시도, 기존 동시성·가상화 포커스 보존이 범위입니다. 기능 계약은 `docs/tasks/undo.md`에 있으며 완료 후 통합·검증합니다.
+필수 기능, concurrent-feedback, virtualization, 후속 선택 작업 **Undo 구현·통합·검증 완료**. main이 기준이며 기능 브랜치·워크트리·커밋 이력을 보존했습니다. 진행 중인 기능과 알려진 미해결 결함은 없습니다.
+
+## 최신 Undo 검증 (2026-09-13)
+- 기능 `a3c8274`, main 통합 `57cbfa0`. 브랜치 `codex/undo`, 워크트리 `.worktrees/undo`.
+- 카드별 마지막 성공 이동 한 번 되돌리기, 실패 시 롤백·이력 보존·재시도. 같은 카드 잠금과 다른 카드 병렬 유지. 이력은 페이지 새로고침 시 초기화.
+- main `pnpm format:check && pnpm verify`: 포맷/lint/strict typecheck/**73/73 tests**/production build 통과.
+- production 브라우저: 키보드 Undo·포커스 복귀·성공 이력 소모·되돌린 단계의 reload 후 유지, 390px 메뉴와 Undo 확인. 일반 이동 실패도 실제 발생하여 롤백/재시도 확인. console error/warn 없음.
+- 테스트한 카드는 원래 단계로 되돌렸고 검색 초기화로 250명 복구. 임시 탭/서버 및 viewport override 정리 완료.
+- 상세: `docs/records/undo.md`, `docs/records/undo-integration.md`. 아래 이전 검증 수치는 각 기능 완료 당시의 기록입니다.
 
 ## 최신 가상화 검증 (2026-09-13)
 - 기능 `2c0a912`, main 통합 `da3da3f`. 브랜치 `codex/virtualization`, 워크트리 `.worktrees/virtualization`.
@@ -28,6 +36,7 @@
 | acceptance-tests | codex/acceptance-tests | a0755c8 | 실제 통합 UI 상태, 5 tests |
 | concurrent-feedback | codex/concurrent-feedback | 4ceb4f7 | 동시 렌더링·재시도·갱신 피드백, app 11 tests / 전체 56 tests |
 | virtualization | codex/virtualization | 2c0a912 | 1,000건 가상화/키보드/포커스, 전체 62 tests |
+| undo | codex/undo | a3c8274 | 카드별 성공 이동 되돌리기/실패 재시도, 전체 73 tests |
 
 ## 최종 검증
 - `pnpm format:check`: 통과.
@@ -38,8 +47,8 @@
 - Turbopack production CSS 내부 포트 오류 때문에 build는 공식 `--webpack` 옵션을 사용합니다.
 
 ## 실행과 다음 작업
-2026-09-13 가상화 추가 요청의 문서화와 실제 구현·검증을 모두 완료했습니다. 공통 Input/Button의 기본 HTML 요소 확장과 카드 저장 동시성 계약을 유지했습니다. 진행 중인 기능과 알려진 미해결 사항은 없습니다.
+2026-09-13 선택한 Undo까지 구현·검증·문서화를 완료했습니다. 새 세션은 main에서 시작하고, 완료된 기능 세션을 다른 기능에 재사용하지 않습니다.
 
-개발 미리보기: http://localhost:3100 (서버가 종료되면 `pnpm dev --port 3100`). 기본 실행은 `pnpm install` → `pnpm dev`입니다.
+개발 미리보기는 `pnpm dev --port 3100`으로 실행합니다. 기본 실행은 `pnpm install` → `pnpm dev`입니다. 이번 production 검증 서버는 종료했습니다.
 
-필수 미완료 없음. 선택 작업 중 명시된 가상화를 완료했습니다. 다음 독립 기능 후보는 Undo·DnD이며 이번에는 구현하지 않았습니다. 로그인·실제 백엔드·다중 탭 동기화·공개 저장소 생성/푸시/배포는 승인 범위 밖입니다.
+필수 미완료와 알려진 결함은 없습니다. 다음 독립 기능 후보는 DnD입니다. 로그인·실제 백엔드·다중 탭 동기화·공개 저장소 생성/푸시/배포는 승인 범위 밖입니다.

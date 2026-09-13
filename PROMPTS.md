@@ -499,3 +499,78 @@ Codex in-app browser, 127.0.0.1:3101, 기본 viewport 1280×720.
 
 ## 결론 / 남은 사항
 가상화 구현·리뷰·자동/production 검증 완료. 알려진 미해결 결함 없음. 기본 시드는 250명이며 1,000건은 합성 QA 데이터로 확인했습니다. Undo/DnD는 다음 독립 기능 후보입니다.
+
+
+---
+
+# Undo 구현 기록
+
+## 실제 요청 / 배정
+- 사용자: “후속 작업 이어서 작업하자.”
+- 선택 답변: “Undo: 저장된 단계 이동 되돌리기 (추천)”
+- 통합 담당 배정: “Implement Undo in fresh assigned worktree .../.worktrees/undo branch codex/undo. Read AGENTS/PLAN/STATUS/DECISIONS and docs/tasks/undo.md first ... Own src/features/candidates changes/tests and task + docs/records/undo.md ... Implement card-scoped last-successful-move Undo through existing mutation/locking, failure preserves history, stale history guard, accessible menu action and virtualization focus retention. Validate meaningful tests lint typecheck format; commit feature and send SHA/handoff.”
+- 후속 리뷰 기준: history 참조/콜백 안정성 유지, 실행 시점 stale guard, 실패한 일반 이동의 기존 이력 보존, hook 인스턴스 간 동일 카드 잠금 공유.
+
+## 산출물 / 결정
+- QueryClient별 WeakMap의 기존 동기 잠금 저장소에 메모리 이력 Map을 함께 관리합니다. 카드 가상화/unmount에 영향받지 않고 새 QueryClient/페이지 로드에서는 비어 있습니다. Zustand/localStorage에 이력을 저장하지 않습니다.
+- 일반 이동 성공만 이전 단계/저장된 단계를 기록하고 다음 성공 이동이 교체합니다. Undo는 동일 mutation/API를 이용하며 성공 시 소비합니다. 이동/Undo 실패는 카드만 롤백하고 이력은 보존합니다.
+- Undo와 일반 이동이 같은 잠금을 사용합니다. 다른 카드 저장은 병렬 가능하고 이전 조회 취소 및 성공 후 저장이라는 기존 동작을 유지합니다.
+- UI와 실행 시점 모두 현재 캐시 단계가 기록의 저장 단계와 일치하는지 확인합니다. 실행 시 stale/missing 카드 이력은 제거하고 API를 호출하지 않습니다.
+- 카드 메뉴의 “서류검토로 되돌리기”처럼 목적 단계를 표시합니다. 기존 메뉴 키보드/저장 중 비활성화/가상화 포커스 복원 흐름을 공유합니다. 실패는 되돌리기 전용 안전한 한국어 메시지 한 번으로 전달합니다.
+- 새 의존성 없음. 긴급한 잠금/저장/되돌리기를 transition에 넣지 않고 기존 검색 useDeferredValue 및 retry useTransition 계약을 유지합니다. history와 함수 참조를 안정적으로 유지하여 DeferredBoard memo를 보존합니다.
+- 설치된 Next `node_modules/next/dist/docs/01-app/03-api-reference/01-directives/use-client.md`를 읽고 클라이언트 경계를 유지했습니다.
+
+## 검증 명령 / 실제 결과
+- root node_modules를 워크트리에 symlink(ignored)하여 기존 설치를 공유했습니다.
+- 첫 일반 `pnpm exec prettier ...` / `pnpm typecheck`: pnpm 자동 의존성 검사로 install을 시도하고 `ERR_PNPM_ABORTED_REMOVE_MODULES_DIR_NO_TTY`로 중단했습니다. 의존성 변경 없이 통합 담당이 제시한 `--config.verify-deps-before-run=false`를 후속 명령에 적용했습니다.
+- `node_modules/.bin/prettier --write`(변경 3개 파일), `node_modules/.bin/tsc --noEmit`: 통과.
+- `pnpm --config.verify-deps-before-run=false test src/features/candidates/queries.test.tsx`: 20/20 통과.
+- `pnpm --config.verify-deps-before-run=false test src/features/candidates/candidates-app.test.tsx src/features/candidates/virtualization.test.tsx`: 19/19 통과.
+- `pnpm --config.verify-deps-before-run=false test`: 6 files, **73/73 tests 통과** (기존 62 + Undo 11).
+- `pnpm --config.verify-deps-before-run=false lint && pnpm --config.verify-deps-before-run=false typecheck && pnpm --config.verify-deps-before-run=false format:check`: ESLint, TypeScript strict, Prettier 모두 통과.
+- 통합 담당 코드/신규 hook/UI/화면 밖 테스트 리뷰: “no blocking findings.”
+
+## 검증 내용 / 리뷰
+- 성공 전 이력 없음, 후속 성공 이력 교체, 한 번 Undo 후 소비 및 redo 없음.
+- 일반 이동 실패/Undo 실패에 이력 보존, 낙관적 Undo 후 롤백 및 재시도 성공.
+- hook 두 인스턴스에서 undo-first/move-first 동기 중복 방어.
+- 카드 두 개 병렬 Undo의 성공/실패 완료 순서 두 가지에서 카드 데이터·이력 격리.
+- 캐시 단계 불일치/카드 제거 시 action-time guard, 새 클라이언트 이력 격리 및 remount 유지.
+- 실제 앱에서 키보드 End/Enter Undo, 영향받는 카드만 pending, 실패·재시도·성공 소비와 상세 버튼 포커스.
+- 1,000명 가상 컬럼의 화면 밖 Undo 목적 카드 마운트/포커스, stale menu 숨김.
+
+## 남은 작업 / 한계
+- 통합 담당 production build, 브라우저 영속 저장/키보드/오류 경로 검증 및 top-level 기록 통합.
+- 승인 범위대로 카드별 한 단계 Undo이며 새로고침 후 이력 유지, redo, DnD, 다중 탭 동기화는 구현하지 않습니다.
+
+
+---
+
+# Undo 통합 기록
+
+## 실제 요청 / 범위
+사용자 원문: “후속 작업 이어서 작업하자.”
+상태 문서에서 필수 기능과 가상화 완료, Undo/DnD 후보를 확인한 뒤 선택 질문을 제시했습니다. 사용자 답변: “Undo: 저장된 단계 이동 되돌리기 (추천)”.
+
+- 시작 main `a8be3cc`, git 작업 트리 깨끗함.
+- AGENTS/PLAN/STATUS/DECISIONS, 이전 optimistic-update/virtualization task와 통합 기록 확인.
+- AGENTS의 독립 기능 세션 규칙에 따라 `.worktrees/undo`, `codex/undo` 생성. 기능 담당은 후보 모듈·테스트·기능 기록, 통합은 상위 문서·리뷰·build·browser를 소유.
+- 실제 위임: `docs/tasks/undo.md`의 카드별 마지막 성공 이동 Undo 계약 구현, 기존 잠금/롤백/성공 저장/가상화 접근성 유지, 테스트·lint·typecheck·format 및 커밋 인계.
+- 통합 리뷰 지시: Undo 이력 참조를 안정적으로 유지하여 deferred board memo를 보존하고 실행 시점에도 현재 단계를 검증. 정상 이동 실패의 기존 이력 보존, 여러 hook 간 잠금 공유 확인.
+- rg 미설치로 find 사용. 추가 의존성 없음.
+
+## 검토
+- QueryClient별 메모리 이력과 카드별 pending store를 공유합니다. 성공 일반 이동만 이전/저장 단계를 기록하고 성공 Undo만 해당 이력을 제거합니다.
+- 메뉴에서 목적 단계가 명확하며 실행 불가한 Undo는 메뉴 닫기 후 기존 트리거 포커스 동작을 유지합니다. 실제 이동은 가상화 목록의 기존 포커스 요청 경로를 사용합니다.
+
+## 검증 / 인계
+- 기능 `a3c8274`를 main `57cbfa0`으로 no-ff 병합. 초기 git merge는 ORIG_HEAD.lock sandbox EPERM으로 실패, 같은 병합을 require_escalated로 실행해 성공.
+- main `pnpm format:check && pnpm verify`: 포맷/lint/strict typecheck/**6 files, 73/73 tests**/webpack production build 모두 통과. 테스트 17.11s. 추가 코드 수정 없음.
+- 최초 `pnpm start --hostname 127.0.0.1 --port 3101`은 listen EPERM, require_escalated 실행 성공.
+- 브라우저 기본 250명, 최서연(서류검토) 검색. 면접 이동 직후 저장 중 버튼/새로고침 비활성화와 카드 상세 포커스 확인.
+- 성공 후 메뉴에 `서류검토로 되돌리기` 표시. Enter로 메뉴 열기, End로 Undo 포커스, Enter 실행. 저장 완료 후 상세 포커스 복귀, Undo 메뉴 소모 확인.
+- 페이지 reload 후 최서연이 서류검토 목록에 유지되어 되돌린 단계의 영속 저장 확인. 이력의 새 QueryClient 초기화는 hook 테스트로 확인.
+- 390×844 모바일 메뉴 screenshot으로 폭/배치 확인. 새 일반 이동이 실제 기본 실패 확률로 한 번 실패하여 한국어 오류 알림과 서류검토 롤백 관찰. 재시도 성공 후 Undo 메뉴가 화면 안에 표시됨을 확인하고 Undo로 원래 단계 복구.
+- 검색 초기화로 전체 250명 복구, console error/warn `[]`. viewport override 초기화, 임시 탭 닫기, 검증 서버 Ctrl-C 종료.
+- Undo 실패/재시도는 결정적인 자동 테스트로 확인했으며 production에서는 일반 이동 실패를 관찰했습니다. 실패 확률/지연과 기본 시드를 변경하지 않았습니다.
+- 알려진 미해결 결함 없음. DnD는 다음 후보이며 이번에는 구현하지 않았습니다.
