@@ -55,3 +55,11 @@
 - 사용자 “선택사항 이어서 진행하자”에 따라 남은 후보인 단계 간 드래그 이동을 승인 범위로 옮깁니다. 초기 메뉴 우선 결정은 키보드·터치 대체 경로로 유지합니다.
 - native HTML drag/drop을 사용해 새 의존성 없이 데스크톱 마우스 이동을 제공합니다. 별도 핸들로 상세 보기와 메뉴 클릭을 분리합니다. 키보드와 터치는 기존 단계 메뉴를 사용하며 컬럼 안 순서 변경은 지원하지 않습니다.
 - 드롭도 기존 Query mutation으로 전달하므로 같은 카드 중복 차단·다른 카드 병렬·카드별 롤백·성공 후 저장·Undo 이력 정책을 공유합니다. 드래그 상태는 UI 메모리에만 유지합니다.
+
+## 후속 구현: 재사용성과 구조 정리
+- 사용자 선택사항 1~4에 따라 공통 Input의 명시적 clear action, 실제 초기화/재시도/닫기 버튼 래퍼, left/center/right 슬롯 Header를 제공합니다. native props/ref는 유지합니다. 실제 취소 액션이 없는 화면에 CancelButton을 추가하지 않고 의미에 맞는 CloseButton을 사용합니다.
+- 지원자 기능 경계는 유지하면서 내부를 컴포넌트별 폴더와 api/constants/types/utils/hooks/queries/stores로 나눕니다. 테스트는 해당 모듈 가까이 두고 긴 상대 경로는 프로젝트 alias를 사용합니다. 사용하지 않는 호환용 barrel과 추상화는 추가하지 않습니다.
+- Skeleton primitive는 유지하며 카드/보드/요약 영역의 실제 배치를 조합하는 컴포넌트로 구체화합니다. 입력 훅은 Zustand 검색 값과 변경/clear 로직을 감싸되 즉시 입력과 기존 persist/deferred rendering 정책은 유지합니다.
+- `queryOptions` factory가 실제 목록 hook에 query key와 AbortSignal을 전달하는 queryFn을 제공합니다. key와 API 요청을 각각 별도 파일로 관리합니다.
+- `useSuspenseQuery` 도입은 검토 후 현재 목록에서는 보류합니다. 공식 API는 cancellation 미지원과 enabled 미지원 제약을 명시합니다. 현재 목록은 카드 mutation 전에 이전 조회를 취소하는 계약, 브라우저 localStorage 기반 API, 최초 실패 화면의 버튼 유지 및 재시도 포커스 복구를 갖습니다. 이를 유지하기 위해 `useQuery(candidateQueryOptions())`를 사용하며 미사용 Suspense hook을 추가하지 않습니다. 추후 서버 API/새 조회 화면 도입 시 경계와 오류 복구를 함께 설계하여 재검토합니다.
+- 근거: 설치된 `@tanstack/react-query/src/useSuspenseQuery.ts`, `suspense.ts`, `queryOptions.ts` 및 [useSuspenseQuery 공식 API](https://tanstack.com/query/latest/docs/framework/react/reference/functions/useSuspenseQuery), [queryOptions 가이드](https://tanstack.com/query/latest/docs/framework/react/guides/query-options), [Suspense 가이드](https://tanstack.com/query/latest/docs/framework/react/guides/suspense). 2026-09-13 확인.

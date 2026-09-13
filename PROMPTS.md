@@ -2,6 +2,11 @@
 
 기능별 실제 지시, 출력 요지, 검증 결과와 판단을 기록합니다. 사용자 검증과 에이전트 검증을 구분하며 수행하지 않은 검증은 기록하지 않습니다.
 
+## 재사용성과 구조 정리 — 추가 승인 (2026-09-13)
+사용자 요청: “선택사항 추가” — Input clearButton 및 의미별 Button 래퍼, left/center/right Header, 필요시 세분화된 skeleton; 컴포넌트별 폴더와 상수·유틸·타입·훅·API·query key 분리; 가능한 useSuspenseQuery/queryOptions 적용; 입력 onChange 등의 간단한 훅 추상화(억지로 하지 않음).
+
+독립 `reusable-ui` 및 `candidate-structure` 세션에 공통 UI와 도메인 구조를 각각 배정했습니다. 통합 기록은 [reusability-integration](docs/records/reusability-integration.md), 실제 기능별 지시는 [reusable-ui task](docs/tasks/reusable-ui.md), [candidate-structure task](docs/tasks/candidate-structure.md)를 참조합니다. 진행 중이며 검증 결과는 완료 시 갱신합니다.
+
 ## 최종 요구사항 재감사 (2026-09-13)
 - 사용자: “더 진행할 거 없나? 마지막으로 초기 요구사항에 어긋난 거 있는지 확실히 확인해”
 - 초기 `12ed483:PLAN.md`와 현재 구현·후속 승인·검증 기록을 대조했습니다. 필수 누락이나 승인 범위 위반을 발견하지 못했습니다.
