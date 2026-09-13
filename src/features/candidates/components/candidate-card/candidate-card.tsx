@@ -1,5 +1,6 @@
 "use client";
-import { memo, useRef, type DragEvent } from "react";
+import { memo, useRef } from "react";
+import { useDraggable } from "@dnd-kit/react";
 import {
   Check,
   GripVertical,
@@ -30,13 +31,7 @@ export const CandidateCard = memo(function CandidateCard({
   onUndo,
   onMove,
   onOpenDetail,
-  dragging,
-  onDragStart,
-  onDragEnd,
 }: {
-  dragging: boolean;
-  onDragStart: (event: DragEvent<HTMLElement>, candidate: Candidate) => void;
-  onDragEnd: () => void;
   candidate: Candidate;
   pending: boolean;
   undoStage?: Stage;
@@ -44,34 +39,41 @@ export const CandidateCard = memo(function CandidateCard({
   onMove: (id: string, stage: Stage) => void;
   onOpenDetail: (id: string) => void;
 }) {
+  const { ref, handleRef, isDragging } = useDraggable({
+    id: candidate.id,
+    type: "candidate",
+    disabled: pending,
+  });
   const selectedMove = useRef(false);
   const date = candidate.appliedAt.slice(0, 10).replaceAll("-", ".");
   return (
     <div
+      ref={ref}
       data-candidate-card={candidate.id}
-      data-dragging={dragging || undefined}
+      data-dragging={isDragging || undefined}
       className="relative rounded-xl border border-slate-200/80 bg-white shadow-[0_2px_5px_rgba(27,39,68,0.025)] transition-shadow hover:shadow-md data-[dragging=true]:opacity-50"
     >
-      <span
-        aria-hidden="true"
+      <button
+        ref={handleRef}
+        type="button"
+        tabIndex={-1}
+        aria-label={`${candidate.name} 단계 드래그`}
+        disabled={pending}
         data-candidate-drag={candidate.id}
-        draggable={!pending}
-        onDragStart={(event) => onDragStart(event, candidate)}
-        onDragEnd={onDragEnd}
         title={
           pending
             ? "저장 중"
-            : "다른 단계로 드래그 · 키보드와 터치는 단계 이동 메뉴 사용"
+            : "다른 단계로 드래그 · 단계 이동 메뉴도 사용 가능"
         }
         className={cn(
-          "absolute right-1 top-2 z-10 flex size-7 items-center justify-center rounded-md text-slate-400",
+          "absolute right-1 top-2 z-10 flex touch-none size-7 items-center justify-center rounded-md text-slate-400",
           pending
             ? "cursor-wait opacity-40"
             : "cursor-grab hover:bg-slate-100 active:cursor-grabbing",
         )}
       >
-        <GripVertical className="size-4" />
-      </span>
+        <GripVertical aria-hidden="true" className="size-4" />
+      </button>
       <button
         type="button"
         data-candidate-detail={candidate.id}
