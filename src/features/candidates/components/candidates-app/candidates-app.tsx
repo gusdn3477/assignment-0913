@@ -16,7 +16,7 @@ import {
   Layers3,
   Users,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ResetButton } from "@/components/buttons/reset-button";
 import { WorkspaceHeader } from "@/features/candidates/components/workspace-header/workspace-header";
 import { CandidateMetric } from "@/features/candidates/components/candidate-metric/candidate-metric";
 import { BoardSkeleton } from "@/features/candidates/components/candidate-board/board-skeleton";
@@ -225,14 +225,14 @@ function BoardContent() {
                       : "지원자가 등록되면 이곳에서 채용 단계를 관리할 수 있어요."}
                   </p>
                   {!!candidates?.length && (
-                    <Button
+                    <ResetButton
                       variant="outline"
                       size="sm"
                       className="mt-3"
                       onClick={resetFilters}
                     >
                       검색 조건 초기화
-                    </Button>
+                    </ResetButton>
                   )}
                 </div>
               )}

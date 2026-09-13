@@ -5,6 +5,7 @@ import { Providers } from "@/app/providers";
 import { CandidatesApp } from "@/features/candidates/components/candidates-app/candidates-app";
 import { candidateApi } from "@/features/candidates/api/mock-api";
 import { MockApiError } from "@/features/candidates/api/mock-api-error";
+import { UI_STORAGE_KEY } from "@/features/candidates/constants/storage";
 import {
   JOBS,
   STAGES,
@@ -79,6 +80,42 @@ if (!HTMLElement.prototype.scrollIntoView)
   HTMLElement.prototype.scrollIntoView = () => {};
 
 describe("CandidatesApp acceptance", () => {
+  it("clears only the name filter by keyboard, keeps job and persists the change without refetching", async () => {
+    localStorage.setItem(
+      UI_STORAGE_KEY,
+      JSON.stringify({ state: { search: "김", job: JOBS[0] }, version: 0 }),
+    );
+    mount();
+    const user = userEvent.setup();
+    const input = await screen.findByRole("searchbox");
+    expect(input).toHaveValue("김");
+    expect(detail("김하늘")).toBeInTheDocument();
+    expect(detail("이봄")).not.toBeInTheDocument();
+    await user.click(input);
+    await user.tab();
+    expect(screen.getByRole("button", { name: "검색어 지우기" })).toHaveFocus();
+    await user.keyboard("{Enter}");
+    expect(input).toHaveValue("");
+    expect(input).toHaveFocus();
+    expect(
+      screen.queryByRole("button", { name: "검색어 지우기" }),
+    ).not.toBeInTheDocument();
+    expect(
+      await screen.findByRole("button", { name: "이봄 지원자 상세 보기" }),
+    ).toBeInTheDocument();
+    expect(detail("김여름")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("status", { name: "지원자 검색 결과" }),
+    ).toHaveTextContent("전체 3명 중 2명");
+    expect(
+      screen.getByRole("combobox", { name: "직무 필터" }),
+    ).toHaveTextContent(JOBS[0]);
+    expect(JSON.parse(localStorage.getItem(UI_STORAGE_KEY)!)).toMatchObject({
+      state: { search: "", job: JOBS[0] },
+    });
+    expect(candidateApi.listCandidates).toHaveBeenCalledTimes(1);
+  });
+
   it("shows initial loading until the API resolves, then renders all five columns", async () => {
     const request = deferred<Candidate[]>();
     vi.mocked(candidateApi.listCandidates).mockReturnValue(request.promise);

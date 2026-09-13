@@ -1,9 +1,9 @@
 "use client";
 
 import { useRef } from "react";
-import { X, Mail, CalendarDays, BriefcaseBusiness } from "lucide-react";
+import { Mail, CalendarDays, BriefcaseBusiness } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { CloseButton } from "@/components/buttons/close-button";
 import {
   Sheet,
   SheetClose,
@@ -52,14 +52,14 @@ export function CandidateDetail({
         }}
       >
         <SheetClose asChild>
-          <Button
+          <CloseButton
             variant="ghost"
             size="icon"
             aria-label="상세 닫기"
             className="absolute top-5 right-5 z-10"
           >
-            <X aria-hidden="true" className="size-5" />
-          </Button>
+            {null}
+          </CloseButton>
         </SheetClose>
         <SheetHeader className="border-b border-slate-100 bg-slate-50 px-7 pt-10 pb-7">
           <p className="mb-4 text-xs font-semibold tracking-widest text-slate-500">

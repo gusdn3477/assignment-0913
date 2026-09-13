@@ -3,8 +3,8 @@ import { useCandidateSearch } from "@/features/candidates/hooks/use-candidate-se
 
 import { MAX_SEARCH_LENGTH } from "@/features/candidates/constants/storage";
 import { useId } from "react";
-import { Search, RotateCcw, SlidersHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Search, SlidersHorizontal } from "lucide-react";
+import { ResetButton } from "@/components/buttons/reset-button";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -26,7 +26,7 @@ export function CandidateToolbar({
   filtered: number;
   stale?: boolean;
 }) {
-  const { value: search, onChange } = useCandidateSearch();
+  const { value: search, onChange, clear } = useCandidateSearch();
   const job = useCandidateUI((state) => state.job);
   const setJob = useCandidateUI((state) => state.setJob);
   const resetFilters = useCandidateUI((state) => state.resetFilters);
@@ -44,7 +44,7 @@ export function CandidateToolbar({
         </label>
         <Search
           aria-hidden="true"
-          className="pointer-events-none absolute top-3 left-3 size-4 text-slate-400"
+          className="pointer-events-none absolute top-3 left-3 z-10 size-4 text-slate-400"
         />
         <Input
           id={`${id}-search`}
@@ -52,6 +52,7 @@ export function CandidateToolbar({
           value={search}
           maxLength={MAX_SEARCH_LENGTH}
           onChange={onChange}
+          clearButton={{ onClear: clear, label: "검색어 지우기" }}
           placeholder="지원자 이름 검색"
           className="h-10 border-slate-200 bg-slate-50 pl-9"
         />
@@ -80,16 +81,11 @@ export function CandidateToolbar({
           </SelectContent>
         </Select>
       </div>
-      <Button
-        variant="ghost"
-        size="sm"
+      <ResetButton
         disabled={!hasFilters}
         onClick={resetFilters}
         className="text-slate-500"
-      >
-        <RotateCcw aria-hidden="true" className="size-3.5" />
-        초기화
-      </Button>
+      />
       <p
         role="status"
         aria-live="off"

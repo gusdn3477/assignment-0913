@@ -1,7 +1,7 @@
 "use client";
 
-import { LoaderCircle, RotateCcw, Wifi } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Wifi } from "lucide-react";
+import { RetryButton } from "@/components/buttons/retry-button";
 import { MockApiError } from "@/features/candidates/api/mock-api-error";
 
 function loadErrorMessage(error: Error | null) {
@@ -32,15 +32,7 @@ export function CandidateLoadError({
           {loadErrorMessage(error)}
         </p>
       </div>
-      <Button
-        variant="outline"
-        className="mt-5"
-        onClick={onRetry}
-        disabled={pending}
-      >
-        <RotateCcw className="size-4" aria-hidden />
-        다시 불러오기
-      </Button>
+      <RetryButton className="mt-5" onClick={onRetry} pending={pending} />
       <p role="status" className="mt-3 min-h-5 text-sm text-muted-foreground">
         {pending ? "다시 불러오는 중…" : ""}
       </p>
@@ -75,19 +67,15 @@ export function CandidateRefresh({
         </p>
         {blocked && <p>단계 저장이 끝나면 새로고침할 수 있어요.</p>}
       </div>
-      <Button
+      <RetryButton
         variant="ghost"
         size="sm"
         onClick={onRetry}
-        disabled={pending || blocked}
+        pending={pending}
+        disabled={blocked}
       >
-        {pending ? (
-          <LoaderCircle className="size-3.5 animate-spin" aria-hidden />
-        ) : (
-          <RotateCcw className="size-3.5" aria-hidden />
-        )}
         {failed ? "다시 불러오기" : "새로고침"}
-      </Button>
+      </RetryButton>
     </div>
   );
 }
