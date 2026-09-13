@@ -107,7 +107,7 @@ describe("SearchBar", () => {
     },
   );
 
-  it("preserves slot overrides, uncontrolled native input, constraints and callback refs", async () => {
+  it("preserves uncontrolled native input, constraints and callback refs", async () => {
     const ref = vi.fn();
     const clear = vi.fn();
     const { rerender } = render(
@@ -115,8 +115,6 @@ describe("SearchBar", () => {
         ref={ref}
         defaultValue="홍길동"
         onClear={clear}
-        left={<span>이름</span>}
-        right={<span>⌘ K</span>}
         maxLength={4}
         required
         className="h-12"
@@ -130,11 +128,8 @@ describe("SearchBar", () => {
     const wrapper = input.closest('[data-slot="input-wrapper"]');
     expect(wrapper).toHaveClass("bg-white");
     expect(
-      wrapper?.querySelector('[data-slot="input-left"]'),
-    ).toHaveTextContent("이름");
-    expect(
-      wrapper?.querySelector('[data-slot="input-right"]'),
-    ).toHaveTextContent("⌘ K");
+      wrapper?.querySelector('[data-slot="input-left"] svg'),
+    ).toHaveAttribute("aria-hidden", "true");
     await userEvent.type(input, "가나다");
     expect(input).toHaveValue("홍길동가");
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
@@ -145,11 +140,9 @@ describe("SearchBar", () => {
         value="홍길동"
         onChange={vi.fn()}
         onClear={clear}
-        right={<span>⌘ K</span>}
       />,
     );
     const controlledInput = screen.getByRole("searchbox");
-    expect(screen.getByText("⌘ K")).toBeInTheDocument();
     await userEvent.click(
       screen.getByRole("button", { name: "검색어 지우기" }),
     );
@@ -158,13 +151,14 @@ describe("SearchBar", () => {
     expect(controlledInput).toHaveFocus();
   });
 
-  it("allows an explicit empty left slot", () => {
-    render(<SearchBar left={null} aria-label="검색" />);
+  it("always provides the search icon without a clear action", () => {
+    render(<SearchBar aria-label="검색" />);
     expect(
       screen
         .getByRole("searchbox")
         .closest('[data-slot="input-wrapper"]')
-        ?.querySelector('[data-slot="input-left"]'),
-    ).toBeNull();
+        ?.querySelector('[data-slot="input-left"] svg'),
+    ).toHaveAttribute("aria-hidden", "true");
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 });
