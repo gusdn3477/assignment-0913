@@ -1,7 +1,7 @@
 # 세션 인계 / 현재 상태
 
 ## 현재 결론
-필수 기능, concurrent-feedback, 후속 선택 작업 **virtualization** 구현·통합·검증 완료. main이 기준 브랜치이며 기능 브랜치/워크트리/커밋 이력을 보존했습니다. 진행 중인 기능과 알려진 미해결 결함은 없습니다.
+필수 기능, concurrent-feedback, **virtualization** 완료 후 사용자 선택으로 **Undo 구현 진행 중**입니다. 기준 main `a8be3cc`에서 `codex/undo`, `.worktrees/undo` 독립 기능 세션을 시작했습니다. 카드별 마지막 성공 이동 되돌리기와 실패 재시도, 기존 동시성·가상화 포커스 보존이 범위입니다. 기능 계약은 `docs/tasks/undo.md`에 있으며 완료 후 통합·검증합니다.
 
 ## 최신 가상화 검증 (2026-09-13)
 - 기능 `2c0a912`, main 통합 `da3da3f`. 브랜치 `codex/virtualization`, 워크트리 `.worktrees/virtualization`.
