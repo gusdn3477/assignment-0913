@@ -14,7 +14,7 @@ import type {
   Stage,
 } from "@/features/candidates/types/candidate";
 import { getMoveStore } from "@/features/candidates/stores/move-store";
-import { CANDIDATES_QUERY_KEY } from "@/constants/candidate";
+import { CANDIDATES_QUERY_KEY, STAGE_LABELS } from "@/constants/candidate";
 type StageMutation = MoveCandidateInput & { undo?: boolean };
 function patchCandidate(client: QueryClient, candidate: Candidate) {
   client.setQueryData<Candidate[]>(CANDIDATES_QUERY_KEY, (current) =>
@@ -58,6 +58,12 @@ export function useMoveCandidate(): {
           previousStage: previous.stage,
           savedStage: candidate.stage,
         });
+      toast.success(
+        input.undo
+          ? "단계 되돌리기를 저장했습니다."
+          : "단계 이동을 저장했습니다.",
+        { description: `${candidate.name} · ${STAGE_LABELS[candidate.stage]}` },
+      );
     },
     onError: (_error, input, previous) => {
       if (previous) patchCandidate(client, previous);

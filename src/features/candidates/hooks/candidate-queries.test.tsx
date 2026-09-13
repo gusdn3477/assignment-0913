@@ -13,7 +13,9 @@ import type { Candidate } from "@/features/candidates/types/candidate";
 vi.mock("@/api/candidate/mock-api", () => ({
   candidateApi: { listCandidates: vi.fn(), updateCandidateStage: vi.fn() },
 }));
-vi.mock("sonner", () => ({ toast: { error: vi.fn() } }));
+vi.mock("sonner", () => ({
+  toast: { error: vi.fn(), success: vi.fn() },
+}));
 
 function deferred<T>() {
   let resolve!: (value: T) => void;
@@ -152,6 +154,9 @@ describe("card-scoped optimistic mutations", () => {
     await waitFor(() => expect(hook.result.current.loadingIds.size).toBe(0));
     expect(activeLoading.has(context.candidates[0].id)).toBe(true);
     expect(context.data()[0]).toEqual(saved);
+    expect(toast.success).toHaveBeenCalledWith("단계 이동을 저장했습니다.", {
+      description: `${saved.name} · 최종합격`,
+    });
   });
 
   it("rolls back only the failed card and permits retry", async () => {
@@ -394,6 +399,10 @@ describe("last saved move undo", () => {
     await waitFor(() => expect(hook.result.current.loadingIds.size).toBe(0));
     expect(context.data()[0].stage).toBe("interview");
     expect(hook.result.current.undoHistory.has(id)).toBe(false);
+    expect(toast.success).toHaveBeenLastCalledWith(
+      "단계 되돌리기를 저장했습니다.",
+      { description: `${context.candidates[0].name} · 면접` },
+    );
     act(() => expect(hook.result.current.undo(id)).toBe(false));
     expect(candidateApi.updateCandidateStage).toHaveBeenCalledTimes(3);
     expect(candidateApi.updateCandidateStage).toHaveBeenLastCalledWith({

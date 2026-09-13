@@ -460,6 +460,10 @@ describe("saved stage undo menu", () => {
     await user.click(screen.getByRole("menuitem", { name: "면접" }));
     await screen.findByRole("region", { name: "면접 2명" });
     await screen.findByRole("button", { name: "김하늘 단계 변경" });
+    expect(
+      (await screen.findAllByText("단계 이동을 저장했습니다.")).length,
+    ).toBeGreaterThan(0);
+    expect(screen.getAllByText("김하늘 · 면접").length).toBeGreaterThan(0);
     act(() => trigger().focus());
     await user.keyboard("{Enter}{End}");
     expect(
@@ -494,6 +498,10 @@ describe("saved stage undo menu", () => {
     );
     await act(async () => successfulUndo.resolve(candidates[0]));
     await screen.findByRole("button", { name: "김하늘 단계 변경" });
+    expect(
+      (await screen.findAllByText("단계 되돌리기를 저장했습니다.")).length,
+    ).toBeGreaterThan(0);
+    expect(screen.getAllByText("김하늘 · 서류검토").length).toBeGreaterThan(0);
     expect(detail("김하늘")).toHaveFocus();
     expect(candidateApi.updateCandidateStage).toHaveBeenLastCalledWith({
       id: "a",
