@@ -31,6 +31,13 @@ describe("semantic buttons", () => {
     expect(button).toHaveAttribute("title", "action");
   });
 
+  it("provides an accessible icon close button without null children", () => {
+    render(<CloseButton size="icon" />);
+    const button = screen.getByRole("button", { name: "닫기" });
+    expect(button.textContent).toBe("");
+    expect(button.querySelector("svg")).toBeInTheDocument();
+  });
+
   it.each([RetryButton, ReloadButton])(
     "keeps %s label and focus while pending and excludes repeated clicks",
     async (Component) => {

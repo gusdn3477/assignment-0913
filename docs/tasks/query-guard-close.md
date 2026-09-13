@@ -10,3 +10,11 @@
 - 요약 metric loading도 적절한 guard로 조합. React render 오류 boundary와 API 실패 구분 유지, UI·접근성 바뀌지 않음.
 - 상세 사용처는 <SheetClose asChild><CloseButton /></SheetClose> 또는 적합한 상세 전용 CloseButton 조합으로 props/null children 없이 실제 닫힘/이름/위치/아이콘 기본 설정. 범용 버튼에 무분별하게 페이지 종속 기본 넣지 않도록 실사용 책임에 맞게 설계. native props/ref override 가능/keyboard/실제 Sheet close/focus 복원 보존. 기존 tests 의미 유지(라벨이 바뀌면 root에 공유).
 - Next 설치 docs/readability skill 읽기. 관련 tests 신규/기존 통과, lint/typecheck/format, 실제 records/task 갱신 후 commit. 접두사/scope 영어, 설명 한글.
+
+## 구현 인계
+- CandidateQueryGuard(query, blocked, fallback, children)로 최초 로딩/API 실패/재시도/배경 refresh/focus를 선언적으로 조합. retry Action/동기 잠금은 useCandidates의 Query observer와 함께 관리.
+- metric은 공통 LoadingGuard 적용. 상세 전용 CloseButton이 SheetClose를 조합하여 호출은 <CloseButton />, 기존 '상세 닫기' 유지.
+- 실제 Sheet keyboard/ref/override 2개, 공통 icon accessibility 1개 추가. 관련 23/23 통과. 전체 13 files/111 tests(--maxWorkers=1), lint/typecheck/format/diff-check 통과. 기본 병렬 전체 검사 timeout 2건과 재검사 결과는 records에 기록.
+- 신규 의존성/소유권 밖 파일 변경 없음. 상세 구현/실패 수정 기록: docs/records/query-guard-close.md.
+
+- 구현 완료, 통합 인계 가능. 미해결 기능 이슈 없음. production build/browser는 통합 담당이 수행합니다.
