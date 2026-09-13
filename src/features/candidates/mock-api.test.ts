@@ -182,8 +182,8 @@ describe("mock API", () => {
     await expect(
       api.updateCandidateStage({ id: "missing", stage: "hired" }),
     ).rejects.toMatchObject({ code: "not-found" });
-    // @ts-expect-error exercise untrusted runtime input
     await expect(
+      // @ts-expect-error exercise untrusted runtime input
       api.updateCandidateStage({ id: "candidate-001", stage: "bad" }),
     ).rejects.toMatchObject({ code: "invalid-input" });
     expect(port.setItem).not.toHaveBeenCalled();
