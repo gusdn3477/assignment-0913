@@ -79,9 +79,8 @@ src/components/
     error-boundary/
     load-feedback/
     workspace-header/
-  ui/                 # shadcn 기반 Button/Skeleton 등
+  ui/                 # Input primitive·테스트, shadcn 기반 Button/Skeleton 등
   buttons/            # ResetButton, ReloadButton, RetryButton, CloseButton
-  input/              # 좌우 슬롯과 지우기 액션
   search-bar/         # Input을 조합한 검색 입력
   loading-guard/      # 선언적 loading/fallback
   header/             # left/center/right 슬롯 Header
@@ -103,7 +102,7 @@ const { value, onChange, clear } = useCandidateSearch();
 <Header left={<Brand />} center={<Navigation />} right={<Profile />} />;
 ```
 
-Input의 clear는 명시적인 `onClear`를 한 번 호출합니다. 일반 입력 `onChange` 이벤트를 인위적으로 만들지 않으며, 빈 값·disabled·readOnly에는 지우기 버튼을 표시하지 않습니다. 버튼 래퍼는 native props/ref를 전달하고 기본 `type="button"`으로 의도치 않은 폼 제출을 막습니다. Header 중앙 슬롯은 선택 사항이며 좁은 화면에서 별도 행으로 내려갑니다.
+Input은 스타일과 native props/ref, left/right 슬롯만 제공하는 primitive입니다. 테스트는 `src/components/ui/input.test.tsx`에 있습니다. 검색어 지우기는 SearchBar의 `onClear`가 담당합니다. 일반 입력 이벤트를 인위적으로 만들지 않으며 빈 값에서는 X를 숨기고 disabled/readOnly에서는 비활성화합니다. 버튼 래퍼는 native props/ref를 전달하고 기본 `type="button"`으로 의도치 않은 폼 제출을 막습니다. Header 중앙 슬롯은 선택 사항이며 좁은 화면에서 별도 행으로 내려갑니다.
 
 - [AGENTS.md](AGENTS.md): 모든 기능 세션의 작업 규칙.
 - [PLAN.md](PLAN.md): 승인된 목표·범위·완료 기준.
@@ -133,7 +132,7 @@ DnD production 검증에서 실제 드래그·실패 롤백·재시도·키보�
 추가사항의 검증 기록은 [candidate-boundaries](docs/records/candidate-boundaries.md)에 있습니다.
 
 ## 검색 입력 조합과 보드 공간
-`Input`의 `left`/`right` 슬롯은 아이콘, 설명, 버튼 등 ReactNode를 받습니다. 슬롯은 문서 흐름 안에서 자신의 공간을 차지하며 `clearButton`은 오른쪽 슬롯의 다른 요소와 함께 사용할 수 있습니다. `className`은 native input, `wrapperClassName`은 슬롯을 감싼 테두리·배경 영역에 적용합니다.
+`Input`의 `left`/`right` 슬롯은 아이콘, 설명, 버튼 등 ReactNode를 받습니다. 슬롯은 문서 흐름 안에서 자신의 공간을 차지하며 버튼 동작은 상위 컴포넌트에서 조합합니다. `className`은 native input, `wrapperClassName`은 슬롯을 감싼 테두리·배경 영역에 적용합니다.
 
 ```tsx
 <Input

@@ -67,3 +67,6 @@ Zustand UI 상태의 Context/Provider를 제거하고 bound store를 직접 구�
 
 ## 후속 승인: ErrorBoundary 라이브러리 전환
 사용자 요청에 따라 직접 작성한 class 경계를 react-error-boundary로 교체하고 공식 예시의 fallback/reset 조합을 사용합니다. 영역별 렌더 오류 복구와 기존 Query 오류 처리 구분은 유지합니다.
+
+## 사용자 정정: Input primitive
+Input은 native props/ref와 스타일·left/right 슬롯만 제공하는 primitive로 둡니다. clearButton 중복 기능은 제거하고 SearchBar의 onClear 동작을 사용합니다. 테스트는 구현과 함께 ui/input.test.tsx에 배치합니다.

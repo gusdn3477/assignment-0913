@@ -746,3 +746,8 @@ Codex in-app browser, 127.0.0.1:3101, 기본 viewport 1280×720.
 - 검증: 정정 후 lint/typecheck/explorer9 tests/diff-check 통과. 상세 docs/records/element-props.md.
 
 - 결과: 기능a3c4bf3/main통합daf119d, 직접 구현49→38행. 관련17tests/lint/type/format/build 통과. 공식 reset 순서 유지, 지속오류/콜백없는retry/key교체 검증. production 보드/상세/focus/console[] 확인.
+
+## Input primitive와 테스트 위치
+- 요청: input.test 위치 확인 및 스타일/left/right를 제공하는 primitive로 Input 정리.
+- 결과: 기존 components/input/input.test.tsx를 ui/input.test.tsx로 이동. Input clearButton 제거, SearchBar onClear 유지.
+- 검증: lint/typecheck/관련3 files26 tests 통과. 상세 docs/records/input-primitive.md.

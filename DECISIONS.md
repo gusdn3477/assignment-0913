@@ -113,3 +113,6 @@
 
 ## 이벤트 props 명칭 점검
 사용자 정정에 따라 라이브러리 원래 이벤트 이름은 유지합니다. Select는 Radix onValueChange(string), Input/SearchBar는 native onChange(event), Button은 onClick/loading을 사용합니다. 의미별 도메인 콜백을 일괄 onClick으로 바꾸지 않습니다.
+
+## Input primitive 책임 정리
+Input의 clearButton과 내장 버튼/focus 처리를 제거합니다. native input 스타일·props/ref·left/right 슬롯만 제공하며 검색 지우기는 SearchBar가 담당합니다. Input 테스트는 ui/input.test.tsx로 이동하고 지우기 검증은 SearchBar 테스트에 둡니다.
