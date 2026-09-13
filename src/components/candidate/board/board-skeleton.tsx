@@ -1,6 +1,6 @@
 import { STAGES } from "@/features/candidates/constants/candidate";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CandidateCardSkeleton } from "@/features/candidates/components/candidate-card/candidate-card-skeleton";
+import { CandidateCardSkeleton } from "@/components/candidate/card/candidate-card-skeleton";
 export function BoardSkeleton() {
   return (
     <div role="status" aria-label="지원자를 불러오는 중" className="space-y-5">

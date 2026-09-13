@@ -2,14 +2,14 @@
 
 import { memo, useCallback, useDeferredValue, useMemo } from "react";
 import { ArrowUpRight, CircleHelp, Layers3, Users } from "lucide-react";
-import { CandidateErrorBoundary } from "@/features/candidates/components/candidate-error-boundary/candidate-error-boundary";
+import { CandidateErrorBoundary } from "@/components/candidate/error-boundary/candidate-error-boundary";
 import { ResetButton } from "@/components/buttons/reset-button";
-import { CandidateMetric } from "@/features/candidates/components/candidate-metric/candidate-metric";
-import { BoardSkeleton } from "@/features/candidates/components/candidate-board/board-skeleton";
-import { CandidateBoard } from "@/features/candidates/components/candidate-board/candidate-board";
-import { CandidateDetail } from "@/features/candidates/components/candidate-detail/candidate-detail";
-import { CandidateToolbar } from "@/features/candidates/components/candidate-toolbar/candidate-toolbar";
-import { CandidateQueryGuard } from "@/features/candidates/components/candidate-load-feedback/candidate-query-guard";
+import { CandidateMetric } from "@/components/candidate/metric/candidate-metric";
+import { BoardSkeleton } from "@/components/candidate/board/board-skeleton";
+import { CandidateBoard } from "@/components/candidate/board/candidate-board";
+import { CandidateDetail } from "@/components/candidate/detail/candidate-detail";
+import { CandidateToolbar } from "@/components/candidate/toolbar/candidate-toolbar";
+import { CandidateQueryGuard } from "@/components/candidate/load-feedback/candidate-query-guard";
 import { useCandidates } from "@/features/candidates/hooks/use-candidates";
 import { useMoveCandidate } from "@/features/candidates/hooks/use-move-candidate";
 import { filterCandidates } from "@/features/candidates/utils/selectors";

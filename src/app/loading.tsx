@@ -1,5 +1,5 @@
-import { WorkspaceHeader } from "@/features/candidates/components/workspace-header/workspace-header";
-import { BoardSkeleton } from "@/features/candidates/components/candidate-board/board-skeleton";
+import { WorkspaceHeader } from "@/components/candidate/workspace-header/workspace-header";
+import { BoardSkeleton } from "@/components/candidate/board/board-skeleton";
 import { Skeleton } from "@/components/ui/skeleton";
 
 // Route streaming fallback; browser Query loading is handled inside CandidatesApp.

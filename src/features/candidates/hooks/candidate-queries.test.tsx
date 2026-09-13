@@ -3,14 +3,14 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { toast } from "sonner";
-import { candidateApi } from "@/features/candidates/api/mock-api";
+import { candidateApi } from "@/api/candidate/mock-api";
 import { CANDIDATES_QUERY_KEY } from "@/features/candidates/queries/candidate-keys";
 import { useCandidates } from "@/features/candidates/hooks/use-candidates";
 import { useMoveCandidate } from "@/features/candidates/hooks/use-move-candidate";
-import { createSeedCandidates } from "@/features/candidates/api/seed";
+import { createSeedCandidates } from "@/api/candidate/seed";
 import type { Candidate } from "@/features/candidates/types/candidate";
 
-vi.mock("@/features/candidates/api/mock-api", () => ({
+vi.mock("@/api/candidate/mock-api", () => ({
   candidateApi: { listCandidates: vi.fn(), updateCandidateStage: vi.fn() },
 }));
 vi.mock("sonner", () => ({ toast: { error: vi.fn() } }));

@@ -7,7 +7,7 @@ import { STORAGE_KEY } from "@/features/candidates/constants/storage";
 import { MockApiError } from "./mock-api-error";
 import { checkAbort, sleep } from "@/features/candidates/utils/abortable-delay";
 import { parseCandidates } from "@/features/candidates/utils/validate-candidates";
-import { createSeedCandidates } from "@/features/candidates/api/seed";
+import { createSeedCandidates } from "@/api/candidate/seed";
 import { STAGES } from "@/features/candidates/constants/candidate";
 import {
   type Candidate,
