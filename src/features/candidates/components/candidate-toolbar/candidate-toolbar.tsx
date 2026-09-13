@@ -3,9 +3,9 @@ import { useCandidateSearch } from "@/features/candidates/hooks/use-candidate-se
 
 import { MAX_SEARCH_LENGTH } from "@/features/candidates/constants/storage";
 import { useId } from "react";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { SlidersHorizontal } from "lucide-react";
 import { ResetButton } from "@/components/buttons/reset-button";
-import { Input } from "@/components/ui/input";
+import { SearchBar } from "@/components/search-bar/search-bar";
 import {
   Select,
   SelectContent,
@@ -38,23 +38,19 @@ export function CandidateToolbar({
       aria-label="지원자 검색 및 필터"
       className="flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
     >
-      <div className="relative min-w-48 flex-1 sm:max-w-sm">
+      <div className="min-w-48 flex-1 sm:max-w-sm">
         <label htmlFor={`${id}-search`} className="sr-only">
           지원자 이름 검색
         </label>
-        <Search
-          aria-hidden="true"
-          className="pointer-events-none absolute top-3 left-3 z-10 size-4 text-slate-400"
-        />
-        <Input
+        <SearchBar
           id={`${id}-search`}
-          type="search"
           value={search}
           maxLength={MAX_SEARCH_LENGTH}
           onChange={onChange}
           clearButton={{ onClear: clear, label: "검색어 지우기" }}
           placeholder="지원자 이름 검색"
-          className="h-10 border-slate-200 bg-slate-50 pl-9"
+          className="h-10"
+          wrapperClassName="border-slate-200 bg-slate-50"
         />
       </div>
       <div className="flex items-center gap-2">

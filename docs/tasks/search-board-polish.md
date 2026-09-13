@@ -11,3 +11,11 @@
 - 카드 영역은 기존 max-height min(60vh,720px)보다 넉넉하게(기본 약 720px 이상 가용 공간), 목록 마지막 카드와 focus outline이 끝에서 잘리지 않도록 실제 가상화 padding/scroll 여유 보장. 고정 카드 높이 가정으로 텍스트를 자르지 않고 측정/키보드/드래그/스크롤 유지.
 - 관련 meaningful input 슬롯/긴 adornment/clear/focus, 버튼 pending, 가상화 끝 카드 접근 회귀 검증. 기존 tests/lint/typecheck/format 통과. Next 설치 docs 먼저 읽기.
 - 실제 prompt/output/review/commands/results/decisions/issues 기록 및 task handoff 갱신 후 커밋. main에는 통합 담당만 병합.
+
+
+## 기능 인계 (2026-09-13)
+- 구현 완료: Input left/right + SearchBar 실제 조합, ReloadButton 실제 사용, 720px/75vh 컬럼 높이와 virtualizer 끝 여백 16px/시작·좌우 6px.
+- native props/ref, clear value/keyboard/focus, 기존 Reset/Retry, query/store/drag/undo 경로 유지. SearchBar 타입은 clear controlled-value union을 보존.
+- 설치된 binaries 직접 실행: strict typecheck, eslint, prettier check, 12 files 108/108 tests, diff whitespace 검사 통과. pnpm symlink dependency 자동검사 이슈와 해결은 record 참조.
+- source 작업 완료. production build/browser와 main 병합은 통합 담당이 이어서 수행; 브라우저 수정 요청 시 동일 기능 correction commit 유지.
+- 기록: docs/records/search-board-polish.md. 의존성 변경 없음.

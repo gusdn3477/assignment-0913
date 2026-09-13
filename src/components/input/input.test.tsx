@@ -5,6 +5,53 @@ import { describe, expect, it, vi } from "vitest";
 import { Input } from "@/components/ui/input";
 
 describe("Input", () => {
+  it("composes variable-width left and right content with clear without leaking slot props onto the native input", async () => {
+    const onClear = vi.fn();
+    const ref = createRef<HTMLInputElement>();
+    render(
+      <Input
+        ref={ref}
+        aria-label="검색"
+        name="query"
+        value="text"
+        onChange={vi.fn()}
+        left={<span>긴 검색 대상 설명</span>}
+        right={<button type="button">검색 도움말 보기</button>}
+        clearButton={{ onClear }}
+        wrapperClassName="bg-white"
+      />,
+    );
+    const input = screen.getByRole("textbox");
+    expect(input).not.toHaveAttribute("left");
+    expect(input).not.toHaveAttribute("right");
+    expect(ref.current).toBe(input);
+    expect(input).toHaveAttribute("name", "query");
+    expect(input.closest('[data-slot="input-wrapper"]')).toHaveClass(
+      "bg-white",
+    );
+    expect(
+      screen.getByText("긴 검색 대상 설명").closest('[data-slot="input-left"]'),
+    ).toBeInTheDocument();
+    expect(
+      screen
+        .getByRole("button", { name: "검색 도움말 보기" })
+        .closest('[data-slot="input-right"]'),
+    ).toBe(
+      screen
+        .getByRole("button", { name: "입력 지우기" })
+        .closest('[data-slot="input-right"]'),
+    );
+    await userEvent.click(input);
+    await userEvent.tab();
+    expect(
+      screen.getByRole("button", { name: "검색 도움말 보기" }),
+    ).toHaveFocus();
+    await userEvent.tab();
+    await userEvent.keyboard("{Enter}");
+    expect(onClear).toHaveBeenCalledTimes(1);
+    expect(input).toHaveFocus();
+  });
+
   it("keeps the external ref current when clear support changes", async () => {
     const ref = createRef<HTMLInputElement>();
     const onClear = vi.fn();
