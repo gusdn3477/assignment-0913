@@ -23,3 +23,5 @@ CandidateBoard 계약 구현. 5단계·카운트·빈 컬럼 유지, 지원일 �
 ## 남은 사항
 
 통합 전체 테스트와 실제 브라우저 키보드 메뉴·이동/롤백 포커스·스크롤 검증 필요. 공유 UI 로컬 변경과 node_modules 링크는 커밋 제외.
+
+최종 실행 결과: Node24 `vitest run src/features/candidates/board.test.tsx --maxWorkers=1 --reporter=verbose`는 **7 passed, 1 failed**, 55.41s. 유일한 실패는 `restores focus to the moved card and again on rollback` (5000ms timeout, 보고된 실행 40866ms). 실패 테스트를 유지하여 통합 진단에 제공함. 마지막 tsc 재실행 통과.
